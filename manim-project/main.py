@@ -20,9 +20,8 @@ class FirstScene(Scene):
         d1_coord = [0, 0, 0]
         d2_coord = [5, 3, 0]
 
-        d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.07, color=WHITE)
-
-        d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.07,color=WHITE)
+        d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.05, color=GREEN)
+        d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.05, color=GREEN)
 
         d1_text = Text("D1", font_size=21).next_to(d1, DOWN)
         d2_text = Text("D2", font_size=21).next_to(d2, UP)
@@ -124,7 +123,7 @@ class SecondScene(MovingCameraScene):
             square.set_z_index(1)
 
             #Dot
-            dot = Dot(plane.c2p(0, 0), radius= 0.04, color=RED)
+            dot = Dot(plane.c2p(0, 0), radius= 0.05, color=GREEN)
             dot.set_z_index(3)
 
             #Arrows
@@ -142,8 +141,12 @@ class SecondScene(MovingCameraScene):
             text_2mm_approx = Tex(r"$\approx$ 1.41 mm", font_size=17)
             text_2mm_approx.move_to(arrow_2mm.get_center() + UP * 0.14 + LEFT * 0.13)
             text_2mm_approx.rotate(PI/4)
+
             all_text_in_sqare = VGroup(text_1mm, text_2mm, text_2mm_approx)
             all_text_in_sqare.set_z_index(2)
+
+            all_arrows_in_square = VGroup(arrow_1mm, arrow_2mm)
+            all_arrows_in_square.set_z_index(2)
 
 
             #Move Camera
@@ -151,32 +154,88 @@ class SecondScene(MovingCameraScene):
             self.wait(2)
 
             #D1D2
-            d1_coord = [0, 0, 0]
+            d1_coord = [0, 0, 0] 
             d2_coord = [5, 3, 0]
-            d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.07, color=WHITE)
+            d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.05, color=GREEN) #По сути лишний код, у нас уже есть эта точка, но в коде выглядит логичнее так
 
-            d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.07, color=WHITE)
+            d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.05, color=GREEN)
 
-            d1_text = Text("D1", font_size=21).next_to(d1, DOWN * 0.7)
-            d2_text = Text("D2", font_size=21).next_to(d2, UP * 0.5)
+            d1_name = Tex(r"$\boldsymbol{D_1}$", font_size=21).next_to(d1, DOWN * 0.7)
+            d2_name = Tex(r"$\boldsymbol{D_2}$", font_size=21).next_to(d2, UP * 0.5)
 
-            x1y1_text = Text("(x1y1)", font_size=21).next_to(d1, DOWN * 0.7)
-            x2y2_text = Text("(x2y2)", font_size=21).next_to(d2, UP * 0.3)
+            x1y1_text = Tex(r"$\boldsymbol{(x_1, y_1)}$", font_size=21)
+            x2y2_text = Tex(r"$\boldsymbol{(x_2, y_2)}$", font_size=21)
 
 
             d1d2_line= Line(start=d1.get_center(), end=d2.get_center(), color=WHITE)
-            line_stuff = VGroup(d1, d2, d1d2_line, d1_text, d2_text)
-            d1d2_names = VGroup(d1_text, d2_text)
+            
+            d1d2_dots = VGroup(d1, d2)
+            d1d2_names = VGroup(d1_name, d2_name)
+
             xy_group = VGroup(x1y1_text, x2y2_text)
 
-            line_stuff.set_z_index(3)
+            d1d2_line.set_z_index(3)
+            d1d2_dots.set_z_index(4)
             d1d2_names.set_z_index(3)
+
             xy_group.set_z_index(3)
 
+            #Arrows_on_sides
+            arrow_b = Arrow(start = plane.c2p(0, 2.2), end = plane.c2p(0, 2.7), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+            b_name = Text("b", font_size=14).next_to(arrow_b, LEFT * 0.1)
+
+            b_group = VGroup(arrow_b, b_name)
+            b_group.set_z_index(2)
+            b_group.shift(LEFT * 0.2).set_opacity(0.8)
+            
+            arrow_a = Arrow(start = plane.c2p(4.2, 0), end = plane.c2p(4.7, 0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+            a_name = Text("a", font_size=14).next_to(arrow_a, DOWN * 0.1)
+
+            a_group = VGroup(arrow_a, a_name)
+            a_group.set_z_index(2)
+            a_group.shift(DOWN * 0.2).set_opacity(0.8)
+
             #Change_of_coordinates
-            d1_new_coord_text = Text("(0, 0)", font_size=21).next_to(d1, DOWN * 0.6)
-            d2_new_coord_text1 = Text("(x2-x1, y2-y1)", font_size=21).next_to(d2, UP * 0.3)
-            d2_new_coord_text2 = Text("(Δa, Δb)", font_size=21).next_to(d2, UP * 0.3)
+            d1_new_coord_text = Tex(r"$\boldsymbol{(0, 0)}$", font_size=17)                         # .next_to(d1_text, RIGHT * 0.5)
+            d2_new_coord_text1 = Tex(r"$\boldsymbol{(x_2-x_1$, $y_2-y_1)}$", font_size=17)           # .next_to(d2_text, RIGHT * 0.5)
+            d2_new_coord_text2 = Tex(r"$\boldsymbol{(\Delta a, \Delta b)}$", font_size=17)          # .next_to(d2_text, RIGHT * 0.5)
+
+            #b_equation
+            b_equation_1 = Tex(r"$\boldsymbol{b = ma}$", font_size=21)
+            b_equation_2 = Tex(r"$\boldsymbol{m = \frac{\Delta b}{\Delta a}}$", font_size=21)
+            b_equation_1.next_to(plane.c2p(2.5, 0), DOWN * 1.5)
+            b_equation_2.next_to(b_equation_1.get_bottom(), DOWN * 0.7)
+
+            #Grid_Numbers
+            grid_diag_numbers = VGroup()
+            grid_vertical_numbers = VGroup()
+            for i in range(1, 6):
+                grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
+
+            for i in range(1, 4):
+                grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
+
+            #D2_Traverse
+            d2_newpos_name = Tex(r"$\boldsymbol{D_2}$", font_size=21).move_to(plane.c2p(3.2, 2.2))
+            d2_new_coord_names = Tex(r"$\boldsymbol{(\Delta a, \Delta b)}$", font_size=17).next_to(d2_newpos_name, RIGHT * 0.5)
+            d2_traverse_group = VGroup(d2, d2_newpos_name, d2_new_coord_names)
+            d2_traverse_group.set_z_index(4)
+
+            dashed_horizontal_line = DashedLine(start=plane.c2p(3, 0), end=plane.c2p(3, 2), color=WHITE, dash_length=0.1, dashed_ratio=0.5)
+            dashed_vertical_line = DashedLine(start=plane.c2p(0, 2), end=plane.c2p(3, 2), color=WHITE, dash_length=0.1, dashed_ratio=0.5)
+
+            dashed_lines = VGroup(dashed_horizontal_line, dashed_vertical_line)
+            dashed_lines.set_z_index(3)
+
+            #Undoing_Whats_Done
+            d2_original = d2.copy()
+            d2_original_name = d2_name.copy()
+            d2_original_delta_coord = d2_new_coord_text2.copy().next_to(d2_original_name, RIGHT * 0.5)
+            d1d2_original_line = d1d2_line.copy()
+            undoing_group = VGroup(d2_original, d2_original_name, d2_original_delta_coord)
+            d1d2_original_line.set_z_index(3)
+            undoing_group.set_z_index(4)
+
 
             #Animation_Square
             self.play(Create(square))
@@ -199,36 +258,90 @@ class SecondScene(MovingCameraScene):
             self.wait(1)
 
             #Animation_unzoom
-            self.play(self.camera.frame.animate.scale(2).move_to(ORIGIN), Unwrite(all_text_in_sqare),run_time=2)
+            self.play(self.camera.frame.animate.scale(2).move_to(ORIGIN), Unwrite(all_text_in_sqare), Unwrite(all_arrows_in_square),run_time=2)
             self.play(Create(box), run_time = 4)
 
             #D1D2 Animation
-            self.play(Create(d1), Create(d2), run_time=1)
+            self.play(Create(d1), Create(d2), run_time=1) #По сути лишний код (часть "Create(d1)" ), у нас уже есть эта точка, но в коде выглядит логичнее так
             self.wait(2)
             self.play(Create(d1d2_line), run_time=2)
             self.wait(2)
             self.play(Write(d1d2_names), run_time=1)
 
-            self.play(d1_text.animate.shift(LEFT * 0.333), d2_text.animate.shift(LEFT * 0.275), run_time=2)
-            self.play(Write(x1y1_text.shift(RIGHT * 0.3)), Write(x2y2_text.shift(RIGHT * 0.4)), run_time=1)
+            self.play(d1_name.animate.shift(LEFT * 0.17), d2_name.animate.shift(LEFT * 0.17), run_time=1)
+
+            self.play(Write(x1y1_text.next_to(d1_name, RIGHT * 0.5)), Write(x2y2_text.next_to(d2_name, RIGHT * 0.5)), run_time=1)
             self.wait(1.5)
+
+            #Animation_arrows_on_sides
+            self.play(Write(b_group), Write(a_group), run_time=1)
+            self.wait(1)
+
+
+            self.wait(1)
 
             #Animation_Change_of_coordinates
             self.play(Unwrite(x1y1_text), run_time=1)
             self.wait(0.2)
-            self.play(Write(d1_new_coord_text.shift(RIGHT * 0.3)), run_time=1)
-            #self.play(Transform(x1y1_text, d1_new_coord_text.shift(RIGHT * 0.3)), run_time=1)
+            self.play(Write(d1_new_coord_text.next_to(d1_name, RIGHT * 0.5)), run_time=1)
+
+            self.wait(1)
+
             self.play(Unwrite(x2y2_text), run_time=1)
             self.wait(0.2)
-            self.play(Write(d2_new_coord_text1.shift(RIGHT * 0.9)), run_time=1)
-            #self.play(Transform(x2y2_text, d2_new_coord_text1.shift(RIGHT * 0.9)), run_time=1)
-            self.wait(1.5)
-            #self.play(Transform(d2_new_coord_text1, d2_new_coord_text2.shift(RIGHT * 0.5)), run_time=1)
+            self.play(Write(d2_new_coord_text1.next_to(d2_name, RIGHT * 0.5)), run_time=1)
+
+            self.wait(1)
+
             self.play(Unwrite(d2_new_coord_text1), run_time=1)
             self.wait(0.2)
-            self.play(Write(d2_new_coord_text2.shift(RIGHT * 0.5)))
+            self.play(Write(d2_new_coord_text2.next_to(d2_name, RIGHT * 0.5)), run_time=1)
+
+            self.wait(1)
+
+            #Animation_b_equation
+
+            self.play(Write(b_equation_1), run_time=2)
+            self.wait(0.5)
+            self.play(Write(b_equation_2), run_time=2)
+            self.wait(1)
+
+            #Animation_grid_numbers
+            self.play(Write(grid_diag_numbers), Write(grid_vertical_numbers), run_time=2)
+
+            self.wait(2)
+
+            #Animation_D2_Traverse
+            self.play(Uncreate(d1d2_line), run_time=1)
+            self.play(Uncreate(d2_name), Uncreate(d2_new_coord_text2) ,run_time=0.5)
+
+            self.wait(0.5)
+
+            self.play(d2.animate.move_to(plane.c2p(3.4, 2.2)), run_time=2)
+
+            self.wait(1)
+
+            self.play(Create(dashed_horizontal_line), Create(dashed_vertical_line), run_time=2)
+
+            self.wait(1)
+
+            self.play(d2.animate.move_to(plane.c2p(3.0, 2.0)), run_time=1)
+            self.play(Write(d2_newpos_name), Write(d2_new_coord_names), run_time=0.7)
+
+            self.wait(2)
+
+            #Undoing_Whats_Done
+            self.play(Uncreate(dashed_lines), Unwrite(d2_newpos_name), Unwrite(d2_new_coord_names), Uncreate(d2), run_time=2)
+            self.wait(0.7)
+
+            self.play(Create(d2_original), run_time=1)
+            self.play(Write(d2_original_name), Write(d2_original_delta_coord.next_to(d2_original_name, RIGHT * 0.5)), run_time=1)
+            self.wait(2)
+            self.play(Create(d1d2_original_line), run_time=2)
+            self.wait(2)
 
             self.wait(3)
+            
 
 
 
