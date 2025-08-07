@@ -1,5 +1,17 @@
 import time
 from manim import *
+
+
+class Introduction(MovingCameraScene):
+    def construct(self):
+
+        circle = Circle(radius=3, stroke_width=3, color=WHITE)
+        self.play(Create(circle), run_time=2)
+        self.wait(2)
+
+        self.play(self.camera.frame.animate.move_to(circle.point_at_angle(3 * np.pi / 4)).scale(0.01), run_time=2)
+        self.wait(2)
+
 class FirstScene(Scene):
 
 
@@ -111,9 +123,9 @@ class SecondScene(MovingCameraScene):
 
 
             #Box
-            plane = NumberPlane(x_range=(0, 5, 1), y_range=(0, 3, 1))
-            upper_line = Line(start=plane.c2p(0, 3), end=plane.c2p(5, 3), stroke_width= 2, color=WHITE)
-            right_line = Line(start=plane.c2p(5, 3), end=plane.c2p(5,0), stroke_width= 2, color=WHITE)
+            plane = NumberPlane(x_range=(0, 5, 1), y_range=(0, 4, 1))
+            upper_line = Line(start=plane.c2p(0, 4), end=plane.c2p(5, 4), stroke_width= 2, color=WHITE)
+            right_line = Line(start=plane.c2p(5, 4), end=plane.c2p(5,0), stroke_width= 2, color=WHITE)
             box = VGroup(plane, upper_line, right_line)
             box.set_z_index(1)
 
@@ -155,7 +167,7 @@ class SecondScene(MovingCameraScene):
 
             #D1D2
             d1_coord = [0, 0, 0] 
-            d2_coord = [5, 3, 0]
+            d2_coord = [5, 4, 0]
             d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.05, color=GREEN) #По сути лишний код, у нас уже есть эта точка, но в коде выглядит логичнее так
 
             d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.05, color=GREEN)
@@ -212,7 +224,7 @@ class SecondScene(MovingCameraScene):
             for i in range(1, 6):
                 grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
 
-            for i in range(1, 4):
+            for i in range(1, 5):
                 grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
 
             #D2_Traverse
@@ -338,10 +350,18 @@ class SecondScene(MovingCameraScene):
             self.play(Write(d2_original_name), Write(d2_original_delta_coord.next_to(d2_original_name, RIGHT * 0.5)), run_time=1)
             self.wait(2)
             self.play(Create(d1d2_original_line), run_time=2)
-            self.wait(2)
+            self.wait(3)
+
+            #                                                                  Third Scene                                                                                    #
+
+            self.play(self.camera.frame.animate.move_to(plane.c2p(2, 1.5)).scale(0.45), run_time=2)
+            
 
             self.wait(3)
             
+
+            
+
 
 
 
