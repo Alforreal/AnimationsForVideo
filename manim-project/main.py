@@ -248,6 +248,32 @@ class SecondScene(MovingCameraScene):
             d1d2_original_line.set_z_index(3)
             undoing_group.set_z_index(4)
 
+                        #                                                                  Third Scene                                                                                    #
+
+            # P point
+            p_dot = Dot(plane.c2p(1, 1), radius= 0.04, color=GREEN)
+            p_name = Tex(r"$\boldsymbol{P (a_1, a_2)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
+
+            p_stuff = VGroup(p_dot, p_name)
+            p_stuff.set_z_index(4)
+
+            # S point
+
+            start = d1d2_line.get_start()
+            end = d1d2_line.get_end()
+
+            x = 2
+
+            t = (x - plane.p2c(start)[0]) / (plane.p2c(end)[0] - plane.p2c(start)[0])
+            y = (1 - t) * plane.p2c(start)[1] + t * plane.p2c(end)[1]
+
+            s_dot = Dot(plane.c2p(x, y), radius= 0.04, color=GREEN)
+            s_name = Tex(r"$\boldsymbol{P (a_1 + 1, c)}$", font_size = 11).move_to(plane.c2p(x + 0.5, y))
+
+            s_stuff = VGroup(s_dot, s_name)
+            s_stuff.set_z_index(4)
+
+
 
             #Animation_Square
             self.play(Create(square))
@@ -355,7 +381,13 @@ class SecondScene(MovingCameraScene):
             #                                                                  Third Scene                                                                                    #
 
             self.play(self.camera.frame.animate.move_to(plane.c2p(2, 1.5)).scale(0.45), run_time=2)
-            
+            self.wait(1.5)
+
+            self.play(Create(p_dot), Write(p_name))
+
+            self.wait(1.5)
+
+            self.play(Create(s_dot), Write(s_name))
 
             self.wait(3)
             
