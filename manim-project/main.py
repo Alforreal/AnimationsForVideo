@@ -248,14 +248,31 @@ class SecondScene(MovingCameraScene):
             d1d2_original_line.set_z_index(3)
             undoing_group.set_z_index(4)
 
-                        #                                                                  Third Scene                                                                                    #
+            #                                                                  Third Scene                                                                                    #
+
+
 
             # P point
             p_dot = Dot(plane.c2p(1, 1), radius= 0.04, color=GREEN)
-            p_name = Tex(r"$\boldsymbol{P (a_1, a_2)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
+            p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
 
             p_stuff = VGroup(p_dot, p_name)
             p_stuff.set_z_index(4)
+
+            # R point
+            r_dot = Dot(plane.c2p(2, 1), radius= 0.04, color=GREEN)
+            r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8))
+
+            r_stuff = VGroup(r_dot, r_name)
+            r_stuff.set_z_index(4)
+
+            # Q point
+            q_dot = Dot(plane.c2p(2, 2), radius= 0.04, color=GREEN)
+            q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2))
+
+            q_stuff = VGroup(q_dot, q_name)
+            q_stuff.set_z_index(4)
+
 
             # S point
 
@@ -268,11 +285,55 @@ class SecondScene(MovingCameraScene):
             y = (1 - t) * plane.p2c(start)[1] + t * plane.p2c(end)[1]
 
             s_dot = Dot(plane.c2p(x, y), radius= 0.04, color=GREEN)
-            s_name = Tex(r"$\boldsymbol{P (a_1 + 1, c)}$", font_size = 11).move_to(plane.c2p(x + 0.5, y))
+            s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11).move_to(plane.c2p(x + 0.5, y))
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
 
+            # R or Q?
+            line_to_r = DashedLine(start = p_dot.get_center(), end = r_dot.get_center(), color = WHITE, dash_length = 0.1, dashed_ratio = 0.5, stroke_width = 1)
+            line_to_q = DashedLine(start = p_dot.get_center(), end = q_dot.get_center(), color = WHITE, dash_length = 0.1, dashed_ratio = 0.5, stroke_width = 1)
+            dashed_rq = VGroup(line_to_q, line_to_r)
+            dashed_rq.set_z_index(3)
+
+            #Triangles 
+
+            projection_point_r = d1d2_line.get_projection(r_dot.get_center())
+            projection_point_q = d1d2_line.get_projection(q_dot.get_center())
+
+            projection_r = Line(start = r_dot.get_center(), end = projection_point_r, color = ORANGE, stroke_width = 1)
+            projection_q = Line(start = q_dot.get_center(), end = projection_point_q, color = ORANGE, stroke_width = 1)
+
+            line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
+
+            little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 )
+            little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
+
+            r_part_from_original = Line(start = projection_point_r, end = s_dot.get_center(), color = ORANGE)
+            q_part_from_original = Line(start = projection_point_q, end = s_dot.get_center(), color = ORANGE)
+            parts = VGroup(r_part_from_original, q_part_from_original, line_QR)
+            parts.set_z_index(3)
+
+            projections = VGroup(projection_r, projection_q)
+            projections.set_z_index(2)
+
+            right_angle_r = RightAngle(
+            d1d2_line,            
+            projection_r,   
+            length=0.07, 
+            stroke_width = 1,          
+            quadrant=(1, -1),      
+            color=ORANGE
+            )
+
+            right_angle_q = RightAngle(
+            d1d2_line,            
+            projection_q,   
+            length=0.07, 
+            stroke_width = 1,          
+            quadrant=(-1, -1),      
+            color=ORANGE
+            )
 
 
             #Animation_Square
@@ -383,11 +444,30 @@ class SecondScene(MovingCameraScene):
             self.play(self.camera.frame.animate.move_to(plane.c2p(2, 1.5)).scale(0.45), run_time=2)
             self.wait(1.5)
 
+            #P
             self.play(Create(p_dot), Write(p_name))
 
             self.wait(1.5)
 
+            #R and Q
+            self.play(Create(r_dot), Write(r_name), Create(q_dot), Write(q_name))
+            self.wait(1.5)
+
+            #S
             self.play(Create(s_dot), Write(s_name))
+
+            #R or Q? 
+
+            self.play(Create(line_to_r), Create(line_to_q))
+            self.wait(1.5)
+
+            self.play(Uncreate(line_to_r), Uncreate(line_to_q))
+            self.wait(1.5)
+            self.play(Create(projections))
+            self.wait(1)
+            self.play(Create(parts), Write(little_q_name), Write(little_r_name))
+
+            self.play(Create(right_angle_r), Create(right_angle_q))
 
             self.wait(3)
             
