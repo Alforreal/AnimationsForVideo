@@ -171,7 +171,7 @@ class SecondScene(MovingCameraScene):
             d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.05, color=GREEN) #По сути лишний код, у нас уже есть эта точка, но в коде выглядит логичнее так
 
             d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.05, color=GREEN)
-
+            d2_after_traverse = d2.copy()
             d1_name = Tex(r"$\boldsymbol{D_1}$", font_size=21).next_to(d1, DOWN * 0.7)
             d2_name = Tex(r"$\boldsymbol{D_2}$", font_size=21).next_to(d2, UP * 0.5)
 
@@ -179,9 +179,11 @@ class SecondScene(MovingCameraScene):
             x2y2_text = Tex(r"$\boldsymbol{(x_2, y_2)}$", font_size=21)
 
 
-            d1d2_line= Line(start=d1.get_center(), end=d2.get_center(), color=WHITE)
-            
-            d1d2_dots = VGroup(d1, d2)
+            d1d2_line = always_redraw(lambda: 
+                Line(d1.get_center(), d2_after_traverse.get_center(), color=WHITE)
+            )
+
+            d1d2_dots = VGroup(d1, d2, d2_after_traverse)
             d1d2_names = VGroup(d1_name, d2_name)
 
             xy_group = VGroup(x1y1_text, x2y2_text)
@@ -246,6 +248,7 @@ class SecondScene(MovingCameraScene):
             d1d2_original_line = d1d2_line.copy()
             undoing_group = VGroup(d2_original, d2_original_name, d2_original_delta_coord)
             d1d2_original_line.set_z_index(3)
+            d1d2_original_line.add_updater(lambda line: line.put_start_and_end_on(d1.get_center(), d2_after_traverse.get_center()))
             undoing_group.set_z_index(4)
 
             #                                                                  Third Scene                                                                                    #
@@ -285,6 +288,11 @@ class SecondScene(MovingCameraScene):
             y = (1 - t) * plane.p2c(start)[1] + t * plane.p2c(end)[1]
 
             s_dot = Dot(plane.c2p(x, y), radius= 0.04, color=GREEN)
+
+            s_dot.add_updater(lambda dot: dot.move_to(
+                plane.c2p(x, self.interpolate_y_on_line(d1d2_line, x, plane))
+            ))
+
             s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11).move_to(plane.c2p(x + 0.5, y))
 
             s_stuff = VGroup(s_dot, s_name)
@@ -302,17 +310,24 @@ class SecondScene(MovingCameraScene):
             projection_point_q = d1d2_line.get_projection(q_dot.get_center())
 
             projection_r = Line(start = r_dot.get_center(), end = projection_point_r, color = ORANGE, stroke_width = 1)
+            projection_r.add_updater(lambda line: line.put_start_and_end_on(
+                r_dot.get_center(), d1d2_line.get_projection(r_dot.get_center())
+            ))
+
             projection_q = Line(start = q_dot.get_center(), end = projection_point_q, color = ORANGE, stroke_width = 1)
+            projection_q.add_updater(lambda line: line.put_start_and_end_on(
+                q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
+            ))
 
             line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
 
             little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 )
             little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
 
-            r_part_from_original = Line(start = projection_point_r, end = s_dot.get_center(), color = ORANGE)
-            q_part_from_original = Line(start = projection_point_q, end = s_dot.get_center(), color = ORANGE)
-            parts = VGroup(r_part_from_original, q_part_from_original, line_QR)
-            parts.set_z_index(3)
+            # r_part_from_original = Line(start = projection_point_r, end = s_dot.get_center(), color = ORANGE)
+            # q_part_from_original = Line(start = projection_point_q, end = s_dot.get_center(), color = ORANGE)
+            # parts = VGroup(r_part_from_original, q_part_from_original, line_QR)
+            # parts.set_z_index(3)
 
             projections = VGroup(projection_r, projection_q)
             projections.set_z_index(2)
@@ -334,6 +349,8 @@ class SecondScene(MovingCameraScene):
             quadrant=(-1, -1),      
             color=ORANGE
             )
+
+
 
 
             #Animation_Square
@@ -465,15 +482,24 @@ class SecondScene(MovingCameraScene):
             self.wait(1.5)
             self.play(Create(projections))
             self.wait(1)
-            self.play(Create(parts), Write(little_q_name), Write(little_r_name))
+            #self.play(Create(parts), Write(little_q_name), Write(little_r_name))
 
             self.play(Create(right_angle_r), Create(right_angle_q))
 
+
+            self.play(d2_after_traverse.animate.move_to(plane.c2p(4, 3)), run_time=3)
             self.wait(3)
             
 
-            
-
+        def interpolate_y_on_line(self, line, x_value, plane):
+            start = line.get_start()
+            end = line.get_end()
+            start_coords = plane.p2c(start)
+            end_coords = plane.p2c(end)
+            if end_coords[0] - start_coords[0] == 0:
+                return start_coords[1]
+            t = (x_value - start_coords[0]) / (end_coords[0] - start_coords[0])
+            return (1 - t) * start_coords[1] + t * end_coords[1]
 
 
 
