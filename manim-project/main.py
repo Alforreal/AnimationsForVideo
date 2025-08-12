@@ -293,7 +293,9 @@ class SecondScene(MovingCameraScene):
                 plane.c2p(x, self.interpolate_y_on_line(d1d2_line, x, plane))
             ))
 
-            s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11).move_to(plane.c2p(x + 0.5, y))
+            s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11)
+
+            s_name.add_updater(lambda s: s.next_to(s_dot.get_center(), RIGHT, buff = 0.09))
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
@@ -306,23 +308,29 @@ class SecondScene(MovingCameraScene):
 
             #Triangles 
 
-            projection_point_r = d1d2_line.get_projection(r_dot.get_center())
-            projection_point_q = d1d2_line.get_projection(q_dot.get_center())
+            # projection_point_r = d1d2_line.get_projection(r_dot.get_center())
+            # projection_point_q = d1d2_line.get_projection(q_dot.get_center())
 
-            projection_r = Line(start = r_dot.get_center(), end = projection_point_r, color = ORANGE, stroke_width = 1)
-            projection_r.add_updater(lambda line: line.put_start_and_end_on(
-                r_dot.get_center(), d1d2_line.get_projection(r_dot.get_center())
-            ))
+            projection_r = always_redraw(lambda: Line(start = r_dot.get_center(), end = d1d2_line.get_projection(r_dot.get_center()), color = ORANGE, stroke_width = 1))
 
-            projection_q = Line(start = q_dot.get_center(), end = projection_point_q, color = ORANGE, stroke_width = 1)
-            projection_q.add_updater(lambda line: line.put_start_and_end_on(
-                q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
-            ))
+            # projection_r.add_updater(lambda line: line.put_start_and_end_on(
+            #     r_dot.get_center(), d1d2_line.get_projection(r_dot.get_center())
+            # ))
+
+            projection_q = always_redraw(lambda: Line(start = q_dot.get_center(), end = d1d2_line.get_projection(q_dot.get_center()), color = ORANGE, stroke_width = 1))
+            # projection_q.add_updater(lambda line: line.put_start_and_end_on(
+            #     q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
+            # ))
 
             line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
 
             little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 )
+            little_r_name.add_updater(lambda name: name.next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 ))
+
             little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
+            little_q_name.add_updater(lambda name: name.next_to(projection_q.get_center(), DOWN+LEFT, buff=0.01 ))
+
+            
 
             # r_part_from_original = Line(start = projection_point_r, end = s_dot.get_center(), color = ORANGE)
             # q_part_from_original = Line(start = projection_point_q, end = s_dot.get_center(), color = ORANGE)
@@ -332,26 +340,44 @@ class SecondScene(MovingCameraScene):
             projections = VGroup(projection_r, projection_q)
             projections.set_z_index(2)
 
-            right_angle_r = RightAngle(
+            right_angle_r = always_redraw(lambda: RightAngle(
             d1d2_line,            
             projection_r,   
             length=0.07, 
             stroke_width = 1,          
             quadrant=(1, -1),      
             color=ORANGE
-            )
+            ))
 
-            right_angle_q = RightAngle(
+            right_angle_q = always_redraw(lambda: RightAngle(
             d1d2_line,            
             projection_q,   
             length=0.07, 
             stroke_width = 1,          
             quadrant=(-1, -1),      
             color=ORANGE
-            )
+            ))
 
 
+            #Calculate projection valeus
+            r_label = Tex(r"\textbf{r = }", font_size=11)
+            r_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
+            r_len_text = VGroup(r_label, r_value).arrange(RIGHT, buff=0.05)
+            r_len_text.move_to(plane.c2p(3.8, 1.7), aligned_edge=RIGHT)
+
+            r_value.add_updater(lambda r: r.set_value(projection_r.get_length()))
+
+
+            q_label = Tex(r"\textbf{q = }", font_size=11)
+            q_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
+
+            q_len_text = VGroup(q_label, q_value).arrange(RIGHT, buff=0.05)
+            q_len_text.next_to(r_len_text, DOWN, buff = 0.1)
+
+            q_value.add_updater(lambda q: q.set_value(projection_q.get_length()))
+ 
+            #                                                                       ANIMATIONS
 
             #Animation_Square
             self.play(Create(square))
@@ -482,12 +508,13 @@ class SecondScene(MovingCameraScene):
             self.wait(1.5)
             self.play(Create(projections))
             self.wait(1)
-            #self.play(Create(parts), Write(little_q_name), Write(little_r_name))
+            self.play(Write(little_q_name), Write(little_r_name))
 
             self.play(Create(right_angle_r), Create(right_angle_q))
+            self.play(Write(r_len_text), Write(q_len_text))
+            self.wait(1)
 
-
-            self.play(d2_after_traverse.animate.move_to(plane.c2p(4, 3)), run_time=3)
+            self.play(d2_after_traverse.animate.move_to(plane.c2p(5, 3.3)), run_time=3)
             self.wait(3)
             
 
