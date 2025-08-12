@@ -295,7 +295,7 @@ class SecondScene(MovingCameraScene):
 
             s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11)
 
-            s_name.add_updater(lambda s: s.next_to(s_dot.get_center(), RIGHT, buff = 0.09))
+            s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.09))
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
@@ -328,7 +328,7 @@ class SecondScene(MovingCameraScene):
             little_r_name.add_updater(lambda name: name.next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 ))
 
             little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
-            little_q_name.add_updater(lambda name: name.next_to(projection_q.get_center(), DOWN+LEFT, buff=0.01 ))
+            little_q_name.add_updater(lambda name: name.next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 ))
 
             
 
@@ -364,7 +364,7 @@ class SecondScene(MovingCameraScene):
             r_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
             r_len_text = VGroup(r_label, r_value).arrange(RIGHT, buff=0.05)
-            r_len_text.move_to(plane.c2p(3.8, 1.7), aligned_edge=RIGHT)
+            r_len_text.move_to(plane.c2p(3.5, 1.7), aligned_edge=RIGHT)
 
             r_value.add_updater(lambda r: r.set_value(projection_r.get_length()))
 
@@ -376,6 +376,28 @@ class SecondScene(MovingCameraScene):
             q_len_text.next_to(r_len_text, DOWN, buff = 0.1)
 
             q_value.add_updater(lambda q: q.set_value(projection_q.get_length()))
+
+            rq_difference_label = Tex(r"\textbf{r - q = }", font_size=11)
+            rq_difference_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
+
+            rq_difference_text = VGroup(rq_difference_label, rq_difference_value).arrange(RIGHT, buff=0.05)
+            rq_difference_text.next_to(q_len_text, DOWN, buff = 0.1)
+
+            rq_difference_value.add_updater(lambda qr: qr.set_value(projection_r.get_length() - projection_q.get_length()))
+
+            #Where to move explanation objects (idk how to call it lol)
+
+            r_greater_q = Tex(r"$\boldsymbol{>0 \rightarrow diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+
+            r_less_q = Tex(r"$\boldsymbol{<0 \rightarrow horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.1)
+
+            r_zero_q = Tex(r"$\boldsymbol{=0 \rightarrow diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+
+            r_equal_q = Tex(r"$\boldsymbol{\geq0 \rightarrow horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+
+            explanation_text = VGroup(r_greater_q, r_less_q, r_zero_q, r_equal_q)
+            explanation_text.set_z_index(4)
+
  
             #                                                                       ANIMATIONS
 
@@ -497,7 +519,7 @@ class SecondScene(MovingCameraScene):
             self.wait(1.5)
 
             #S
-            self.play(Create(s_dot), Write(s_name))
+            self.play(Write(s_dot), Write(s_name))
 
             #R or Q? 
 
@@ -511,10 +533,33 @@ class SecondScene(MovingCameraScene):
             self.play(Write(little_q_name), Write(little_r_name))
 
             self.play(Create(right_angle_r), Create(right_angle_q))
-            self.play(Write(r_len_text), Write(q_len_text))
-            self.wait(1)
+            self.wait(3)
+            self.play(self.camera.frame.animate.shift(RIGHT * 0.17), runtime = 0.7)
+            self.wait(0.5)
 
+            self.play(Write(r_len_text), Write(q_len_text))
+            self.wait(1.5)
+            self.play(Write(rq_difference_text))
+            self.wait(2)
+
+            self.play(Write(r_greater_q))
+            self.wait(3)
+
+            self.play(Unwrite(r_greater_q))
+            self.wait(1)
             self.play(d2_after_traverse.animate.move_to(plane.c2p(5, 3.3)), run_time=3)
+            self.wait(1)
+            self.play(Write(r_less_q))
+            self.wait(3)
+
+            self.play(Unwrite(r_less_q))
+            self.wait(1)
+            self.play(d2_after_traverse.animate.move_to(plane.c2p(6, 4.5)), run_time=3)
+            self.wait(1)
+            self.play(Write(r_zero_q))
+            self.wait(1)
+            self.play(Unwrite(r_zero_q))
+            self.play(Write(r_equal_q))
             self.wait(3)
             
 
