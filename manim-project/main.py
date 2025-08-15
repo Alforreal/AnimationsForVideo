@@ -257,21 +257,21 @@ class SecondScene(MovingCameraScene):
 
             # P point
             p_dot = Dot(plane.c2p(1, 1), radius= 0.04, color=GREEN)
-            p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
+            p_name = Tex(r"$\boldsymbol{P}$", font_size = 11).move_to(plane.c2p(0.9, 1.1))
 
             p_stuff = VGroup(p_dot, p_name)
             p_stuff.set_z_index(4)
 
             # R point
             r_dot = Dot(plane.c2p(2, 1), radius= 0.04, color=GREEN)
-            r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8))
+            r_name = Tex(r"$\boldsymbol{R}$", font_size = 11).move_to(plane.c2p(2.1, 0.9))
 
             r_stuff = VGroup(r_dot, r_name)
             r_stuff.set_z_index(4)
 
             # Q point
             q_dot = Dot(plane.c2p(2, 2), radius= 0.04, color=GREEN)
-            q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2))
+            q_name = Tex(r"$\boldsymbol{Q}$", font_size = 11).move_to(plane.c2p(2.1, 2.1))
 
             q_stuff = VGroup(q_dot, q_name)
             q_stuff.set_z_index(4)
@@ -293,9 +293,9 @@ class SecondScene(MovingCameraScene):
                 plane.c2p(x, self.interpolate_y_on_line(d1d2_line, x, plane))
             ))
 
-            s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11)
+            s_name = Tex(r"$\boldsymbol{S}$", font_size = 11)
 
-            s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.09))
+            s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.05))
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
@@ -311,12 +311,14 @@ class SecondScene(MovingCameraScene):
             # projection_point_r = d1d2_line.get_projection(r_dot.get_center())
             # projection_point_q = d1d2_line.get_projection(q_dot.get_center())
 
+            static_projection_r = Line(start = r_dot.get_center(), end = d1d2_line.get_projection(r_dot.get_center()), color = ORANGE, stroke_width = 1)
             projection_r = always_redraw(lambda: Line(start = r_dot.get_center(), end = d1d2_line.get_projection(r_dot.get_center()), color = ORANGE, stroke_width = 1))
 
             # projection_r.add_updater(lambda line: line.put_start_and_end_on(
             #     r_dot.get_center(), d1d2_line.get_projection(r_dot.get_center())
             # ))
-
+            
+            static_projection_q = Line(start = q_dot.get_center(), end = d1d2_line.get_projection(q_dot.get_center()), color = ORANGE, stroke_width = 1)
             projection_q = always_redraw(lambda: Line(start = q_dot.get_center(), end = d1d2_line.get_projection(q_dot.get_center()), color = ORANGE, stroke_width = 1))
             # projection_q.add_updater(lambda line: line.put_start_and_end_on(
             #     q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
@@ -324,11 +326,15 @@ class SecondScene(MovingCameraScene):
 
             line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
 
+            static_little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(static_projection_r.get_center(), DOWN+LEFT, buff=0.01 )
+            static_little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(static_projection_q.get_center(), UP+RIGHT, buff=0.01 )
+
             little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 )
             little_r_name.add_updater(lambda name: name.next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 ))
 
             little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
             little_q_name.add_updater(lambda name: name.next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 ))
+
 
             
 
@@ -337,9 +343,21 @@ class SecondScene(MovingCameraScene):
             # parts = VGroup(r_part_from_original, q_part_from_original, line_QR)
             # parts.set_z_index(3)
 
+            static_projections = VGroup(static_projection_r, static_projection_q)
+            static_projections.set_z_index(2)
+
             projections = VGroup(projection_r, projection_q)
             projections.set_z_index(2)
 
+            static_right_angle_r = RightAngle(
+            d1d2_line,            
+            projection_r,   
+            length=0.07, 
+            stroke_width = 1,          
+            quadrant=(1, -1),      
+            color=ORANGE
+            )
+            
             right_angle_r = always_redraw(lambda: RightAngle(
             d1d2_line,            
             projection_r,   
@@ -348,6 +366,15 @@ class SecondScene(MovingCameraScene):
             quadrant=(1, -1),      
             color=ORANGE
             ))
+
+            static_right_angle_q = RightAngle(
+            d1d2_line,            
+            projection_q,   
+            length=0.07, 
+            stroke_width = 1,          
+            quadrant=(-1, -1),      
+            color=ORANGE
+            )
 
             right_angle_q = always_redraw(lambda: RightAngle(
             d1d2_line,            
@@ -359,7 +386,7 @@ class SecondScene(MovingCameraScene):
             ))
 
 
-            #Calculate projection valeus
+            #Calculate projection values
             r_label = Tex(r"\textbf{r = }", font_size=11)
             r_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
@@ -398,7 +425,53 @@ class SecondScene(MovingCameraScene):
             explanation_text = VGroup(r_greater_q, r_less_q, r_zero_q, r_equal_q)
             explanation_text.set_z_index(4)
 
- 
+            #Stuff for "How are q and r calculated?"
+            perpendicular_line = Line(d1.get_center(), d2_after_traverse.get_center(), color = ORANGE, stroke_width = 1) #Same direction as D1D2 for animation purposes
+            perpendicular_line.set_z_index(3)
+            movement_line = Line(ORIGIN, d1d2_line.get_projection(r_dot.get_center())) #Determines movement path for the line
+
+            pythagoras_dot = Dot(point=[d1d2_line.get_projection(r_dot.get_center())[0], r_dot.get_y(), 0]) #Used for the triangle that shows Pythagoras
+            pythagoras_horizontal_line = DashedLine(
+                start=r_dot.get_center(),
+                end=pythagoras_dot.get_center(),
+                dash_length=0.05,
+                dashed_ratio=0.7,
+                stroke_width=1.2,
+                color=RED
+            )
+            
+            pythagoras_vertical_line = DashedLine(
+                start=d1d2_line.get_projection(r_dot.get_center()),
+                end=pythagoras_dot.get_center(),
+                dash_length=0.05,
+                dashed_ratio=0.7,
+                stroke_width=1.2,
+                color=RED
+            )
+
+            pythagoras_dashes = VGroup(pythagoras_horizontal_line, pythagoras_vertical_line)
+            pythagoras_dashes.set_z_index(2)
+
+            pythagoras_angle = RightAngle(
+                pythagoras_horizontal_line,
+                pythagoras_vertical_line,
+                length=0.08,
+                quadrant=(-1,-1),
+                color=RED,
+                stroke_width=1
+            )
+            pythagoras_angle.set_z_index(1)
+
+            pythagoras_horizontal_label = Tex(r"c", font_size=8)
+            pythagoras_horizontal_label.next_to(pythagoras_horizontal_line, DOWN, buff=0.03)
+
+            pythagoras_vertical_label = Tex(r"d", font_size=8)
+            pythagoras_vertical_label.next_to(pythagoras_vertical_line, LEFT, buff=0.03)
+
+            pythagoras_diagonal_label = Tex(r"$\sqrt{c^2+d^2}$", font_size=8)
+            pythagoras_diagonal_label.rotate(PI + static_projection_r.get_angle())
+            pythagoras_diagonal_label.move_to(static_projection_r.get_center() + RIGHT * 0.05 + UP * 0.03)
+
             #                                                                       ANIMATIONS
 
             #Animation_Square
@@ -528,12 +601,61 @@ class SecondScene(MovingCameraScene):
 
             self.play(Uncreate(line_to_r), Uncreate(line_to_q))
             self.wait(1.5)
-            self.play(Create(projections))
+            self.play(Create(static_projections))
             self.wait(1)
-            self.play(Write(little_q_name), Write(little_r_name))
+            self.play(Create(static_right_angle_r), Create(static_right_angle_q))
 
-            self.play(Create(right_angle_r), Create(right_angle_q))
+            self.play(Write(static_little_q_name), Write(static_little_r_name))
             self.wait(3)
+            
+            #How are q and r calculated?
+            self.play(Unwrite(static_little_q_name), Unwrite(static_little_r_name))
+            self.play(Uncreate(static_right_angle_r), Uncreate(static_right_angle_q), Uncreate(static_projections))
+
+            self.play(Create(perpendicular_line, run_time=3))
+            self.wait(1)
+            self.play(Rotate(perpendicular_line, angle=1/2*PI, about_point=ORIGIN, rate_func=smooth))
+
+            perpendicular_line_right_angle = RightAngle(
+                d1d2_line,
+                perpendicular_line,
+                length=0.07, 
+                stroke_width = 1,          
+                quadrant=(1, -1),      
+                color=ORANGE
+            )
+            perpendicular_line_right_angle.set_z_index(2)
+
+            self.play(Create(perpendicular_line_right_angle))
+            self.wait(0.2)
+            self.play(Uncreate(perpendicular_line_right_angle))
+
+            self.play(MoveAlongPath(perpendicular_line, movement_line, rate_func=smooth))
+            temp_perpendicular_line1 = Line(start=d1d2_line.get_projection(r_dot.get_center()), end=perpendicular_line.get_end(), color = ORANGE, stroke_width = 1)
+            temp_perpendicular_line2 = Line(start=d1d2_line.get_projection(r_dot.get_center()), end=perpendicular_line.get_start(), color = ORANGE, stroke_width = 1)
+            self.add(temp_perpendicular_line1)
+            self.add(temp_perpendicular_line2)
+            self.add(projection_r)
+            self.remove(perpendicular_line)
+            self.play(Uncreate(temp_perpendicular_line1), Uncreate(temp_perpendicular_line2))
+
+            self.play(Create(pythagoras_dashes))
+            self.play(Create(pythagoras_angle))
+            self.wait(1)
+
+            self.play(Create(pythagoras_horizontal_label, run_time=0.5), Create(pythagoras_vertical_label, run_time=0.5))
+            self.play(Create(pythagoras_diagonal_label, run_time=0.5))
+
+            self.wait(3)
+
+            #Returning back to normal:
+            self.play(Uncreate(pythagoras_diagonal_label, run_time=0.5), Uncreate(pythagoras_horizontal_label, run_time=0.5), Uncreate(pythagoras_vertical_label, run_time=0.5))
+            self.play(Uncreate(pythagoras_angle, run_time=0.5), Uncreate(pythagoras_dashes, run_time=0.5))
+            self.play(Create(projection_q))
+            self.play(Create(right_angle_q), Create(right_angle_r))
+            self.play(Write(little_q_name), Write(little_r_name))
+            
+            #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 0.17), runtime = 0.7)
             self.wait(0.5)
 
