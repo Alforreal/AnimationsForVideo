@@ -1,5 +1,6 @@
 import time
 from manim import *
+import numpy as np
 
 
 class Introduction(MovingCameraScene):
@@ -423,6 +424,26 @@ class SecondScene(MovingCameraScene):
             rq_difference_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
             rq_difference_nabla = Tex(r"$\boldsymbol{\nabla}$", font_size=11)
 
+            # Nabla = r-q:
+            rq_nabla_coords = plane.c2p(0.65, 3)
+            rq_nabla_temp_group = VGroup(rq_difference_nabla, rq_difference_equals, rq_difference_label)
+
+            rq_nabla_expression = Tex(r"$\boxed{\boldsymbol{\nabla=}\textbf{r - q}}$", font_size=11) # Used for a precise box
+            rq_nabla_expression.set_z_index(2)
+            rq_nabla_rectangle = Rectangle(                                                          # Used for background
+                width=rq_nabla_expression.get_right()[0]-rq_nabla_expression.get_left()[0] - 0.01,
+                height=rq_nabla_expression.get_top()[1]-rq_nabla_expression.get_bottom()[1] - 0.01,
+                fill_opacity=1.0,
+                fill_color=BLACK,
+                stroke_opacity=0.0
+            )
+            rq_nabla_rectangle.set_z_index(3)
+            rq_nabla_rectangle_group = VGroup(rq_nabla_expression, rq_nabla_rectangle)
+            rq_nabla_rectangle_group.move_to(rq_nabla_coords)
+
+            rq_nabla_group = VGroup(rq_nabla_temp_group, rq_nabla_rectangle_group)
+
+            # Setting up r-q=... :
             rq_difference_text = VGroup(rq_difference_label, rq_difference_equals, rq_difference_value).arrange(RIGHT, buff=0.05)
             rq_difference_text.next_to(q_len_text, DOWN, buff = 0.05)
             rq_difference_text.move_to([rq_difference_text.get_center()[0] - 0.09, rq_difference_text.get_center()[1], rq_difference_text.get_center()[2]])
@@ -482,6 +503,7 @@ class SecondScene(MovingCameraScene):
             
             if_r_greater_q_nabla = Tex(r"$\boldsymbol{\nabla}$", font_size=11).next_to(if_r_greater_q_if, RIGHT, buff=0.05)
             if_r_greater_q_sign_change = Tex(r"$\boldsymbol{\ge}$", font_size=11).next_to(if_r_greater_q_rq, RIGHT, buff=0.05)
+
             
             # r<q:
             if_r_less_q_if = Tex(r"$\boldsymbol{if}$", font_size=11).next_to(if_r_greater_q_if, DOWN, buff=0.05)
@@ -529,8 +551,6 @@ class SecondScene(MovingCameraScene):
             pythagoras_horizontal_line = Line(
                 start=r_dot.get_center(),
                 end=pythagoras_dot.get_center(),
-                # dash_length=0.05,
-                # dashed_ratio=0.7,
                 stroke_width=1.6,
                 color=RED
             )
@@ -538,8 +558,6 @@ class SecondScene(MovingCameraScene):
             pythagoras_vertical_line = Line(
                 start=d1d2_line.get_projection(r_dot.get_center()),
                 end=pythagoras_dot.get_center(),
-                # dash_length=0.05,
-                # dashed_ratio=0.7,
                 stroke_width=1.6,
                 color=RED
             )
@@ -568,22 +586,9 @@ class SecondScene(MovingCameraScene):
             pythagoras_diagonal_label.move_to(static_projection_r.get_center() + RIGHT * 0.05 + UP * 0.03)
             pythagoras_diagonal_label.set_z_index(3)
 
-            # Arcs for movement with nabla:
-            movement_arc_up = Arc(
-                radius=(rq_difference_nabla.get_center()[0]-rq_difference_label.get_center()[0])/2,
-                arc_center=[(rq_difference_nabla.get_center()[0]+rq_difference_label.get_center()[0])/2, rq_difference_label.get_center()[1], rq_difference_label.get_center()[2]],
-                angle=PI
-            )
-            movement_arc_down = Arc(
-                radius=(rq_difference_nabla.get_center()[0]-rq_difference_label.get_center()[0])/2,
-                arc_center=[(rq_difference_nabla.get_center()[0]+rq_difference_label.get_center()[0])/2, rq_difference_label.get_center()[1], rq_difference_label.get_center()[2]],
-                start_angle=PI,
-                angle=PI
-            )
-
 
             #                                                                       ANIMATIONS
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -687,7 +692,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
 
             #                                                                  Third Scene                                                                                    #
 
@@ -770,7 +775,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             
             #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
@@ -805,9 +810,8 @@ class SecondScene(MovingCameraScene):
             self.wait(1)
             self.play(Unwrite(r_zero_q), ReplacementTransform(if_r_greater_q_sign, if_r_greater_q_sign_change))
 
-            # self.next_section()
+            self.next_section()
             self.play(d2_after_traverse.animate.move_to(plane.c2p(5,4)))
-            # self.play(Unwrite(rq_difference_text), Unwrite(r_len_text), Unwrite(q_len_text))
             self.play(
                 ReplacementTransform(if_r_greater_q_rq, if_r_greater_q_nabla),
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
@@ -820,12 +824,45 @@ class SecondScene(MovingCameraScene):
             )
             self.play(
                 if_r_greater_q_move.animate.next_to(if_r_greater_q_sign_change, buff=0.05),
-                if_r_less_q_move.animate.next_to(if_r_less_q_sign, buff=0.05)
-            )
-            self.play(
+                if_r_less_q_move.animate.next_to(if_r_less_q_sign, buff=0.05),
                 rq_difference_nabla.animate.next_to(rq_difference_equals, LEFT, buff=0.05),
                 rq_difference_label.animate.next_to(rq_difference_equals, RIGHT, buff=0.05),
             )
+            self.play(
+                rq_difference_label.animate.move_to([
+                    rq_difference_label.get_center()[0],
+                    rq_difference_label.get_center()[1] - 0.01, # Nudge for aesthetic reasons, without it r-q is a not in center
+                    rq_difference_label.get_center()[2]
+                ])
+            )
+            
+            # Transitioning to Scene 4:
+            self.play(
+                Unwrite(r_len_text),
+                Unwrite(q_len_text),
+                Unwrite(if_r_greater_q),
+                Unwrite(if_r_less_q),
+                Unwrite(curly_brace_if_r),
+                Uncreate(text_rectangle),
+                rq_nabla_temp_group.animate.move_to(rq_nabla_coords),
+                Create(rq_nabla_rectangle)
+            )
+
+            rq_nabla_rectangle_group.move_to([
+                rq_nabla_temp_group.get_center()[0] - 0.005, # Same logic for the nudge as the previous nudge - aesthetic reasons
+                rq_nabla_temp_group.get_center()[1] + 0.005,
+                rq_nabla_temp_group.get_center()[2]
+            ])
+
+            self.play(Create(rq_nabla_expression), run_time=0.5)
+            shift_value = LEFT * 1.225
+            scale_value = 0.7
+            self.play(
+                self.camera.frame.animate.shift(shift_value).scale(scale_value),
+                rq_nabla_group.animate.shift(shift_value).shift((scale_value + 0.2) * RIGHT).shift(1/np.sqrt(2) * scale_value * DOWN), # Got from trial and error
+                runtime = 1
+            )
+            #                                                                  Fourth Scene
 
 
             self.wait(3)
