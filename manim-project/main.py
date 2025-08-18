@@ -2,7 +2,6 @@ import time
 from manim import *
 import numpy as np
 
-
 class Introduction(MovingCameraScene):
     def construct(self):
 
@@ -14,10 +13,6 @@ class Introduction(MovingCameraScene):
         self.wait(2)
 
 class FirstScene(Scene):
-
-
-
-
 
     def construct(self):
         
@@ -340,8 +335,6 @@ class SecondScene(MovingCameraScene):
             #     q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
             # ))
 
-            
-
             static_little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(static_projection_r.get_center(), DOWN+LEFT, buff=0.01 )
             static_little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(static_projection_q.get_center(), UP+RIGHT, buff=0.01 )
 
@@ -400,6 +393,7 @@ class SecondScene(MovingCameraScene):
 
 
             #Calculate projection values
+            #r:
             r_label = Tex(r"\textbf{r = }", font_size=11)
             r_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
@@ -409,7 +403,7 @@ class SecondScene(MovingCameraScene):
             r_value.add_updater(lambda r: r.set_value(projection_r.get_length()))
             r_value.add_updater(lambda r2: r2.set_z_index(4))
 
-
+            #q:
             q_label = Tex(r"\textbf{q = }", font_size=11)
             q_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
@@ -419,6 +413,7 @@ class SecondScene(MovingCameraScene):
             q_value.add_updater(lambda q: q.set_value(projection_q.get_length()))
             q_value.add_updater(lambda q2: q2.set_z_index(4))
 
+            #r-q:
             rq_difference_label = Tex(r"\textbf{r - q}", font_size=11)
             rq_difference_equals = Tex(r"\textbf{=}", font_size=11)
             rq_difference_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
@@ -450,20 +445,14 @@ class SecondScene(MovingCameraScene):
 
             rq_difference_nabla.next_to(rq_difference_label)
 
-
             rq_difference_value.add_updater(lambda qr: qr.set_value(projection_r.get_length() - projection_q.get_length()))
             rq_difference_value.add_updater(lambda qr2: qr2.set_z_index(4))
 
             #Where to move explanation objects (idk how to call it lol)
-
             r_greater_q = Tex(r"$\boldsymbol{>0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
-
             r_less_q = Tex(r"$\boldsymbol{<0 \rightarrow move\;horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.13)
-
             r_zero_q = Tex(r"$\boldsymbol{=0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
-
             r_equal_q = Tex(r"$\boldsymbol{\geq0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
-
 
             arrow_r = Arrow(
                 start=p_dot.get_center(),
@@ -645,11 +634,179 @@ class SecondScene(MovingCameraScene):
                 color = GREEN
             )
 
+            # Labels for angles:
+            nudging_factor_angle_horizontal = 0.13
+            nudging_factor_angle_vertical = 0.06
+            angle_label_alpha = Tex(r"$\boldsymbol{\alpha}$", font_size=7)
+            angle_label_alpha.move_to(s_dot.get_center())
+            angle_label_alpha.shift(nudging_factor_angle_horizontal * DOWN).shift(nudging_factor_angle_vertical * LEFT)
 
+            angle_label_beta = Tex(r"$\boldsymbol{\beta}$", font_size=7)
+            angle_label_beta.move_to(s_dot.get_center())
+            angle_label_beta.shift((nudging_factor_angle_horizontal + 0.01) * UP).shift((nudging_factor_angle_vertical) * RIGHT)
 
+            angle_label_group = VGroup(angle_label_alpha, angle_label_beta)
+            angle_label_group.set_z_index(4)
+
+            # Text for algebra:
+            '''
+            Context: Here are the equations:
+            sin(alpha) = sin(beta) 
+            r / RS = q / QS
+            r * QS = q * RS
+            r = q * RS / QS
+            r / q = RS / QS
+            And eventually:
+            r / q = r' / q'
+            '''
+            alpha_text = Tex(r"$\boldsymbol{\alpha}$", font_size=11)
+            equals_text = Tex(r"$\boldsymbol{=}$", font_size=11)
+            beta_text = Tex(r"$\boldsymbol{\beta}$", font_size=11)
+
+            alpha_is_beta = VGroup(alpha_text, equals_text, beta_text).arrange(RIGHT, buff=0.05)           
+            alpha_is_beta.move_to(plane.c2p(3.5, 1.55))
+            #sin alpha:
+            alpha_sine_sine = Tex(r"$\boldsymbol{sin}$", font_size=11)
+            alpha_sine_sine.move_to([
+                alpha_text.get_center()[0] - 0.165,
+                alpha_text.get_center()[1] + 0.0125,
+                alpha_text.get_center()[2]
+            ])
+            alpha_sine = VGroup(alpha_text, alpha_sine_sine)
+            #sin beta:
+            beta_sine_sine = Tex(r"$\boldsymbol{sin}$", font_size=11)
+            beta_sine_sine.move_to([
+                equals_text.get_center()[0] + 0.165,
+                equals_text.get_center()[1] + 0.0125,
+                equals_text.get_center()[2]
+            ])
+            beta_sine = VGroup(beta_text, beta_sine_sine)
+
+            # r/RS:
+
+            fraction_offset = 0.05
+
+            r_fraction_text = Tex(r"$\boldsymbol{r}$", font_size=11)
+            rs_fraction_text = Tex(r"$\boldsymbol{RS}$", font_size=11)
+
+            r_rs_fraction_line = Line(
+                start=[equals_text.get_left()[0] - (rs_fraction_text.get_right()[0] - rs_fraction_text.get_left()[0]) - fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[equals_text.get_left()[0] - fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                color=WHITE,
+                stroke_width=0.5
+            )
+
+            r_fraction_text.move_to([
+                r_rs_fraction_line.get_center()[0],
+                r_rs_fraction_line.get_center()[1] + (r_fraction_text.get_top()[1] - r_fraction_text.get_bottom()[1])/2 + fraction_offset/2,
+                r_rs_fraction_line.get_center()[2]])
+            rs_fraction_text.move_to([
+                r_rs_fraction_line.get_center()[0],
+                r_rs_fraction_line.get_center()[1] - (rs_fraction_text.get_top()[1] - rs_fraction_text.get_bottom()[1])/2 - fraction_offset/2,
+                r_rs_fraction_line.get_center()[2]
+            ])
+
+            r_rs_group = VGroup(r_rs_fraction_line, r_fraction_text, rs_fraction_text)
+            r_rs_group.set_z_index(3)
+
+            # q/QS:
+            q_fraction_text = Tex(r"$\boldsymbol{q}$", font_size=11)
+            qs_fraction_text = Tex(r"$\boldsymbol{QS}$", font_size=11)
+
+            q_qs_fraction_line = Line(
+                start=[equals_text.get_right()[0] + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[equals_text.get_right()[0] + (qs_fraction_text.get_right()[0] - qs_fraction_text.get_left()[0]) + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                color=WHITE,
+                stroke_width=0.5
+            )
+
+            q_fraction_text.move_to([
+                q_qs_fraction_line.get_center()[0],
+                q_qs_fraction_line.get_center()[1] + (q_fraction_text.get_top()[1] - q_fraction_text.get_bottom()[1])/2 + fraction_offset/2,
+                q_qs_fraction_line.get_center()[2]
+            ])
+            qs_fraction_text.move_to([
+                q_qs_fraction_line.get_center()[0],
+                q_qs_fraction_line.get_center()[1] - (qs_fraction_text.get_top()[1] - qs_fraction_text.get_bottom()[1])/2 - fraction_offset/2,
+                q_qs_fraction_line.get_center()[2]
+            ])
+
+            q_qs_group = VGroup(q_fraction_text, qs_fraction_text, q_qs_fraction_line)
+
+            # r*QS = q*RS
+
+            r_qs_multiplication = Tex(r"$\times$", font_size=11)
+            r_qs_multiplication.move_to([
+                equals_text.get_left()[0] - (qs_fraction_text.get_right()[0] - qs_fraction_text.get_left()[0]) - fraction_offset - (r_qs_multiplication.get_right()[0] - r_qs_multiplication.get_left()[0])/2,
+                equals_text.get_center()[1], equals_text.get_center()[2]
+            ])
+            
+            q_rs_multiplication = Tex(r"$\times$", font_size=11)
+            q_rs_multiplication.move_to([
+                equals_text.get_right()[0] + (q_fraction_text.get_right()[0] - q_fraction_text.get_left()[0]) + fraction_offset + (q_rs_multiplication.get_right()[0] - q_rs_multiplication.get_left()[0])/2,
+                equals_text.get_center()[1], equals_text.get_center()[2]
+            ])
+
+            # r = q*RS/QS
+            q_rs_group = VGroup(q_fraction_text, q_rs_multiplication, rs_fraction_text)
+            q_rs_fraction_line = Line(
+                start=[equals_text.get_right()[0] + fraction_offset/2, equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[
+                    equals_text.get_right()[0] + 1.5*fraction_offset + (rs_fraction_text.get_right()[0]-rs_fraction_text.get_left()[0]) + (q_rs_multiplication.get_right()[0]-q_rs_multiplication.get_left()[0]) + (q_fraction_text.get_right()[0]-q_fraction_text.get_left()[0]),
+                    equals_text.get_center()[1], equals_text.get_center()[2]
+                ],
+                color=WHITE,
+                stroke_width=0.5
+            )
+
+            # r/q = RS/QS
+            rs_qs_fraction_line = Line(
+                start=[equals_text.get_right()[0] + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[equals_text.get_right()[0] + (rs_fraction_text.get_right()[0] - rs_fraction_text.get_left()[0]) + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                color=WHITE,
+                stroke_width=0.5
+            )
+            r_q_fraction_line = Line(
+                start=[equals_text.get_left()[0] - fraction_offset - (q_fraction_text.get_right()[0] - q_fraction_text.get_left()[0]), equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[equals_text.get_left()[0] - fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                color=WHITE,
+                stroke_width=0.5
+            )
+            
+            # r' label
+            r_prime_label = Tex(r"$\boldsymbol{r'}$", font_size=11)
+            r_prime_label.move_to([r_dot.get_center()[0] + 0.08, (r_dot.get_center()[1] + s_dot.get_center()[1])/2, r_dot.get_center()[2]])
+
+            # q' label
+            q_prime_label = Tex(r"$\boldsymbol{q'}$", font_size=11)
+            q_prime_label.move_to([q_dot.get_center()[0] - 0.07, (q_dot.get_center()[1] + s_dot.get_center()[1])/2, q_dot.get_center()[2]])
+
+            # r' and q' texts in the algebra
+            r_prime_text = Tex(r"$\boldsymbol{r'}$", font_size=11)
+            q_prime_text = Tex(r"$\boldsymbol{q'}$", font_size=11)
+
+            r_prime_q_fraction_line = Line(
+                start=[equals_text.get_right()[0] + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                end=[equals_text.get_right()[0] + (q_prime_text.get_right()[0] - q_prime_text.get_left()[0]) + fraction_offset, equals_text.get_center()[1], equals_text.get_center()[2]],
+                color=WHITE,
+                stroke_width=0.5
+            )
+
+            r_prime_text.move_to([
+                r_prime_q_fraction_line.get_center()[0],
+                r_prime_q_fraction_line.get_top()[1] + fraction_offset + (r_prime_text.get_top()[1] - r_prime_text.get_bottom()[1])/2,
+                r_prime_text.get_center()[2]
+            ])
+            q_prime_text.move_to([
+                r_prime_q_fraction_line.get_center()[0],
+                r_prime_q_fraction_line.get_bottom()[1] - (fraction_offset - 0.02)  - (q_prime_text.get_top()[1] - q_prime_text.get_bottom()[1])/2,
+                r_prime_text.get_center()[2]
+            ])
+
+            r_prime_q_group = VGroup(r_prime_text, r_prime_q_fraction_line, q_prime_text)
 
             #                                                                       ANIMATIONS
-            self.next_section(skip_animations=True)
+            # self.next_section(skip_animations=True)
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -753,7 +910,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
-            self.next_section(skip_animations=True)
+            # self.next_section(skip_animations=True)
 
             #                                                                  Third Scene                                                                                    #
 
@@ -836,7 +993,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            self.next_section(skip_animations=True)
+            # self.next_section(skip_animations=True)
             
             #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
@@ -878,7 +1035,7 @@ class SecondScene(MovingCameraScene):
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
                 Uncreate(rq_difference_value)
             )
-            self.next_section()
+            # self.next_section(skip_animations=True)
             self.play(
                 Write(rq_difference_nabla),
                 if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
@@ -927,12 +1084,9 @@ class SecondScene(MovingCameraScene):
             
             self.wait(1)
             #                                                                  Fourth Scene                                                                                    #
-
-
             self.play(Create(lower_angle), Create(upper_angle))
             self.wait(0.7)
             s_name.clear_updaters()
-
             self.play(
                 s_name.animate.shift(RIGHT * 0.1), 
                 Create(unnecessary_smaller_angle_right), 
@@ -941,10 +1095,7 @@ class SecondScene(MovingCameraScene):
                 Create(unnecessary_bigger_angle_left),
                 runtime = 0.4
             )
-
-
             self.wait(2)
-
             self.play(
                 s_name.animate.shift(LEFT * 0.1), 
                 Uncreate(unnecessary_smaller_angle_right), 
@@ -953,12 +1104,115 @@ class SecondScene(MovingCameraScene):
                 Uncreate(unnecessary_bigger_angle_left),
                 runtime = 0.5
             )
-
-
-
             self.next_section()
-            self.wait(1)
 
+            self.play(Write(angle_label_group))
+            self.wait(1)
+            shift_value = RIGHT * 1
+            self.play(
+                self.camera.frame.animate.shift(shift_value),
+                rq_nabla_group.animate.shift(shift_value),
+                ReplacementTransform(angle_label_group, alpha_is_beta)
+            )
+            self.wait(1)
+            self.play(
+                beta_text.animate(run_time=0.7, rate_func=smooth).move_to([
+                    beta_text.get_center()[0] + (beta_sine_sine.get_right()[0] - beta_sine_sine.get_left()[0]),
+                    beta_text.get_center()[1],
+                    beta_text.get_center()[2],
+                ]),
+                Create(alpha_sine_sine, run_time=0.7),
+                Create(beta_sine_sine, run_time=0.7)
+            )
+            self.wait(1)
+            self.play(
+                ReplacementTransform(alpha_sine, r_rs_group),
+                ReplacementTransform(beta_sine, q_qs_group)
+            )
+            self.wait(0.5)
+            self.play(
+                FadeOut(r_rs_fraction_line),
+                FadeOut(q_qs_fraction_line),
+                r_fraction_text.animate.move_to([
+                    r_qs_multiplication.get_left()[0] - (r_fraction_text.get_right()[0] - r_fraction_text.get_left()[0])/2 - fraction_offset/2,
+                    equals_text.get_center()[1], r_fraction_text.get_center()[2]
+                ]),
+                q_fraction_text.animate.move_to([
+                    equals_text.get_right()[0] + (q_fraction_text.get_right()[0] - q_fraction_text.get_left()[0])/2 + fraction_offset/2,
+                    equals_text.get_center()[1], q_fraction_text.get_center()[2]
+                ]),
+                rs_fraction_text.animate.move_to([
+                    q_rs_multiplication.get_right()[0] + (rs_fraction_text.get_right()[0] - rs_fraction_text.get_left()[0])/2 + fraction_offset/2,
+                    equals_text.get_center()[1], rs_fraction_text.get_center()[2]
+                ]),
+                qs_fraction_text.animate.move_to([
+                    equals_text.get_left()[0] - (qs_fraction_text.get_right()[0] - qs_fraction_text.get_left()[0])/2 - fraction_offset/2,
+                    equals_text.get_center()[1], qs_fraction_text.get_center()[2]
+                ]),
+                FadeIn(r_qs_multiplication),
+                FadeIn(q_rs_multiplication)
+            )
+            self.wait(0.5)
+            self.play(
+                FadeOut(r_qs_multiplication),
+                q_rs_group.animate.move_to([
+                    q_rs_group.get_center()[0],
+                    q_rs_fraction_line.get_top()[1] + (rs_fraction_text.get_top()[1] - rs_fraction_text.get_bottom()[1])/2 + fraction_offset/2,
+                    q_rs_group.get_center()[2]
+                ]),
+                Create(q_rs_fraction_line),
+                qs_fraction_text.animate.move_to([
+                    q_rs_fraction_line.get_center()[0],
+                    q_rs_fraction_line.get_bottom()[1] - (qs_fraction_text.get_top()[1] - qs_fraction_text.get_bottom()[1])/2 - fraction_offset/2,
+                    qs_fraction_text.get_center()[2]
+                ]),
+                r_fraction_text.animate.move_to([
+                    equals_text.get_left()[0] - (r_fraction_text.get_right()[0] - r_fraction_text.get_left()[0]) - fraction_offset/2,
+                    r_fraction_text.get_center()[1], r_fraction_text.get_center()[2]
+                ])
+            )
+            self.wait(0.5)
+            self.play(
+                r_fraction_text.animate.move_to([
+                    r_q_fraction_line.get_center()[0],
+                    r_q_fraction_line.get_top()[1] + (r_fraction_text.get_top()[1] - r_fraction_text.get_bottom()[1])/2 + fraction_offset/2,
+                    r_fraction_text.get_center()[2]
+                ]),
+                Create(r_q_fraction_line),
+                FadeOut(q_rs_multiplication),
+                q_fraction_text.animate.move_to([
+                    r_q_fraction_line.get_center()[0],
+                    r_q_fraction_line.get_bottom()[1] - (q_fraction_text.get_top()[1] - q_fraction_text.get_bottom()[1])/2 - fraction_offset/2,
+                    q_fraction_text.get_center()[2]
+                ]),
+                ReplacementTransform(q_rs_fraction_line, rs_qs_fraction_line),
+                rs_fraction_text.animate.move_to([rs_qs_fraction_line.get_center()[0], rs_fraction_text.get_center()[1], rs_fraction_text.get_center()[2]]),
+                qs_fraction_text.animate.move_to([rs_qs_fraction_line.get_center()[0], qs_fraction_text.get_center()[1], qs_fraction_text.get_center()[2]]),
+            )
+            self.wait(1)
+            self.play(
+                Write(r_prime_label),
+                Write(q_prime_label),
+                ReplacementTransform(rs_fraction_text, r_prime_text),
+                ReplacementTransform(qs_fraction_text, q_prime_text),
+                ReplacementTransform(rs_qs_fraction_line, r_prime_q_fraction_line),
+                r_q_fraction_line.animate.put_start_and_end_on([
+                    r_q_fraction_line.get_end()[0] - (r_prime_q_fraction_line.get_right()[0] - r_prime_q_fraction_line.get_left()[0]),
+                    equals_text.get_center()[1],
+                    equals_text.get_center()[2]
+                ], r_q_fraction_line.get_end()
+                ),
+                q_fraction_text.animate.move_to([
+                    r_q_fraction_line.get_end()[0] - (r_prime_q_fraction_line.get_right()[0] - r_prime_q_fraction_line.get_left()[0])/2,
+                    q_prime_text.get_bottom()[1] + (q_fraction_text.get_top()[1] - q_fraction_text.get_bottom()[1])/2,
+                    q_fraction_text.get_center()[2]
+                ]),
+                r_fraction_text.animate.move_to([
+                    r_q_fraction_line.get_end()[0] - (r_prime_q_fraction_line.get_right()[0] - r_prime_q_fraction_line.get_left()[0])/2,
+                    r_prime_text.get_bottom()[1] + (r_fraction_text.get_top()[1] - r_fraction_text.get_bottom()[1])/2,
+                    r_fraction_text.get_center()[2]
+                ])
+            )
 
             self.wait(3)
 
