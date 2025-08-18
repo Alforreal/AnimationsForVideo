@@ -257,21 +257,25 @@ class SecondScene(MovingCameraScene):
 
             # P point
             p_dot = Dot(plane.c2p(1, 1), radius= 0.04, color=GREEN)
-            p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
+            p_name = Tex(r"$\boldsymbol{P}$", font_size = 11).move_to(plane.c2p(0.9, 1.1))
+            # p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2)) // For later use
 
             p_stuff = VGroup(p_dot, p_name)
             p_stuff.set_z_index(4)
 
             # R point
             r_dot = Dot(plane.c2p(2, 1), radius= 0.04, color=GREEN)
-            r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8))
+            r_name = Tex(r"$\boldsymbol{R}$", font_size = 11).move_to(plane.c2p(2.1, 0.9))
+            # r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8)) // For later use
 
             r_stuff = VGroup(r_dot, r_name)
             r_stuff.set_z_index(4)
 
             # Q point
             q_dot = Dot(plane.c2p(2, 2), radius= 0.04, color=GREEN)
-            q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2))
+            q_name = Tex(r"$\boldsymbol{Q}$", font_size = 11).move_to(plane.c2p(2.1, 2.1))
+            # q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2)) // For later use
+
 
             q_stuff = VGroup(q_dot, q_name)
             q_stuff.set_z_index(4)
@@ -293,12 +297,23 @@ class SecondScene(MovingCameraScene):
                 plane.c2p(x, self.interpolate_y_on_line(d1d2_line, x, plane))
             ))
 
-            s_name = Tex(r"$\boldsymbol{S (a_1 + 1, c)}$", font_size = 11)
+            s_name = Tex(r"$\boldsymbol{S}$", font_size = 11)
 
-            s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.09))
+            s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.05))
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
+
+            # Arrow to P
+            p_arrow = Arrow(
+                start=plane.c2p(0, 0),
+                end=p_dot.get_center(),
+                color=ManimColor('#FF0000'),
+                buff=0.025,
+                stroke_width=2,
+                tip_length=0.1,
+            )
+            p_arrow.set_z_index(3)
 
             # R or Q?
             line_to_r = DashedLine(start = p_dot.get_center(), end = r_dot.get_center(), color = WHITE, dash_length = 0.1, dashed_ratio = 0.5, stroke_width = 1)
@@ -311,12 +326,14 @@ class SecondScene(MovingCameraScene):
             # projection_point_r = d1d2_line.get_projection(r_dot.get_center())
             # projection_point_q = d1d2_line.get_projection(q_dot.get_center())
 
+            static_projection_r = Line(start = r_dot.get_center(), end = d1d2_line.get_projection(r_dot.get_center()), color = ORANGE, stroke_width = 1)
             projection_r = always_redraw(lambda: Line(start = r_dot.get_center(), end = d1d2_line.get_projection(r_dot.get_center()), color = ORANGE, stroke_width = 1))
 
             # projection_r.add_updater(lambda line: line.put_start_and_end_on(
             #     r_dot.get_center(), d1d2_line.get_projection(r_dot.get_center())
             # ))
-
+            
+            static_projection_q = Line(start = q_dot.get_center(), end = d1d2_line.get_projection(q_dot.get_center()), color = ORANGE, stroke_width = 1)
             projection_q = always_redraw(lambda: Line(start = q_dot.get_center(), end = d1d2_line.get_projection(q_dot.get_center()), color = ORANGE, stroke_width = 1))
             # projection_q.add_updater(lambda line: line.put_start_and_end_on(
             #     q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
@@ -324,83 +341,249 @@ class SecondScene(MovingCameraScene):
 
             line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
 
+            static_little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(static_projection_r.get_center(), DOWN+LEFT, buff=0.01 )
+            static_little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(static_projection_q.get_center(), UP+RIGHT, buff=0.01 )
+
             little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 )
             little_r_name.add_updater(lambda name: name.next_to(projection_r.get_center(), DOWN+LEFT, buff=0.01 ))
 
             little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 )
             little_q_name.add_updater(lambda name: name.next_to(projection_q.get_center(), UP+RIGHT, buff=0.01 ))
 
-            
-
             # r_part_from_original = Line(start = projection_point_r, end = s_dot.get_center(), color = ORANGE)
             # q_part_from_original = Line(start = projection_point_q, end = s_dot.get_center(), color = ORANGE)
             # parts = VGroup(r_part_from_original, q_part_from_original, line_QR)
             # parts.set_z_index(3)
 
+            static_projections = VGroup(static_projection_r, static_projection_q)
+            static_projections.set_z_index(2)
+
             projections = VGroup(projection_r, projection_q)
             projections.set_z_index(2)
 
+            static_right_angle_r = RightAngle(
+                d1d2_line,            
+                projection_r,   
+                length=0.07, 
+                stroke_width = 1,          
+                quadrant=(1, -1),      
+                color=ORANGE
+            )
+            
             right_angle_r = always_redraw(lambda: RightAngle(
-            d1d2_line,            
-            projection_r,   
-            length=0.07, 
-            stroke_width = 1,          
-            quadrant=(1, -1),      
-            color=ORANGE
+                d1d2_line,            
+                projection_r,   
+                length=0.07, 
+                stroke_width = 1,          
+                quadrant=(1, -1),      
+                color=ORANGE
             ))
+
+            static_right_angle_q = RightAngle(
+                d1d2_line,            
+                projection_q,   
+                length=0.07, 
+                stroke_width = 1,          
+                quadrant=(-1, -1),      
+                color=ORANGE
+            )
 
             right_angle_q = always_redraw(lambda: RightAngle(
-            d1d2_line,            
-            projection_q,   
-            length=0.07, 
-            stroke_width = 1,          
-            quadrant=(-1, -1),      
-            color=ORANGE
+                d1d2_line,            
+                projection_q,   
+                length=0.07, 
+                stroke_width = 1,          
+                quadrant=(-1, -1),      
+                color=ORANGE
             ))
 
 
-            #Calculate projection valeus
+            #Calculate projection values
             r_label = Tex(r"\textbf{r = }", font_size=11)
             r_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
             r_len_text = VGroup(r_label, r_value).arrange(RIGHT, buff=0.05)
-            r_len_text.move_to(plane.c2p(3.5, 1.7), aligned_edge=RIGHT)
+            r_len_text.move_to(plane.c2p(3.5, 1.85), aligned_edge=RIGHT)
 
             r_value.add_updater(lambda r: r.set_value(projection_r.get_length()))
+            r_value.add_updater(lambda r2: r2.set_z_index(4))
 
 
             q_label = Tex(r"\textbf{q = }", font_size=11)
             q_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
 
             q_len_text = VGroup(q_label, q_value).arrange(RIGHT, buff=0.05)
-            q_len_text.next_to(r_len_text, DOWN, buff = 0.1)
+            q_len_text.next_to(r_len_text, DOWN, buff = 0.05)
 
             q_value.add_updater(lambda q: q.set_value(projection_q.get_length()))
+            q_value.add_updater(lambda q2: q2.set_z_index(4))
 
-            rq_difference_label = Tex(r"\textbf{r - q = }", font_size=11)
+            rq_difference_label = Tex(r"\textbf{r - q}", font_size=11)
+            rq_difference_equals = Tex(r"\textbf{=}", font_size=11)
             rq_difference_value = DecimalNumber(0, num_decimal_places=2, font_size=11)
+            rq_difference_nabla = Tex(r"$\boldsymbol{\nabla}$", font_size=11)
 
-            rq_difference_text = VGroup(rq_difference_label, rq_difference_value).arrange(RIGHT, buff=0.05)
-            rq_difference_text.next_to(q_len_text, DOWN, buff = 0.1)
+            rq_difference_text = VGroup(rq_difference_label, rq_difference_equals, rq_difference_value).arrange(RIGHT, buff=0.05)
+            rq_difference_text.next_to(q_len_text, DOWN, buff = 0.05)
+            rq_difference_text.move_to([rq_difference_text.get_center()[0] - 0.09, rq_difference_text.get_center()[1], rq_difference_text.get_center()[2]])
+
+            rq_difference_nabla.next_to(rq_difference_label)
+
 
             rq_difference_value.add_updater(lambda qr: qr.set_value(projection_r.get_length() - projection_q.get_length()))
+            rq_difference_value.add_updater(lambda qr2: qr2.set_z_index(4))
 
             #Where to move explanation objects (idk how to call it lol)
 
-            r_greater_q = Tex(r"$\boldsymbol{>0 \rightarrow diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+            r_greater_q = Tex(r"$\boldsymbol{>0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
 
-            r_less_q = Tex(r"$\boldsymbol{<0 \rightarrow horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.1)
+            r_less_q = Tex(r"$\boldsymbol{<0 \rightarrow move\;horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.13)
 
-            r_zero_q = Tex(r"$\boldsymbol{=0 \rightarrow diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+            r_zero_q = Tex(r"$\boldsymbol{=0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
 
-            r_equal_q = Tex(r"$\boldsymbol{\geq0 \rightarrow horizontally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
+            r_equal_q = Tex(r"$\boldsymbol{\geq0 \rightarrow move\;diagonally}$", font_size=11).next_to(rq_difference_text, RIGHT, buff = 0.05)
 
-            explanation_text = VGroup(r_greater_q, r_less_q, r_zero_q, r_equal_q)
+
+            arrow_r = Arrow(
+                start=p_dot.get_center(),
+                end=r_dot.get_center(),
+                color=ManimColor('#FF0000'),
+                buff=0.025,
+                stroke_width=2,
+                tip_length=0.1,
+            )
+            arrow_r.set_z_index(3)
+
+            arrow_q = Arrow(
+                start=p_dot.get_center(),
+                end=q_dot.get_center(),
+                color=ManimColor('#FF0000'),
+                buff=0.025,
+                stroke_width=2,
+                tip_length=0.1,
+            )
+            arrow_q.set_z_index(3)
+
+            text_rectangle = Rectangle(width=2.5, height=1, fill_opacity=1.0, fill_color=BLACK)
+            text_rectangle.set_z_index(4)
+            text_rectangle.move_to(plane.c2p(4, 1.5))
+
+            # r>q:
+            if_r_greater_q_if = Tex(r"$\boldsymbol{if}$", font_size=11).next_to(rq_difference_text, DOWN, buff=0.05)
+            if_r_greater_q_rq = Tex(r"$\boldsymbol{r-q}$", font_size=11).next_to(if_r_greater_q_if, RIGHT, buff=0.05)
+            if_r_greater_q_sign = Tex(r"$\boldsymbol{>}$", font_size=11).next_to(if_r_greater_q_rq, RIGHT, buff=0.05)
+            if_r_greater_q_move = Tex(r"$\boldsymbol{0\rightarrow move\;diagonally}$", font_size=11).next_to(if_r_greater_q_sign, RIGHT, buff=0.05)
+
+            nudging_factor_greater = 0.25 # Used to offset to the left all the objects that have to do with if_r_greater_q 
+            
+            if_r_greater_q = VGroup(if_r_greater_q_if, if_r_greater_q_rq, if_r_greater_q_sign, if_r_greater_q_move)
+            for item in if_r_greater_q:
+                item.move_to([item.get_center()[0] - nudging_factor_greater, item.get_center()[1], item.get_center()[2]])
+            
+            if_r_greater_q_nabla = Tex(r"$\boldsymbol{\nabla}$", font_size=11).next_to(if_r_greater_q_if, RIGHT, buff=0.05)
+            if_r_greater_q_sign_change = Tex(r"$\boldsymbol{\ge}$", font_size=11).next_to(if_r_greater_q_rq, RIGHT, buff=0.05)
+            
+            # r<q:
+            if_r_less_q_if = Tex(r"$\boldsymbol{if}$", font_size=11).next_to(if_r_greater_q_if, DOWN, buff=0.05)
+            if_r_less_q_rq = Tex(r"$\boldsymbol{r-q}$", font_size=11).next_to(if_r_less_q_if, RIGHT, buff=0.05)
+            if_r_less_q_sign = Tex(r"$\boldsymbol{<}$", font_size=11).next_to(if_r_less_q_rq, RIGHT, buff=0.05)
+            if_r_less_q_move = Tex(r"$\boldsymbol{0\rightarrow move\;horizontally}$", font_size=11).next_to(if_r_less_q_sign, RIGHT, buff=0.05)
+            
+            if_r_less_q = VGroup(if_r_less_q_if, if_r_less_q_rq, if_r_less_q_sign, if_r_less_q_move)
+            if_r_less_q_nabla = Tex(r"$\boldsymbol{\nabla}$", font_size=11).next_to(if_r_less_q_if, RIGHT, buff=0.05)
+
+            # Curly bracket:
+            curly_brace_if_r = Tex(r"$\begin{cases}\\\end{cases}$", font_size=15)
+            curly_brace_if_r.move_to([if_r_greater_q_if.get_center()[0] - 0.09, (if_r_greater_q_if.get_center()[1] + if_r_less_q_if.get_center()[1])/2, if_r_less_q_if.get_center()[2]])
+
+
+            explanation_text = VGroup(
+                r_len_text,
+                q_len_text,
+                rq_difference_text,
+                r_greater_q,
+                r_less_q,
+                r_zero_q,
+                r_equal_q,
+                if_r_greater_q,
+                if_r_less_q,
+                if_r_greater_q_nabla,
+                if_r_greater_q_sign_change,
+                if_r_less_q_nabla,
+                curly_brace_if_r,
+                rq_difference_nabla
+            )
             explanation_text.set_z_index(4)
 
- 
-            #                                                                       ANIMATIONS
+            #Stuff for "How are q and r calculated?"
+            perpendicular_line = Line(d1.get_center(), d2_after_traverse.get_center(), color = ORANGE, stroke_width = 1) #Same direction as D1D2 for animation purposes
+            perpendicular_line.set_z_index(3)
+            movement_line = Line(ORIGIN, d1d2_line.get_projection(r_dot.get_center())) #Determines movement path for the line
 
+            pythagoras_dot = Dot(point=[d1d2_line.get_projection(r_dot.get_center())[0], r_dot.get_y(), 0], color = RED, radius = 0.025) #Used for the triangle that shows Pythagoras
+            projection_dot = Dot(point=d1d2_line.get_projection(r_dot.get_center()), color = RED, radius = 0.025)
+            
+            pythagoras_dot.set_z_index(3)
+            projection_dot.set_z_index(3)
+            
+            pythagoras_horizontal_line = Line(
+                start=r_dot.get_center(),
+                end=pythagoras_dot.get_center(),
+                # dash_length=0.05,
+                # dashed_ratio=0.7,
+                stroke_width=1.6,
+                color=RED
+            )
+            
+            pythagoras_vertical_line = Line(
+                start=d1d2_line.get_projection(r_dot.get_center()),
+                end=pythagoras_dot.get_center(),
+                # dash_length=0.05,
+                # dashed_ratio=0.7,
+                stroke_width=1.6,
+                color=RED
+            )
+
+            pythagoras_dashes = VGroup(pythagoras_horizontal_line, pythagoras_vertical_line)
+            pythagoras_dashes.set_z_index(2)
+
+            pythagoras_angle = RightAngle(
+                pythagoras_horizontal_line,
+                pythagoras_vertical_line,
+                length=0.08,
+                quadrant=(-1,-1),
+                color=RED,
+                stroke_width=1
+            )
+            pythagoras_angle.set_z_index(1)
+
+            pythagoras_horizontal_label = Tex(r"c", font_size=8)
+            pythagoras_horizontal_label.next_to(pythagoras_horizontal_line, DOWN, buff=0.03)
+
+            pythagoras_vertical_label = Tex(r"d", font_size=8)
+            pythagoras_vertical_label.next_to(pythagoras_vertical_line, LEFT, buff=0.03)
+
+            pythagoras_diagonal_label = Tex(r"$\sqrt{c^2+d^2}$", font_size=8)
+            pythagoras_diagonal_label.rotate(PI + static_projection_r.get_angle())
+            pythagoras_diagonal_label.move_to(static_projection_r.get_center() + RIGHT * 0.05 + UP * 0.03)
+            pythagoras_diagonal_label.set_z_index(3)
+
+            # Arcs for movement with nabla:
+            movement_arc_up = Arc(
+                radius=(rq_difference_nabla.get_center()[0]-rq_difference_label.get_center()[0])/2,
+                arc_center=[(rq_difference_nabla.get_center()[0]+rq_difference_label.get_center()[0])/2, rq_difference_label.get_center()[1], rq_difference_label.get_center()[2]],
+                angle=PI
+            )
+            movement_arc_down = Arc(
+                radius=(rq_difference_nabla.get_center()[0]-rq_difference_label.get_center()[0])/2,
+                arc_center=[(rq_difference_nabla.get_center()[0]+rq_difference_label.get_center()[0])/2, rq_difference_label.get_center()[1], rq_difference_label.get_center()[2]],
+                start_angle=PI,
+                angle=PI
+            )
+
+
+            #                                                                       ANIMATIONS
+            # self.next_section(skip_animations=True)
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -504,13 +687,17 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
+            # self.next_section(skip_animations=True)
+
             #                                                                  Third Scene                                                                                    #
 
             self.play(self.camera.frame.animate.move_to(plane.c2p(2, 1.5)).scale(0.45), run_time=2)
             self.wait(1.5)
 
             #P
+            self.play(Create(p_arrow))
             self.play(Create(p_dot), Write(p_name))
+            self.play(Uncreate(p_arrow))
 
             self.wait(1.5)
 
@@ -528,38 +715,119 @@ class SecondScene(MovingCameraScene):
 
             self.play(Uncreate(line_to_r), Uncreate(line_to_q))
             self.wait(1.5)
-            self.play(Create(projections))
+            self.play(Create(static_projections))
             self.wait(1)
+            self.play(Create(static_right_angle_r), Create(static_right_angle_q))
+
+            self.play(Write(static_little_q_name), Write(static_little_r_name))
+            self.wait(3)
+            
+            #How are q and r calculated?
+            self.play(Unwrite(static_little_q_name), Unwrite(static_little_r_name))
+            self.play(Uncreate(static_right_angle_r), Uncreate(static_right_angle_q), Uncreate(static_projections))
+
+            self.play(Create(perpendicular_line, run_time=3))
+            self.wait(1)
+            self.play(Rotate(perpendicular_line, angle=1/2*PI, about_point=ORIGIN, rate_func=smooth))
+
+            perpendicular_line_right_angle = RightAngle(
+                d1d2_line,
+                perpendicular_line,
+                length=0.1,
+                stroke_width = 1.3,
+                quadrant=(1, 1),      
+                color=ORANGE
+            )
+            perpendicular_line_right_angle.set_z_index(2)
+
+            self.play(Create(perpendicular_line_right_angle))
+            self.wait(0.2)
+            self.play(Uncreate(perpendicular_line_right_angle))
+
+            self.play(MoveAlongPath(perpendicular_line, movement_line, rate_func=smooth))
+            temp_perpendicular_line1 = Line(start=d1d2_line.get_projection(r_dot.get_center()), end=perpendicular_line.get_end(), color = ORANGE, stroke_width = 1)
+            temp_perpendicular_line2 = Line(start=d1d2_line.get_projection(r_dot.get_center()), end=perpendicular_line.get_start(), color = ORANGE, stroke_width = 1)
+            self.add(temp_perpendicular_line1)
+            self.add(temp_perpendicular_line2)
+            self.add(projection_r)
+            self.remove(perpendicular_line)
+            self.play(Uncreate(temp_perpendicular_line1), Uncreate(temp_perpendicular_line2))
+
+            self.play(Create(pythagoras_dashes))
+            self.play(Create(pythagoras_angle), Create(pythagoras_dot), Create(projection_dot))
+            self.wait(1)
+
+            self.play(Create(pythagoras_horizontal_label, run_time=0.5), Create(pythagoras_vertical_label, run_time=0.5))
+            self.play(Create(pythagoras_diagonal_label, run_time=0.5))
+
+            self.wait(3)
+
+            #Returning back to normal:
+            self.play(Uncreate(pythagoras_dot), Uncreate(projection_dot))
+            self.play(Uncreate(pythagoras_diagonal_label, run_time=0.5), Uncreate(pythagoras_horizontal_label, run_time=0.5), Uncreate(pythagoras_vertical_label, run_time=0.5))
+            self.play(Uncreate(pythagoras_angle, run_time=0.5), Uncreate(pythagoras_dashes, run_time=0.5))
+            self.play(Create(projection_q))
+            self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            self.play(Create(right_angle_r), Create(right_angle_q))
-            self.wait(3)
-            self.play(self.camera.frame.animate.shift(RIGHT * 0.17), runtime = 0.7)
+            # self.next_section(skip_animations=True)
+            
+            #r-q:
+            self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
             self.wait(0.5)
+            self.play(FadeIn(text_rectangle))
 
             self.play(Write(r_len_text), Write(q_len_text))
             self.wait(1.5)
             self.play(Write(rq_difference_text))
             self.wait(2)
 
+            self.play(Create(arrow_q))
             self.play(Write(r_greater_q))
-            self.wait(3)
+            self.wait(0.5)
+            self.play(ReplacementTransform(r_greater_q, if_r_greater_q))
+            self.wait(2)
 
-            self.play(Unwrite(r_greater_q))
+            self.play(Uncreate(arrow_q))
             self.wait(1)
             self.play(d2_after_traverse.animate.move_to(plane.c2p(5, 3.3)), run_time=3)
             self.wait(1)
+            self.play(Create(arrow_r))
             self.play(Write(r_less_q))
-            self.wait(3)
+            self.wait(0.5)
+            self.play(ReplacementTransform(r_less_q, if_r_less_q), Write(curly_brace_if_r))
+            self.wait(2)
 
-            self.play(Unwrite(r_less_q))
-            self.wait(1)
+            self.play(Uncreate(arrow_r))
             self.play(d2_after_traverse.animate.move_to(plane.c2p(6, 4.5)), run_time=3)
             self.wait(1)
             self.play(Write(r_zero_q))
             self.wait(1)
-            self.play(Unwrite(r_zero_q))
-            self.play(Write(r_equal_q))
+            self.play(Unwrite(r_zero_q), ReplacementTransform(if_r_greater_q_sign, if_r_greater_q_sign_change))
+
+            # self.next_section()
+            self.play(d2_after_traverse.animate.move_to(plane.c2p(5,4)))
+            # self.play(Unwrite(rq_difference_text), Unwrite(r_len_text), Unwrite(q_len_text))
+            self.play(
+                ReplacementTransform(if_r_greater_q_rq, if_r_greater_q_nabla),
+                ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
+                Uncreate(rq_difference_value)
+            )
+            self.play(
+                Write(rq_difference_nabla),
+                if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
+                if_r_less_q_sign.animate.next_to(if_r_less_q_nabla, buff=0.05)
+            )
+            self.play(
+                if_r_greater_q_move.animate.next_to(if_r_greater_q_sign_change, buff=0.05),
+                if_r_less_q_move.animate.next_to(if_r_less_q_sign, buff=0.05)
+            )
+            self.play(
+                rq_difference_nabla.animate.next_to(rq_difference_equals, LEFT, buff=0.05),
+                rq_difference_label.animate.next_to(rq_difference_equals, RIGHT, buff=0.05),
+            )
+
+
             self.wait(3)
             
 
