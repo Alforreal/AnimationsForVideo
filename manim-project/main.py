@@ -340,7 +340,7 @@ class SecondScene(MovingCameraScene):
             #     q_dot.get_center(), d1d2_line.get_projection(q_dot.get_center())
             # ))
 
-            line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
+            
 
             static_little_r_name = Tex(r"$\boldsymbol{r}$", font_size = 10).next_to(static_projection_r.get_center(), DOWN+LEFT, buff=0.01 )
             static_little_q_name = Tex(r"$\boldsymbol{q}$", font_size = 10).next_to(static_projection_q.get_center(), UP+RIGHT, buff=0.01 )
@@ -586,6 +586,67 @@ class SecondScene(MovingCameraScene):
             pythagoras_diagonal_label.move_to(static_projection_r.get_center() + RIGHT * 0.05 + UP * 0.03)
             pythagoras_diagonal_label.set_z_index(3)
 
+            #                                                                  Fourth Scene                                                                                    #
+
+            
+            # Angles
+            line_QR = Line(start = q_dot.get_center(), end = r_dot.get_center(), color = ORANGE, stroke_width = 1.7)
+            lower_angle = Angle(
+                d1d2_line,
+                line_QR,
+                radius=0.1,
+                quadrant=(-1, 1),
+                stroke_width=0.5,
+                color=ORANGE
+            )
+
+            upper_angle = Angle(
+                d1d2_line,
+                line_QR,
+                radius=0.1,
+                quadrant=(1, -1),
+                stroke_width=0.5,
+                color=ORANGE
+            )
+
+            unnecessary_smaller_angle_right= Angle(
+                line_QR,
+                d1d2_line,
+                radius=0.12,
+                quadrant=(1, 1),
+                stroke_width=0.5,
+                color = GREEN
+            )
+
+            unnecessary_bigger_angle_right= Angle(
+                line_QR,
+                d1d2_line,
+                radius=0.14,
+                quadrant=(1, 1),
+                stroke_width=0.5,
+                color = GREEN
+            )
+
+            unnecessary_smaller_angle_left = Angle(
+                line_QR,
+                d1d2_line,
+                radius=0.12,
+                quadrant=(-1, -1),
+                stroke_width=0.5,
+                color = GREEN
+            )
+
+            unnecessary_bigger_angle_left = Angle(
+                line_QR,
+                d1d2_line,
+                radius=0.14,
+                quadrant=(-1, -1),
+                stroke_width=0.5,
+                color = GREEN
+            )
+
+
+
 
             #                                                                       ANIMATIONS
             self.next_section(skip_animations=True)
@@ -810,13 +871,14 @@ class SecondScene(MovingCameraScene):
             self.wait(1)
             self.play(Unwrite(r_zero_q), ReplacementTransform(if_r_greater_q_sign, if_r_greater_q_sign_change))
 
-            self.next_section()
+            
             self.play(d2_after_traverse.animate.move_to(plane.c2p(5,4)))
             self.play(
                 ReplacementTransform(if_r_greater_q_rq, if_r_greater_q_nabla),
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
                 Uncreate(rq_difference_value)
             )
+            self.next_section()
             self.play(
                 Write(rq_difference_nabla),
                 if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
@@ -862,10 +924,45 @@ class SecondScene(MovingCameraScene):
                 rq_nabla_group.animate.shift(shift_value).shift((scale_value + 0.2) * RIGHT).shift(1/np.sqrt(2) * scale_value * DOWN), # Got from trial and error
                 runtime = 1
             )
-            #                                                                  Fourth Scene
+            
+            self.wait(1)
+            #                                                                  Fourth Scene                                                                                    #
+
+
+            self.play(Create(lower_angle), Create(upper_angle))
+            self.wait(0.7)
+            s_name.clear_updaters()
+
+            self.play(
+                s_name.animate.shift(RIGHT * 0.1), 
+                Create(unnecessary_smaller_angle_right), 
+                Create(unnecessary_smaller_angle_left), 
+                Create(unnecessary_bigger_angle_right), 
+                Create(unnecessary_bigger_angle_left),
+                runtime = 0.4
+            )
+
+
+            self.wait(2)
+
+            self.play(
+                s_name.animate.shift(LEFT * 0.1), 
+                Uncreate(unnecessary_smaller_angle_right), 
+                Uncreate(unnecessary_smaller_angle_left), 
+                Uncreate(unnecessary_bigger_angle_right), 
+                Uncreate(unnecessary_bigger_angle_left),
+                runtime = 0.5
+            )
+
+
+
+            self.next_section()
+            self.wait(1)
 
 
             self.wait(3)
+
+            
             
 
         def interpolate_y_on_line(self, line, x_value, plane):
