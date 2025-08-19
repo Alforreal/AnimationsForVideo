@@ -2,6 +2,16 @@ import time
 from manim import *
 import numpy as np
 
+
+fraction_offset = 0.05
+
+def get_len(mobject):
+            return (mobject.get_right()[0] - mobject.get_left()[0])
+    
+
+def get_height(mobject):
+            return (mobject.get_top()[1] - mobject.get_bottom()[1])
+
 class Introduction(MovingCameraScene):
     def construct(self):
 
@@ -703,8 +713,8 @@ class SecondScene(MovingCameraScene):
 
             # r/RS:
 
-            fraction_offset = 0.05
-
+            
+            
             r_fraction_text = Tex(r"$\boldsymbol{r}$", font_size=11)
             rs_fraction_text = Tex(r"$\boldsymbol{RS}$", font_size=11)
 
@@ -849,7 +859,7 @@ class SecondScene(MovingCameraScene):
             # q_name_wcoords = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2)) // For later use
 
             #                                                                       ANIMATIONS
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -953,7 +963,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
 
             #                                                                  Third Scene                                                                                    #
 
@@ -1036,7 +1046,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             
             #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
@@ -1078,7 +1088,7 @@ class SecondScene(MovingCameraScene):
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
                 Uncreate(rq_difference_value)
             )
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             self.play(
                 Write(rq_difference_nabla),
                 if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
@@ -1187,7 +1197,7 @@ class SecondScene(MovingCameraScene):
                 Uncreate(unnecessary_bigger_angle_left),
                 runtime = 0.5
             )
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
 
             self.play(Write(angle_label_group))
             self.wait(1)
@@ -1314,11 +1324,13 @@ class SecondScene(MovingCameraScene):
             # p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2)) // For later use
             # r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8)) // For later use
             # q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2)) // For later use
+            self.wait(3)
+
+            self.play(self.camera.frame.animate.next_to(self.camera.frame.get_center(), DOWN * 15), run_time=2)
+            self.next_section()
 
             self.wait(3)
 
-            
-            
 
         def interpolate_y_on_line(self, line, x_value, plane):
             start = line.get_start()
@@ -1337,3 +1349,64 @@ class SecondScene(MovingCameraScene):
             return (mobject.get_top()[1] - mobject.get_bottom()[1])
 
 
+
+class FifthScene(MovingCameraScene):
+    def construct(self):
+        text_size = 42
+
+
+        #q_prime_equation = Tex(r"$\boldsymbol{q' = b_1 + 1 - \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
+
+        q_prime = Tex(r"$\boldsymbol{q' =}$", font_size = text_size)
+        q_prime_before_minus = Tex(r"$\boldsymbol{b_1 + 1}$", font_size = text_size)
+        q_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+        q_prime_after_minus = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
+        q_prime_equation = VGroup(q_prime, q_prime_before_minus, q_prime_minus, q_prime_after_minus).arrange(RIGHT, buff=0.25)
+        q_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_prime_equation), 0])
+
+
+        #curly brackets <3
+
+        q_prime_bracket_down = Brace(q_prime_before_minus, sharpness=1.0, color = BLUE)
+        q_prime_bottom_text = Tex(r"$\textbf{Q vertical coordinate}$", font_size = text_size, color = BLUE)
+
+        q_prime_bracket_up = Brace(q_prime_after_minus, sharpness=1.0, color = GREEN).rotate(PI)
+        q_prime_up_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
+
+        r_prime_before_minus = q_prime_after_minus.copy()
+        r_prime = Tex(r"$\boldsymbol{r' =}$", font_size = text_size)
+        r_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+        r_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
+        r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=0.25)
+        
+
+
+
+        #Animation sextion
+
+        #self.camera.frame.scale(0.4)
+    
+
+
+        self.play(Write(q_prime_equation))
+        self.wait(1)
+        #self.play(Write(r_prime_equation))
+        self.wait(1)
+
+        self.play(q_prime_equation.animate.move_to(self.camera.frame.get_center()))
+        self.wait(1)
+
+        self.play(FadeToColor(q_prime_before_minus, BLUE))
+        self.wait(0.5)
+
+        self.play(Write(q_prime_bracket_down.next_to(q_prime_before_minus, DOWN, buff=0.1)))
+        self.play(Write(q_prime_bottom_text.next_to(q_prime_bracket_down, DOWN, buff=0.2)))
+        self.wait(1)
+
+        self.play(FadeToColor(q_prime_after_minus, GREEN))
+        self.play(
+            Write(q_prime_bracket_up.next_to(q_prime_after_minus, UP, buff=0.1), runtime = 1.3),
+            Write(q_prime_up_text.next_to(q_prime_bracket_up, UP, buff=0.2))
+        )
+
+        self.wait(3)
