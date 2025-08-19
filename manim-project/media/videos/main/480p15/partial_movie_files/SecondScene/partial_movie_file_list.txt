@@ -1,0 +1,12 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/837730673_2230675760_631829896.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/2418535904_4073845205_464306535.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/2043238646_37365297_36288789.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_3837672192_1712912891.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_4073845205_3743095005.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_4189800606_2524620167.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_548731573_1019295700.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_2319304147_4187040345.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_548731573_3542230424.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_2451766523_1753222077.mp4'
+file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/SecondScene/3253380161_3879069619_3544333886.mp4'

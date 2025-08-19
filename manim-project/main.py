@@ -825,31 +825,229 @@ class SecondScene(MovingCameraScene):
             r_prime_q_group = VGroup(r_prime_text, r_prime_q_fraction_line, q_prime_text)
 
             # Coordinates part:
-
-            p_name_coords = plane.c2p(0.8, 1.2)
-
+            # P:
             p_name_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
+            p_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
+            p_name_coma = Tex(r"$\boldsymbol{,}$", font_size=11)
+            p_name_question_y = Tex(r"$\boldsymbol{???}$", font_size=11)
+            p_name_close_brace = Tex(r"$\boldsymbol{)}$", font_size=11)
+            p_name_x = Tex(r"$\boldsymbol{a_1}$", font_size=11)
+            p_name_y = Tex(r"$\boldsymbol{b_1}$", font_size=11)
+            p_name_x.set_z_index(3)
+            p_name_y.set_z_index(3)
+
+            p_name_axis_offset = 0.1
+            p_name_original_length = self.get_len(p_dot) + 3.5*fraction_offset + self.get_len(p_name_open_brace) + self.get_len(p_name_question_x) + self.get_len(p_name_coma) + self.get_len(p_name_question_y) + self.get_len(p_name_close_brace)
+            
+
+            p_name_coords = [
+                p_dot.get_center()[0] - p_name_original_length/2 + self.get_len(p_dot)/2,
+                p_dot.get_center()[1] + p_name_axis_offset + self.get_height(p_dot)/2,
+                p_dot.get_center()[2]
+            ]
+
             p_name_open_brace.move_to([
-                p_name_coords[0] + self.get_len(p_name) + fraction_offset/2,
+                p_name_coords[0] + self.get_len(p_name)/2 + fraction_offset/2,
                 p_name_coords[1], p_name_coords[2]
             ])
 
-            p_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
             p_name_question_x.move_to([
-                p_name_open_brace.get_right()[0] + fraction_offset/2,
-                p_name_open_brace.get_bottom()[1] + self.get_len(p_name_question_x)/2,
+                p_name_open_brace.get_right()[0] + fraction_offset/2 + self.get_len(p_name_question_x)/2,
+                p_name_open_brace.get_center()[1],
                 p_name_open_brace.get_center()[2]
             ])
 
-            p_name_coma = Tex(r"$\boldsymbol{,}$")
-            
+            p_name_coma.move_to([
+                p_name_question_x.get_right()[0] + fraction_offset/2 + self.get_len(p_name_coma)/2,
+                p_name_question_x.get_bottom()[1],
+                p_name_question_x.get_center()[2]
+            ])
 
-            # p_name_wcoords = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2))
-            # r_name_wcoords = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8)) // For later use
-            # q_name_wcoords = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2)) // For later use
+            p_name_question_y.move_to([
+                p_name_coma.get_right()[0] + fraction_offset*3/2 + self.get_len(p_name_question_y)/2,
+                p_name_question_x.get_center()[1],
+                p_name_coma.get_center()[2]
+            ])
+
+            p_name_close_brace.move_to([
+                p_name_question_y.get_right()[0] + fraction_offset/2 + self.get_len(p_name_close_brace)/2,
+                p_name_coords[1],
+                p_name_question_y.get_center()[2]
+            ])
+
+            p_name_group = VGroup(p_name_open_brace, p_name_question_x, p_name_coma, p_name_question_y, p_name_close_brace)
+            p_name_group.set_z_index(4)
+
+            p_name_length = self.get_len(p_dot) + 3*fraction_offset + self.get_len(p_name_open_brace) + self.get_len(p_name_x) + self.get_len(p_name_coma) + self.get_len(p_name_y) + self.get_len(p_name_close_brace)
+
+            p_name_x.move_to([
+                p_dot.get_center()[0] - p_name_length/2 + self.get_len(p_dot) + self.get_len(p_name_open_brace) + fraction_offset + self.get_len(p_name_x)/2,
+                p_name_coords[1] - self.get_height(p_name)/2 + self.get_height(p_name_x)/2,
+                p_name_coords[2]
+            ])
+
+            p_name_y.move_to([
+                p_dot.get_center()[0] + p_name_length/2 - self.get_len(p_name_close_brace) - fraction_offset/2 - self.get_len(p_name_y)/2,
+                p_name_coords[1] - self.get_height(p_name)/2 + self.get_height(p_name_y)/2,
+                p_name_coords[2]
+            ])
+
+            p_name_second_group = VGroup(p_name, p_name_open_brace, p_name_x, p_name_coma, p_name_y, p_name_close_brace)
+            p_name_second_group.set_z_index(4)
+
+            p_name_rectangle = Rectangle(width=self.get_len(p_name_second_group), height=self.get_height(p_name_second_group), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            p_name_rectangle.set_z_index(3)
+            p_name_rectangle.move_to([p_dot.get_center()[0], p_dot.get_center()[1] + p_name_axis_offset + self.get_height(p_dot)/2, p_dot.get_center()[2]])
+
+            # Q:
+            q_name_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
+            q_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
+            q_name_coma = Tex(r"$\boldsymbol{,}$", font_size=11)
+            q_name_question_y = Tex(r"$\boldsymbol{???}$", font_size=11)
+            q_name_close_brace = Tex(r"$\boldsymbol{)}$", font_size=11)
+            q_name_x = Tex(r"$\boldsymbol{a_1 + 1}$", font_size=11)
+            q_name_y = Tex(r"$\boldsymbol{b_1 + 1}$", font_size=11)
+
+            q_name_axis_offset = 0.1
+            q_name_original_length = self.get_len(q_dot) + 3.5*fraction_offset + self.get_len(q_name_open_brace) + self.get_len(q_name_question_x) + self.get_len(q_name_coma) + self.get_len(q_name_question_y) + self.get_len(q_name_close_brace)
+            
+            q_name_first_length = self.get_len(q_dot) + 3.5*fraction_offset + self.get_len(q_name_open_brace) + self.get_len(q_name_x) + self.get_len(q_name_coma) + self.get_len(q_name_question_y) + self.get_len(q_name_close_brace)
+
+            q_name_second_length = self.get_len(q_dot) + 3*fraction_offset + self.get_len(q_name_open_brace) + self.get_len(q_name_x) + self.get_len(q_name_coma) + self.get_len(q_name_y) + self.get_len(q_name_close_brace)
+
+            q_name_coords = [
+                q_dot.get_center()[0] - q_name_original_length/2 + self.get_len(q_dot)/2,
+                q_dot.get_center()[1] + q_name_axis_offset + self.get_height(q_dot)/2,
+                q_dot.get_center()[2]
+            ]
+
+            q_name_open_brace.move_to([
+                q_name_coords[0] + self.get_len(q_name)/2 + fraction_offset/2,
+                q_name_coords[1], q_name_coords[2]
+            ])
+
+            q_name_question_x.move_to([
+                q_name_open_brace.get_right()[0] + fraction_offset/2 + self.get_len(q_name_question_x)/2,
+                q_name_open_brace.get_center()[1],
+                q_name_open_brace.get_center()[2]
+            ])
+
+            q_name_coma.move_to([
+                q_name_question_x.get_right()[0] + fraction_offset/2 + self.get_len(q_name_coma)/2,
+                q_name_question_x.get_bottom()[1],
+                q_name_question_x.get_center()[2]
+            ])
+
+            q_name_question_y.move_to([
+                q_name_coma.get_right()[0] + fraction_offset*3/2 + self.get_len(q_name_question_y)/2,
+                q_name_question_x.get_center()[1],
+                q_name_coma.get_center()[2]
+            ])
+
+            q_name_close_brace.move_to([
+                q_name_question_y.get_right()[0] + fraction_offset/2 + self.get_len(q_name_close_brace)/2,
+                q_name_coords[1],
+                q_name_question_y.get_center()[2]
+            ])
+
+            q_name_group = VGroup(q_name_open_brace, q_name_question_x, q_name_coma, q_name_question_y, q_name_close_brace)
+            q_name_group.set_z_index(4)
+
+            q_name_x.move_to([
+                q_dot.get_center()[0] - q_name_first_length/2 + self.get_len(q_dot) + self.get_len(q_name_open_brace) + fraction_offset + self.get_len(q_name_x)/2,
+                q_name_coords[1] - self.get_height(q_name)/2 + self.get_height(q_name_x)/2,
+                q_name_coords[2]
+            ])
+
+            q_name_y.move_to([
+                q_dot.get_center()[0] + q_name_first_length/2 - self.get_len(q_name_close_brace) - self.get_len(q_name_y)/2 + fraction_offset,
+                q_name_coords[1] - self.get_height(q_name)/2 + self.get_height(q_name_y)/2,
+                q_name_coords[2]
+            ])
+
+            q_name_second_group = VGroup(q_name, q_name_open_brace, q_name_x, q_name_coma, q_name_y, q_name_close_brace)
+            q_name_second_group.set_z_index(4)
+
+            q_name_rectangle = Rectangle(width=self.get_len(q_name_second_group), height=self.get_height(q_name_second_group), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            q_name_rectangle.set_z_index(3)
+            q_name_rectangle.move_to([q_dot.get_center()[0], q_dot.get_center()[1] + q_name_axis_offset + self.get_height(q_dot)/2, q_dot.get_center()[2]])
+
+            #R:
+            r_name_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
+            r_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
+            r_name_coma = Tex(r"$\boldsymbol{,}$", font_size=11)
+            r_name_question_y = Tex(r"$\boldsymbol{???}$", font_size=11)
+            r_name_close_brace = Tex(r"$\boldsymbol{)}$", font_size=11)
+            r_name_x = Tex(r"$\boldsymbol{a_1 + 1}$", font_size=11)
+            r_name_y = Tex(r"$\boldsymbol{b_1}$", font_size=11)
+            r_name_x.set_z_index(3)
+            r_name_y.set_z_index(3)
+
+            r_name_axis_offset = 0.1
+            r_name_original_length = self.get_len(r_dot) + 3.5*fraction_offset + self.get_len(r_name_open_brace) + self.get_len(r_name_question_x) + self.get_len(r_name_coma) + self.get_len(r_name_question_y) + self.get_len(r_name_close_brace)
+            r_name_second_length = self.get_len(r_dot) + 3*fraction_offset + self.get_len(r_name_open_brace) + self.get_len(r_name_x) + self.get_len(r_name_coma) + self.get_len(r_name_y) + self.get_len(r_name_close_brace)
+
+            r_name_coords = [
+                r_dot.get_center()[0] - r_name_original_length/2 + self.get_len(r_dot)/2,
+                r_dot.get_center()[1] - r_name_axis_offset - self.get_height(r_dot)/2,
+                r_dot.get_center()[2]
+            ]
+
+            r_name_open_brace.move_to([
+                r_name_coords[0] + self.get_len(r_name)/2 + fraction_offset/2,
+                r_name_coords[1], r_name_coords[2]
+            ])
+
+            r_name_question_x.move_to([
+                r_name_open_brace.get_right()[0] + fraction_offset/2 + self.get_len(r_name_question_x)/2,
+                r_name_open_brace.get_center()[1],
+                r_name_open_brace.get_center()[2]
+            ])
+
+            r_name_coma.move_to([
+                r_name_question_x.get_right()[0] + fraction_offset/2 + self.get_len(r_name_coma)/2,
+                r_name_question_x.get_bottom()[1],
+                r_name_question_x.get_center()[2]
+            ])
+
+            r_name_question_y.move_to([
+                r_name_coma.get_right()[0] + fraction_offset*3/2 + self.get_len(r_name_question_y)/2,
+                r_name_question_x.get_center()[1],
+                r_name_coma.get_center()[2]
+            ])
+
+            r_name_close_brace.move_to([
+                r_name_question_y.get_right()[0] + fraction_offset/2 + self.get_len(r_name_close_brace)/2,
+                r_name_coords[1],
+                r_name_question_y.get_center()[2]
+            ])
+
+            r_name_group = VGroup(r_name_open_brace, r_name_question_x, r_name_coma, r_name_question_y, r_name_close_brace)
+            r_name_group.set_z_index(4)
+
+            r_name_first_length = self.get_len(r_dot) + 3.5*fraction_offset + self.get_len(r_name_open_brace) + self.get_len(r_name_x) + self.get_len(r_name_coma) + self.get_len(r_name_question_y) + self.get_len(r_name_close_brace)
+
+            r_name_x.move_to([
+                r_dot.get_center()[0] - r_name_first_length/2 + self.get_len(r_dot) + self.get_len(r_name_open_brace) + fraction_offset + self.get_len(r_name_x)/2,
+                r_name_coords[1] - self.get_height(r_name)/2 + self.get_height(r_name_x)/2,
+                r_name_coords[2]
+            ])
+
+            r_name_y.move_to([
+                r_dot.get_center()[0] + r_name_first_length/2 - self.get_len(r_name_close_brace) - fraction_offset - self.get_len(r_name_y)/2,
+                r_name_coords[1] - self.get_height(r_name)/2 + self.get_height(r_name_y)/2,
+                r_name_coords[2]
+            ])
+
+            r_name_second_group = VGroup(r_name, r_name_open_brace, r_name_x, r_name_coma, r_name_y, r_name_close_brace)
+            r_name_second_group.set_z_index(4)
+
+            r_name_rectangle = Rectangle(width=self.get_len(r_name_second_group), height=self.get_height(r_name_second_group), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            r_name_rectangle.set_z_index(3)
+            r_name_rectangle.move_to([r_dot.get_center()[0], r_dot.get_center()[1] - r_name_axis_offset - self.get_height(r_dot)/2, r_dot.get_center()[2]])
 
             #                                                                       ANIMATIONS
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -953,7 +1151,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
 
             #                                                                  Third Scene                                                                                    #
 
@@ -1036,7 +1234,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             
             #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
@@ -1078,7 +1276,7 @@ class SecondScene(MovingCameraScene):
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
                 Uncreate(rq_difference_value)
             )
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
             self.play(
                 Write(rq_difference_nabla),
                 if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
@@ -1187,7 +1385,7 @@ class SecondScene(MovingCameraScene):
                 Uncreate(unnecessary_bigger_angle_left),
                 runtime = 0.5
             )
-            # self.next_section(skip_animations=True)
+            self.next_section(skip_animations=True)
 
             self.play(Write(angle_label_group))
             self.wait(1)
@@ -1306,15 +1504,140 @@ class SecondScene(MovingCameraScene):
                 if_nabla_move_group.animate.shift(shift_value * LEFT),
             )
             self.play(
-                p_name.animate.move_to(plane.c2p(0.8, 1.2)),
-                r_name.animate.move_to(plane.c2p(2.2, 0.8)),
-                q_name.animate.move_to(plane.c2p(2.2, 2.2)),
-
+                p_name.animate.move_to(p_name_coords),
+                q_name.animate.move_to(q_name_coords),
+                r_name.animate.move_to(r_name_coords),
+                Create(p_name_group),
+                Create(q_name_group),
+                Create(r_name_group),
+                Create(p_name_rectangle),
+                Create(q_name_rectangle),
+                Create(r_name_rectangle)
             )
-            # p_name = Tex(r"$\boldsymbol{P (a_1, b_1)}$", font_size = 11).move_to(plane.c2p(0.8, 1.2)) // For later use
-            # r_name = Tex(r"$\boldsymbol{R (a_1+1, b_1)}$", font_size = 11).move_to(plane.c2p(2.2, 0.8)) // For later use
-            # q_name = Tex(r"$\boldsymbol{Q (a_1+1, b_1 + 1)}$", font_size = 11).move_to(plane.c2p(2.2, 2.2)) // For later use
+            self.wait()
+            self.play(
+                FadeOut(p_name_question_x),
+                FadeOut(p_name_question_y),
+                Write(p_name_x),
+                Write(p_name_y),
+                p_name.animate.move_to([
+                    p_dot.get_center()[0] - p_name_length/2 + self.get_len(p_name)/2,
+                    p_name.get_center()[1],
+                    p_name.get_center()[2]
+                ]),
+                p_name_open_brace.animate.move_to([
+                    p_dot.get_center()[0] - p_name_length/2 + self.get_len(p_name) + fraction_offset/2 + self.get_len(p_name_open_brace)/2,
+                    p_name_open_brace.get_center()[1], p_name_open_brace.get_center()[2]
+                ]),
+                p_name_close_brace.animate.move_to([
+                    p_dot.get_center()[0] + p_name_length/2 - self.get_len(p_name_close_brace)/2,
+                    p_name_close_brace.get_center()[1], p_name_close_brace.get_center()[2]
+                ]),
+                p_name_coma.animate.move_to([
+                    p_dot.get_center()[0] + p_name_length/2 - self.get_len(p_name_close_brace) - self.get_len(p_name_y) - self.get_len(p_name_coma)/2 - 1.5*fraction_offset,
+                    p_name_coma.get_center()[1], p_name_coma.get_center()[2]
+                ]),
+            )
+            self.wait(1)
+            self.play(
+                Write(q_name_x),
+                FadeOut(q_name_question_x),
+                q_name.animate.move_to([
+                    q_dot.get_center()[0] - q_name_first_length/2 + self.get_len(q_name)/2,
+                    q_name.get_center()[1],
+                    q_name.get_center()[2]
+                ]),
+                q_name_open_brace.animate.move_to([
+                    q_dot.get_center()[0] - q_name_first_length/2 + self.get_len(q_name) + fraction_offset/2 + self.get_len(q_name_open_brace)/2,
+                    q_name_open_brace.get_center()[1], q_name_open_brace.get_center()[2]
+                ]),
+                q_name_close_brace.animate.move_to([
+                    q_dot.get_center()[0] + q_name_first_length/2 - self.get_len(q_name_close_brace)/2,
+                    q_name_close_brace.get_center()[1], q_name_close_brace.get_center()[2]
+                ]),
+                q_name_coma.animate.move_to([
+                    q_dot.get_center()[0] + q_name_first_length/2 - self.get_len(q_name_close_brace) - self.get_len(q_name_question_y) - self.get_len(q_name_coma)/2 - 2*fraction_offset,
+                    q_name_coma.get_center()[1], q_name_coma.get_center()[2]
+                ]),
+                q_name_question_y.animate.move_to([
+                    q_dot.get_center()[0] + q_name_first_length/2 - self.get_len(q_name_close_brace) - fraction_offset/2 - self.get_len(q_name_question_y)/2,
+                    q_name_question_y.get_center()[1], q_name_question_y.get_center()[2]
+                ]),
 
+                Write(r_name_x),
+                FadeOut(r_name_question_x),
+                r_name.animate.move_to([
+                    r_dot.get_center()[0] - r_name_first_length/2 + self.get_len(r_name)/2,
+                    r_name.get_center()[1],
+                    r_name.get_center()[2]
+                ]),
+                r_name_open_brace.animate.move_to([
+                    r_dot.get_center()[0] - r_name_first_length/2 + self.get_len(r_name) + fraction_offset/2 + self.get_len(r_name_open_brace)/2,
+                    r_name_open_brace.get_center()[1], r_name_open_brace.get_center()[2]
+                ]),
+                r_name_close_brace.animate.move_to([
+                    r_dot.get_center()[0] + r_name_first_length/2 - self.get_len(r_name_close_brace)/2,
+                    r_name_close_brace.get_center()[1], r_name_close_brace.get_center()[2]
+                ]),
+                r_name_coma.animate.move_to([
+                    r_dot.get_center()[0] + r_name_first_length/2 - self.get_len(r_name_close_brace) - self.get_len(r_name_question_y) - self.get_len(r_name_coma)/2 - 2*fraction_offset,
+                    r_name_coma.get_center()[1], r_name_coma.get_center()[2]
+                ]),
+                r_name_question_y.animate.move_to([
+                    r_dot.get_center()[0] + r_name_first_length/2 - self.get_len(r_name_close_brace) - fraction_offset/2 - self.get_len(r_name_question_y)/2,
+                    r_name_question_y.get_center()[1], r_name_question_y.get_center()[2]
+                ]),
+            )
+            self.wait(1)
+            self.play(
+                Write(q_name_y),
+                FadeOut(q_name_question_y),
+                q_name.animate.move_to([
+                    q_dot.get_center()[0] - q_name_second_length/2 + self.get_len(q_name)/2,
+                    q_name.get_center()[1],
+                    q_name.get_center()[2]
+                ]),
+                q_name_open_brace.animate.move_to([
+                    q_dot.get_center()[0] - q_name_second_length/2 + self.get_len(q_name) + fraction_offset/2 + self.get_len(q_name_open_brace)/2,
+                    q_name_open_brace.get_center()[1], q_name_open_brace.get_center()[2]
+                ]),
+                q_name_close_brace.animate.move_to([
+                    q_dot.get_center()[0] + q_name_second_length/2 - self.get_len(q_name_close_brace)/2,
+                    q_name_close_brace.get_center()[1], q_name_close_brace.get_center()[2]
+                ]),
+                q_name_coma.animate.move_to([
+                    q_dot.get_center()[0] + q_name_second_length/2 - self.get_len(q_name_close_brace) - self.get_len(q_name_y) - self.get_len(q_name_coma)/2 - 1.5*fraction_offset,
+                    q_name_coma.get_center()[1], q_name_coma.get_center()[2]
+                ]),
+                q_name_x.animate.move_to([
+                    q_dot.get_center()[0] - q_name_second_length/2 + self.get_len(q_name_open_brace) + self.get_len(q_name) + self.get_len(q_name_x)/2 + fraction_offset,
+                    q_name_x.get_center()[1], q_name_x.get_center()[2]
+                ]),
+
+                Write(r_name_y),
+                FadeOut(r_name_question_y),
+                r_name.animate.move_to([
+                    r_dot.get_center()[0] - r_name_second_length/2 + self.get_len(r_name)/2,
+                    r_name.get_center()[1],
+                    r_name.get_center()[2]
+                ]),
+                r_name_open_brace.animate.move_to([
+                    r_dot.get_center()[0] - r_name_second_length/2 + self.get_len(r_name) + fraction_offset/2 + self.get_len(r_name_open_brace)/2,
+                    r_name_open_brace.get_center()[1], r_name_open_brace.get_center()[2]
+                ]),
+                r_name_close_brace.animate.move_to([
+                    r_dot.get_center()[0] + r_name_second_length/2 - self.get_len(r_name_close_brace)/2,
+                    r_name_close_brace.get_center()[1], r_name_close_brace.get_center()[2]
+                ]),
+                r_name_coma.animate.move_to([
+                    r_dot.get_center()[0] + r_name_second_length/2 - self.get_len(r_name_close_brace) - self.get_len(r_name_y) - self.get_len(r_name_coma)/2 - 1.5*fraction_offset,
+                    r_name_coma.get_center()[1], r_name_coma.get_center()[2]
+                ]),
+                r_name_x.animate.move_to([
+                    r_dot.get_center()[0] - r_name_second_length/2 + self.get_len(r_name_open_brace) + self.get_len(r_name) + self.get_len(r_name_x)/2 + fraction_offset,
+                    r_name_x.get_center()[1], r_name_x.get_center()[2]
+                ]),
+            )
             self.wait(3)
 
             
