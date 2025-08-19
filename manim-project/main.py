@@ -2,6 +2,15 @@ import time
 from manim import *
 import numpy as np
 
+fraction_offset = 0.05
+
+def get_len(mobject):
+            return (mobject.get_right()[0] - mobject.get_left()[0])
+
+
+def get_height(mobject):
+            return (mobject.get_top()[1] - mobject.get_bottom()[1])
+
 class Introduction(MovingCameraScene):
     def construct(self):
 
@@ -1660,3 +1669,63 @@ class SecondScene(MovingCameraScene):
             return (mobject.get_top()[1] - mobject.get_bottom()[1])
 
 
+class FifthScene(MovingCameraScene):
+    def construct(self):
+        text_size = 42
+
+
+        #q_prime_equation = Tex(r"$\boldsymbol{q' = b_1 + 1 - \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
+
+        q_prime = Tex(r"$\boldsymbol{q' =}$", font_size = text_size)
+        q_prime_before_minus = Tex(r"$\boldsymbol{b_1 + 1}$", font_size = text_size)
+        q_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+        q_prime_after_minus = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
+        q_prime_equation = VGroup(q_prime, q_prime_before_minus, q_prime_minus, q_prime_after_minus).arrange(RIGHT, buff=0.25)
+        q_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_prime_equation), 0])
+
+
+        #curly brackets <3
+
+        q_prime_bracket_down = Brace(q_prime_before_minus, sharpness=1.0, color = BLUE)
+        q_prime_bottom_text = Tex(r"$\textbf{Q vertical coordinate}$", font_size = text_size, color = BLUE)
+
+        q_prime_bracket_up = Brace(q_prime_after_minus, sharpness=1.0, color = GREEN).rotate(PI)
+        q_prime_up_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
+
+        r_prime_before_minus = q_prime_after_minus.copy()
+        r_prime = Tex(r"$\boldsymbol{r' =}$", font_size = text_size)
+        r_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+        r_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
+        r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=0.25)
+
+
+
+
+        #Animation sextion
+
+        #self.camera.frame.scale(0.4)
+
+
+
+        self.play(Write(q_prime_equation))
+        self.wait(1)
+        #self.play(Write(r_prime_equation))
+        self.wait(1)
+
+        self.play(q_prime_equation.animate.move_to(self.camera.frame.get_center()))
+        self.wait(1)
+
+        self.play(FadeToColor(q_prime_before_minus, BLUE))
+        self.wait(0.5)
+
+        self.play(Write(q_prime_bracket_down.next_to(q_prime_before_minus, DOWN, buff=0.1)))
+        self.play(Write(q_prime_bottom_text.next_to(q_prime_bracket_down, DOWN, buff=0.2)))
+        self.wait(1)
+
+        self.play(FadeToColor(q_prime_after_minus, GREEN))
+        self.play(
+            Write(q_prime_bracket_up.next_to(q_prime_after_minus, UP, buff=0.1), runtime = 1.3),
+            Write(q_prime_up_text.next_to(q_prime_bracket_up, UP, buff=0.2))
+        )
+
+        self.wait(3)
