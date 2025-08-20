@@ -300,8 +300,9 @@ class SecondScene(MovingCameraScene):
             ))
 
             s_name = Tex(r"$\boldsymbol{S}$", font_size = 11)
-
             s_name.add_updater(lambda s: s.next_to(s_dot, RIGHT, buff = 0.05))
+
+            static_s_name = Tex(r"$\boldsymbol{S}$", font_size = 11).next_to(s_dot, RIGHT, buff = 0.05)
 
             s_stuff = VGroup(s_dot, s_name)
             s_stuff.set_z_index(4)
@@ -712,8 +713,6 @@ class SecondScene(MovingCameraScene):
 
             # r/RS:
 
-            fraction_offset = 0.05
-
             r_fraction_text = Tex(r"$\boldsymbol{r}$", font_size=11)
             rs_fraction_text = Tex(r"$\boldsymbol{RS}$", font_size=11)
 
@@ -834,6 +833,53 @@ class SecondScene(MovingCameraScene):
             r_prime_q_group = VGroup(r_prime_text, r_prime_q_fraction_line, q_prime_text)
 
             # Coordinates part:
+            # Arrows to explain the script:
+
+            p_r_arrow = Arrow(start=p_dot.get_center(), end=r_dot.get_center(), color=GREEN, buff=get_len(p_dot)/4, stroke_width=2, tip_length=0.1)
+            p_r_arrow_label = Tex(r"$\boldsymbol{+1}$", font_size=10).next_to(p_r_arrow, UP, buff=0.00625)
+            p_r_arrow_group = VGroup(p_r_arrow, p_r_arrow_label)
+            p_r_arrow_group.set_z_index(2)
+
+            '''
+            Quick explanation regarding how the code below works. Originally the coordinates have a form:
+            P(???, ????), Q(???, ???), R(???, ???)
+            In the code you can also see different offsets. Here's how the offsets are divided in this case (as they do change when the question marks become values):
+
+            P                          (                           ???                           ,                             ???                          )
+            | <- fraction_offset/2 -> | | <- fraction_offset/2 -> |   | <- fraction_offset/2 -> | | <- fraction_offset*3/2 -> |   | <- fraction_offset/2 -> |
+
+            (This technically isn't completely true, I've noticed some bugs in the code, but seeing as it works well I don't want to touch it) 
+            
+            Tallied up that is 3.5*fraction_offset, and that's why when calculating length (either p_name_original_length, q_name_original_length or r_name_original_legnth)
+            there is always 3.5*fraction_offset present. That value changes however when the right question mark ([insert dot name here]_name_question_y) becomes a value, as
+            this offset:
+
+            P                          (                           ???                           ,                             ???                          )
+            | <- fraction_offset/2 -> | | <- fraction_offset/2 -> |   | <- fraction_offset/2 -> | | <- fraction_offset*3/2 -> |   | <- fraction_offset/2 -> |
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                                                                            This one
+            
+            becomes too big for values like b_1. That's why the values of the offsets change a bit:
+
+            P                          (                           a1                           ,                         b1                          )
+            | <- fraction_offset/2 -> | | <- fraction_offset/2 -> |  | <- fraction_offset/2 -> | | <- fraction_offset -> |  | <- fraction_offset/2 -> |
+                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^
+                                                                                                   This value has changed
+
+            That's why the last value for the length of the whole expression (p_name_length or q_name_second_length) is 3*fraction_offset, instead of 3.5*fraction_offset
+
+            The coordinates originally are calculated based on being next to p_name_coords that is calculated based on the coordinates p_dot - the green dot on the screen.
+            During animation though this approach is not possible as I wanted to preserve the coordinates' center position on the dot even after the change in length.
+            That's why the movements take the center position dot for the anchor and base their possition off its position. Here is an example for the open brace in P (p_name_open_brace):
+
+                   P                                          (                                               a1                                  ,                                 b1                                  )
+                                                                                                                                               P_DOT
+            |                                                         <- p_name_length/2                                                         |
+                                                     
+            |length(p_name) ->|fraction_offset/2 ->|length(open_brace) ->|fraction_offset/2 ->|length(a_1)/2 ->|
+
+            The length(a_1)/2 is necessary because mobject.move_to() moves the coordinates of the CENTER of the mobject, and so the length of a_1 has to also be taken into account
+            '''
             # P:
             p_name_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
             p_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
@@ -1054,6 +1100,160 @@ class SecondScene(MovingCameraScene):
             r_name_rectangle = Rectangle(width=self.get_len(r_name_second_group), height=self.get_height(r_name_second_group), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
             r_name_rectangle.set_z_index(3)
             r_name_rectangle.move_to([r_dot.get_center()[0], r_dot.get_center()[1] - r_name_axis_offset - self.get_height(r_dot)/2, r_dot.get_center()[2]])
+
+            # S:
+            s_name_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
+            s_name_question_x = Tex(r"$\boldsymbol{???}$", font_size=11)
+            s_name_coma = Tex(r"$\boldsymbol{,}$", font_size=11)
+            s_name_question_y = Tex(r"$\boldsymbol{???}$", font_size=11)
+            s_name_close_brace = Tex(r"$\boldsymbol{)}$", font_size=11)
+            s_name_x = Tex(r"$\boldsymbol{a_1 + 1}$", font_size=11)
+            s_name_y = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size=14)
+
+            s_name_axis_offset = 0.1
+            s_name_original_length = self.get_len(s_dot) + 3.5*fraction_offset + self.get_len(s_name_open_brace) + self.get_len(s_name_question_x) + self.get_len(s_name_coma) + self.get_len(s_name_question_y) + self.get_len(s_name_close_brace)
+
+            s_name_first_length = self.get_len(s_dot) + 3.5*fraction_offset + self.get_len(s_name_open_brace) + self.get_len(s_name_x) + self.get_len(s_name_coma) + self.get_len(s_name_question_y) + self.get_len(s_name_close_brace)
+
+            s_name_second_length = self.get_len(s_dot) + 3*fraction_offset + self.get_len(s_name_open_brace) + self.get_len(s_name_x) + self.get_len(s_name_coma) + self.get_len(s_name_y) + self.get_len(s_name_close_brace)
+
+            s_name_coords = static_s_name.get_center()
+
+            s_name_open_brace.move_to([
+                s_name_coords[0] + self.get_len(s_name),
+                s_name_coords[1], s_name_coords[2]
+            ])
+
+            s_name_question_x.move_to([
+                s_name_open_brace.get_right()[0] + fraction_offset/2 + self.get_len(s_name_question_x)/2,
+                s_name_open_brace.get_center()[1],
+                s_name_open_brace.get_center()[2]
+            ])
+
+            s_name_coma.move_to([
+                s_name_question_x.get_right()[0] + fraction_offset/2 + self.get_len(s_name_coma)/2,
+                s_name_question_x.get_bottom()[1],
+                s_name_question_x.get_center()[2]
+            ])
+
+            s_name_question_y.move_to([
+                s_name_coma.get_right()[0] + fraction_offset*3/2 + self.get_len(s_name_question_y)/2,
+                s_name_question_x.get_center()[1],
+                s_name_coma.get_center()[2]
+            ])
+
+            s_name_close_brace.move_to([
+                s_name_question_y.get_right()[0] + fraction_offset/2 + self.get_len(s_name_close_brace)/2,
+                s_name_coords[1],
+                s_name_question_y.get_center()[2]
+            ])
+
+            s_name_group = VGroup(s_name_open_brace, s_name_question_x, s_name_coma, s_name_question_y, s_name_close_brace)
+            s_name_group.set_z_index(4)
+
+            s_name_x.move_to([
+                s_name_open_brace.get_right()[0] + fraction_offset/2 + get_len(s_name_x)/2,
+                s_name_coords[1] - self.get_height(s_name)/2 + self.get_height(s_name_x)/2,
+                s_name_coords[2]
+            ])
+
+            s_name_y.move_to([
+                s_dot.get_center()[0] + s_name_first_length/2 - self.get_len(s_name_close_brace) - self.get_len(s_name_y)/2 + fraction_offset,
+                s_name_coords[1] - self.get_height(s_name)/2 + self.get_height(s_name_y)/2,
+                s_name_coords[2]
+            ])
+
+            s_name_second_group = VGroup(s_name, s_name_open_brace, s_name_x, s_name_coma, s_name_y, s_name_close_brace)
+            s_name_second_group.set_z_index(4)
+
+            s_name_rectangle = q_name_rectangle.copy()
+            s_name_rectangle.set_z_index(3)
+
+            removal_group = VGroup( # Used for the explanation of S
+                p_name_second_group,
+                p_name_rectangle,
+                q_name_second_group,
+                q_name_rectangle,
+                r_name_second_group,
+                r_name_rectangle,
+                p_dot,
+                q_prime_label,
+                r_prime_label,
+                equals_text,
+                lower_angle,
+                upper_angle,
+                little_r_name,
+                little_q_name,
+                projection_r,
+                projection_q,
+                q_dot,
+                r_dot,
+                right_angle_q,
+                right_angle_r
+            )
+            removed_group = VGroup(
+                r_prime_text,
+                q_prime_text,
+                r_fraction_text,
+                q_fraction_text,
+                r_q_fraction_line,
+                r_prime_q_fraction_line,
+            )
+            active_mobjects_group = VGroup(
+                little_r_name,
+                little_q_name,
+                projection_r,
+                projection_q,
+                right_angle_r,
+                right_angle_q,
+            )
+
+            # Equation for S:
+            b_equation_b = Tex(r"$\boldsymbol{b}$", font_size=11)
+            b_equation_equals = Tex(r"$\boldsymbol{=}$", font_size=11)
+            b_equation_m = Tex(r"$\boldsymbol{m}$", font_size=11)
+            b_equation_a = Tex(r"$\boldsymbol{a}$", font_size=11)
+
+            b_equation_m_m = Tex(r"$\boldsymbol{m}$", font_size=11)
+            b_equation_m_equals = Tex(r"$\boldsymbol{=}$", font_size=11)
+            b_equation_delta = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}}$", font_size=14)
+
+            b_equation_times = Tex(r"$\boldsymbol{\times}$", font_size=11)
+            
+            b_equation_question = s_name_question_y.copy()
+            b_equation_a1 = s_name_x.copy()
+
+            b_equation_open_brace = Tex(r"$\boldsymbol{(}$", font_size=11)
+            b_equation_close_brace = Tex(r"$\boldsymbol{)}$", font_size=11)
+
+            b_equation_start_coords = plane.c2p(3.5, 1.6)
+            b_equation_equals.move_to(b_equation_start_coords)
+            
+            b_equation_b.next_to(b_equation_equals, LEFT, buff=fraction_offset/2)
+            b_equation_m.next_to(b_equation_equals, RIGHT, buff=fraction_offset/2)
+            b_equation_a.next_to(b_equation_m, RIGHT, buff=0)
+
+            b_equation_m_equals.next_to(b_equation_equals, DOWN, buff=5/2*fraction_offset)
+            b_equation_m_m.next_to(b_equation_m_equals, LEFT, buff=fraction_offset/2)
+            b_equation_delta.next_to(b_equation_m_equals, RIGHT, buff=fraction_offset/2)
+
+            b_equation_times.move_to([
+                b_equation_equals.get_right()[0] + fraction_offset + get_len(b_equation_delta) + get_len(b_equation_times)/2,
+                b_equation_start_coords[1], b_equation_start_coords[2]
+            ])
+        
+            # Square for the last step:
+            b_equation_rectangle = Rectangle(height=get_height(b_equation_delta), width=get_len(b_equation_a1), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            b_equation_rectangle.set_z_index(3)
+            
+            b_equation = VGroup(b_equation_b, b_equation_equals, b_equation_m, b_equation_a, b_equation_m_m, b_equation_m_equals, b_equation_delta)
+
+            b_second_equation = VGroup(b_equation_b, b_equation_equals, b_equation_delta, b_equation_times, b_equation_a)
+
+            b_third_equation = VGroup(b_equation_delta, b_equation_times, b_equation_open_brace, b_equation_a1, b_equation_close_brace)
+            b_third_equation.set_z_index(4)
+            
+            
 
             #                                                                       ANIMATIONS
             self.next_section(skip_animations=True)
@@ -1297,6 +1497,16 @@ class SecondScene(MovingCameraScene):
                 rq_difference_nabla.animate.next_to(rq_difference_equals, LEFT, buff=0.05),
                 rq_difference_label.animate.next_to(rq_difference_equals, RIGHT, buff=0.05),
             )
+            '''
+            Note: the movements in the following self.play() are heavily based on the ideas explained previously in the code regarding
+            the animation of coordinates that comes a bit later in the animation.
+            Here the movements are also based on an anchor, only now this anchor is the curly brace. For example, for the '>=' sign the instructions look something like this:
+
+            {                           nabla                                           >= 0 -> diagonally
+            |fraction_offset/2 ->|length(nabla) ->|fraction_offset/2 ->|length('>=')/2 ->|
+            
+            It is important to note, however, that only the x-coordinate (or a-coordinate, doesn't really matter in this context) changes in such a way, the y and the z are not changed.
+            '''
             self.play(
                 rq_difference_label.animate.move_to([
                     rq_difference_label.get_center()[0],
@@ -1512,6 +1722,7 @@ class SecondScene(MovingCameraScene):
                 rq_nabla_group.animate.shift(shift_value * LEFT),
                 if_nabla_move_group.animate.shift(shift_value * LEFT),
             )
+            # P(???, ???), Q(???, ???), R(???, ???):
             self.play(
                 p_name.animate.move_to(p_name_coords),
                 q_name.animate.move_to(q_name_coords),
@@ -1524,6 +1735,7 @@ class SecondScene(MovingCameraScene):
                 Create(r_name_rectangle)
             )
             self.wait()
+            # P(a1, b1), Q(???, ???), R(???, ???):
             self.play(
                 FadeOut(p_name_question_x),
                 FadeOut(p_name_question_y),
@@ -1548,7 +1760,19 @@ class SecondScene(MovingCameraScene):
                 ]),
             )
             self.wait(1)
+            # Arrow for clarifying script:
+            self.play(Create(p_r_arrow), Write(p_r_arrow_label))
+            p_r_arrow_label.add_updater(lambda label: label.next_to(p_r_arrow, UP, buff=0.00625))
             self.play(
+                p_r_arrow.animate.move_to([p_r_arrow.get_center()[0], q_dot.get_center()[1], p_r_arrow.get_center()[2]])
+            )
+            p_r_arrow_label.clear_updaters()
+            self.play(Uncreate(p_r_arrow), FadeOut(p_r_arrow_label))
+            self.wait(1)
+
+            # P(a1, b1), Q(a1+1, ???), R(a1+1, ???):
+            self.play(
+                # Q:
                 Write(q_name_x),
                 FadeOut(q_name_question_x),
                 q_name.animate.move_to([
@@ -1572,7 +1796,7 @@ class SecondScene(MovingCameraScene):
                     q_dot.get_center()[0] + q_name_first_length/2 - self.get_len(q_name_close_brace) - fraction_offset/2 - self.get_len(q_name_question_y)/2,
                     q_name_question_y.get_center()[1], q_name_question_y.get_center()[2]
                 ]),
-
+                # R:
                 Write(r_name_x),
                 FadeOut(r_name_question_x),
                 r_name.animate.move_to([
@@ -1598,7 +1822,9 @@ class SecondScene(MovingCameraScene):
                 ]),
             )
             self.wait(1)
+            # P(a1, b1), Q(a1+1, b1+1), R(a1+1, b1):
             self.play(
+                # Q:
                 Write(q_name_y),
                 FadeOut(q_name_question_y),
                 q_name.animate.move_to([
@@ -1622,7 +1848,7 @@ class SecondScene(MovingCameraScene):
                     q_dot.get_center()[0] - q_name_second_length/2 + self.get_len(q_name_open_brace) + self.get_len(q_name) + self.get_len(q_name_x)/2 + fraction_offset,
                     q_name_x.get_center()[1], q_name_x.get_center()[2]
                 ]),
-
+                # R:
                 Write(r_name_y),
                 FadeOut(r_name_question_y),
                 r_name.animate.move_to([
@@ -1647,6 +1873,101 @@ class SecondScene(MovingCameraScene):
                     r_name_x.get_center()[1], r_name_x.get_center()[2]
                 ]),
             )
+            self.next_section()
+            self.wait(1)
+            # S(???, ???):
+            self.play(FadeIn(s_name_group))
+            self.wait(1)
+            '''
+            Similar thing happening here as with other points, but here the anchor is s_name, which means that open_brace is also called as an anchor,
+            as well as s_name_x because both of the mobjects don't move after they have been called
+            '''
+            # S(a1+1, ???):
+            self.play(
+                FadeOut(s_name_question_x),
+                Write(s_name_x),
+                s_name_coma.animate.move_to([
+                    s_name_x.get_right()[0] + fraction_offset/2 + get_len(s_name_coma)/2,
+                    s_name_coma.get_center()[1], s_name_coma.get_center()[2]
+                ]),
+                s_name_question_y.animate.move_to([
+                    s_name_x.get_right()[0] + 2*fraction_offset + get_len(s_name_coma) + get_len(s_name_question_y)/2,
+                    s_name_question_y.get_center()[1], s_name_question_y.get_center()[2] 
+                ]),
+                s_name_close_brace.animate.move_to([
+                    s_name_x.get_right()[0] + 2.5*fraction_offset + get_len(s_name_coma) + get_len(s_name_question_y) + get_len(s_name_close_brace)/2,
+                    s_name_close_brace.get_center()[1], s_name_close_brace.get_center()[2]
+                ])
+            )
+            # Removing the clutter on the screen for the explanation:
+            active_mobjects_group.clear_updaters()
+            animation_group = removal_group.copy()
+            self.camera.frame.save_state()
+            self.play(FadeOut(removal_group), FadeOut(removed_group))
+            self.wait(1)
+            self.play(self.camera.frame.animate.shift(RIGHT * 1.45))
+            self.play(Write(b_equation))
+            # First transform:
+            self.play(
+                FadeOut(b_equation_m),
+                b_equation_delta.animate.next_to(b_equation_equals, buff=fraction_offset/2),
+                FadeOut(b_equation_m_m),
+                FadeOut(b_equation_m_equals),
+                FadeIn(b_equation_times),
+                b_equation_a.animate.next_to(b_equation_times, buff=fraction_offset/2)
+            )
+            self.play(b_second_equation.animate.move_to([b_equation_start_coords]))
+            self.wait(1)
+            # Parameters for wiggle:
+            scaling_value = 1.5
+            number_wiggles = 15
+            angle_wiggle = 0.25
+            wiggle_runtime = 3
+            # First wiggle:
+            self.play(
+                Wiggle(b_equation_a, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime),
+                Wiggle(s_name_x, scale_value=scaling_value-0.25, n_wiggles=number_wiggles, rotation_angle=angle_wiggle-0.2, run_time=wiggle_runtime)
+            )
+            self.wait(1)
+            # Second wiggle:
+            self.play(
+                Wiggle(b_equation_b, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime),
+                Wiggle(s_name_question_y, scale_value=scaling_value-0.25, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime)
+            )
+            self.wait(1)
+            # Second transform:
+            b_equation_question.move_to(s_name_question_y.get_center())
+            b_equation_open_brace.next_to(b_equation_times, RIGHT, buff=fraction_offset/2)
+            b_equation_close_brace.next_to(b_equation_open_brace, RIGHT, buff= fraction_offset + get_len(b_equation_a1))
+            b_equation_rectangle.next_to(b_equation_open_brace, RIGHT, buff= fraction_offset + get_len(b_equation_a1)/2)
+            self.add(b_equation_question, b_equation_a1)
+            self.play(
+                FadeOut(b_equation_b),
+                b_equation_question.animate.next_to(b_equation_equals, LEFT, buff=fraction_offset/2),
+                FadeOut(b_equation_a),
+                b_equation_a1.animate.next_to(b_equation_open_brace, RIGHT, buff=fraction_offset/2),
+                Write(b_equation_open_brace),
+                Write(b_equation_close_brace),
+                FadeIn(b_equation_rectangle)
+            )
+            self.wait(1)
+            # S (a1+1, deltaB/deltaA*(a1+1)):
+            s_name_rectangle.next_to(s_name_x, RIGHT)
+            self.play(
+                FadeOut(b_equation_equals),
+                FadeOut(b_equation_question),
+                FadeOut(s_name_question_y),
+                FadeOut(b_equation_rectangle),
+                b_third_equation.animate.next_to(s_name_x, RIGHT, buff = get_len(s_name_coma) + 2*fraction_offset),
+                s_name_close_brace.animate.next_to(s_name_x, RIGHT, buff = get_len(s_name_coma) + get_len(b_third_equation) + 2.5*fraction_offset),
+                FadeIn(s_name_rectangle)
+            )
+            self.wait(1)
+            # Restoring everything back to 'normal' - even though the mobjects in animation_group are not responding anymore :(
+            self.play(Restore(self.camera.frame))
+            self.play(FadeIn(animation_group))
+            self.wait(1)
+            self.play(self.camera.frame.animate.shift(DOWN * 5))
             self.wait(3)
 
 
@@ -1697,8 +2018,6 @@ class FifthScene(MovingCameraScene):
         r_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
         r_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
         r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=0.25)
-
-
 
 
         #Animation sextion
