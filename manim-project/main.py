@@ -3,6 +3,7 @@ from manim import *
 import numpy as np
 
 fraction_offset = 0.05
+transition_scene_4_5 = VGroup()
 
 def get_len(mobject):
             return (mobject.get_right()[0] - mobject.get_left()[0])
@@ -1157,15 +1158,6 @@ class SecondScene(MovingCameraScene):
                 s_name_coords[2]
             ])
 
-            s_name_y.move_to([
-                s_dot.get_center()[0] + s_name_first_length/2 - get_len(s_name_close_brace) - get_len(s_name_y)/2 + fraction_offset,
-                s_name_coords[1] - get_height(s_name)/2 + get_height(s_name_y)/2,
-                s_name_coords[2]
-            ])
-
-            s_name_second_group = VGroup(s_name, s_name_open_brace, s_name_x, s_name_coma, s_name_y, s_name_close_brace)
-            s_name_second_group.set_z_index(4)
-
             s_name_rectangle = q_name_rectangle.copy()
             s_name_rectangle.set_z_index(3)
 
@@ -1177,8 +1169,6 @@ class SecondScene(MovingCameraScene):
                 r_name_second_group,
                 r_name_rectangle,
                 p_dot,
-                q_prime_label,
-                r_prime_label,
                 lower_angle,
                 upper_angle,
                 little_r_name,
@@ -1206,6 +1196,10 @@ class SecondScene(MovingCameraScene):
                 projection_q,
                 right_angle_r,
                 right_angle_q,
+            )
+            returning_mobjects_group = VGroup(
+                q_prime_label,
+                r_prime_label,
             )
 
             # Equation for S:
@@ -1245,18 +1239,92 @@ class SecondScene(MovingCameraScene):
             # Square for the last step:
             b_equation_rectangle = Rectangle(height=get_height(b_equation_delta), width=get_len(b_equation_a1), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
             b_equation_rectangle.set_z_index(3)
-            
+
+            # Groups:
             b_equation = VGroup(b_equation_b, b_equation_equals, b_equation_m, b_equation_a, b_equation_m_m, b_equation_m_equals, b_equation_delta)
 
             b_second_equation = VGroup(b_equation_b, b_equation_equals, b_equation_delta, b_equation_times, b_equation_a)
 
             b_third_equation = VGroup(b_equation_delta, b_equation_times, b_equation_open_brace, b_equation_a1, b_equation_close_brace)
             b_third_equation.set_z_index(4)
+
+            s_name_second_group = VGroup(s_name, s_name_open_brace, s_name_x, s_name_coma, b_third_equation, s_name_close_brace)
+            s_name_second_group.set_z_index(4)
             
+            # Braces for the last part of Scene 4:
+            q_prime_brace = BraceBetweenPoints(q_dot.get_center(), s_dot.get_center(), buff=get_len(q_dot)/2, sharpness=2.0)
+            q_prime_brace.width = 0.1
+            q_prime_brace.stretch_to_fit_height(q_dot.get_center()[1] - s_dot.get_center()[1])
+            q_prime_brace.move_to([q_dot.get_left()[0] - get_len(q_prime_brace)/2, q_prime_brace.get_center()[1], q_prime_brace.get_center()[2]])
+            q_prime_brace.set_z_index(3)
+
+            r_prime_brace = BraceBetweenPoints(s_dot.get_center(), r_dot.get_center(), buff=get_len(r_dot)/2, sharpness=2.0, direction=[1.0, 0.0, 0.0])
+            r_prime_brace.width = 0.1
+            r_prime_brace.stretch_to_fit_height(s_dot.get_center()[1] - r_dot.get_center()[1])
+            r_prime_brace.move_to([r_dot.get_right()[0] + get_len(r_prime_brace)/2, r_prime_brace.get_center()[1], r_prime_brace.get_center()[2]])
+            r_prime_brace.set_z_index(3)
             
+            # Equations for the last part of Scene 4:
+            q_prime_equation = Tex(r"$\boldsymbol{=Q_{vertical}-S_{vertical}}$", font_size=11)
+            q_prime_brace.put_at_tip(q_prime_equation, buff=fraction_offset)
+            q_prime_equation.shift([0, -0.01, 0])
+            q_prime_equation.set_z_index(4)
+
+            q_prime_equation_rectangle = Rectangle(width=get_len(q_prime_equation), height=get_height(q_prime_equation), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            q_prime_equation_rectangle.move_to(q_prime_equation.get_center())
+            q_prime_equation_rectangle.set_z_index(3)
+            
+            r_prime_equation = Tex(r"$\boldsymbol{=S_{vertical}-R_{vertical}}$", font_size=11)
+            r_prime_equation.next_to(r_prime_label, RIGHT, buff=fraction_offset + get_len(r_prime_label))
+            r_prime_equation.shift([0, -0.01, 0])
+            r_prime_equation.set_z_index(4)
+
+            r_prime_equation_rectangle = Rectangle(width=get_len(r_prime_equation), height=get_height(r_prime_equation), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
+            r_prime_equation_rectangle.move_to(r_prime_equation.get_center())
+            r_prime_equation_rectangle.set_z_index(3)
+
+            # Transitioning into Scene 5:
+            text_size=42
+            # Q:
+            q_second_prime = Tex(r"$\boldsymbol{q' =}$", font_size = text_size)
+            q_second_prime_before_minus = Tex(r"$\boldsymbol{b_1 + 1}$", font_size = text_size)
+            q_second_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+            q_second_prime_after_minus = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
+            q_second_prime_equation = VGroup(q_second_prime, q_second_prime_before_minus, q_second_prime_minus, q_second_prime_after_minus).arrange(RIGHT, buff=0.25)
+            q_second_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_second_prime_equation), 0])
+    
+    
+            #curly brackets <3 (q)
+            q_second_prime_bracket_down = Brace(q_second_prime_before_minus, sharpness=1.0, color = BLUE)
+            q_second_prime_bottom_text = Tex(r"$\textbf{Q vertical coordinate}$", font_size = text_size, color = BLUE)
+    
+            q_second_prime_bracket_up = Brace(q_second_prime_after_minus, sharpness=1.0, color = GREEN).rotate(PI)
+            q_second_prime_up_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
+
+            # R:
+            r_second_prime = Tex(r"$\boldsymbol{r' =}$", font_size = text_size)
+            r_second_prime_before_minus = q_second_prime_after_minus.copy()
+            r_second_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
+            r_second_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
+            r_second_prime_equation = VGroup(r_second_prime, r_second_prime_before_minus, r_second_prime_minus, r_second_prime_after_minus).arrange(RIGHT, buff=0.25)
+            
+            #curly brackets <3 (r)
+            r_second_prime_bracket_down = Brace(r_second_prime_before_minus, sharpness=1.0, color = GREEN)
+            r_second_prime_bottom_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
+    
+            r_second_prime_bracket_up = Brace(r_second_prime_after_minus, sharpness=1.0, color = RED).rotate(PI)
+            r_second_prime_up_text = Tex(r"$\textbf{R vertical coordinate}$", font_size = text_size, color = RED)
+
+            # Squares for intro to Scene 5:
+            q_coord_rectangle = Rectangle(width=get_len(q_name_y) + fraction_offset, height=get_height(q_name_y) + fraction_offset, color=BLUE, stroke_width=3)
+            q_coord_rectangle.set_z_index(3)
+            s_coord_rectangle = Rectangle(width=get_len(b_third_equation) + fraction_offset/2, height=get_height(b_third_equation) + fraction_offset/2, color=GREEN, stroke_width=3)
+            s_coord_rectangle.set_z_index(3)
+            r_coord_rectangle = Rectangle(width=get_len(r_name_y) + fraction_offset/2, height=get_height(r_name_y) + fraction_offset/2, color=RED, stroke_width=3)
+            r_coord_rectangle.set_z_index(3)
 
             #                                                                       ANIMATIONS
-            # self.next_section(skip_animations=True)
+            self.next_section()
             #Animation_Square
             self.play(Create(square))
             self.wait(2)
@@ -1360,7 +1428,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(d1d2_original_line), run_time=2)
             self.wait(3)
 
-            # self.next_section(skip_animations=True)
+            self.next_section()
 
             #                                                                  Third Scene                                                                                    #
 
@@ -1443,7 +1511,7 @@ class SecondScene(MovingCameraScene):
             self.play(Create(right_angle_q), Create(right_angle_r))
             self.play(Write(little_q_name), Write(little_r_name))
 
-            # self.next_section(skip_animations=True)
+            self.next_section()
 
             #r-q:
             self.play(self.camera.frame.animate.shift(RIGHT * 1.2), runtime = 0.7)
@@ -1485,7 +1553,7 @@ class SecondScene(MovingCameraScene):
                 ReplacementTransform(if_r_less_q_rq, if_r_less_q_nabla),
                 Uncreate(rq_difference_value)
             )
-            # self.next_section(skip_animations=True)
+            self.next_section()
             self.play(
                 Write(rq_difference_nabla),
                 if_r_greater_q_sign_change.animate.next_to(if_r_greater_q_nabla, buff=0.05),
@@ -1604,7 +1672,7 @@ class SecondScene(MovingCameraScene):
                 Uncreate(unnecessary_bigger_angle_left),
                 runtime = 0.5
             )
-            # self.next_section(skip_animations=True)
+            self.next_section()
 
             self.play(Write(angle_label_group))
             self.wait(1)
@@ -1901,9 +1969,8 @@ class SecondScene(MovingCameraScene):
             )
             # Removing the clutter on the screen for the explanation:
             active_mobjects_group.clear_updaters()
-            animation_group = removal_group.copy()
             self.camera.frame.save_state()
-            self.play(FadeOut(removal_group), FadeOut(removed_group))
+            self.play(FadeOut(removal_group), FadeOut(removed_group), returning_mobjects_group.animate.set_opacity(0.0))
             self.wait(1)
             self.play(self.camera.frame.animate.shift(RIGHT * 1.45))
             self.play(Write(b_equation))
@@ -1962,12 +2029,196 @@ class SecondScene(MovingCameraScene):
                 s_name_close_brace.animate.next_to(s_name_x, RIGHT, buff = get_len(s_name_coma) + get_len(b_third_equation) + 2.5*fraction_offset),
                 FadeIn(s_name_rectangle)
             )
+            self.next_section()
             self.wait(1)
             # Restoring everything back to 'normal' - even though the mobjects in animation_group are not responding anymore :(
             self.play(Restore(self.camera.frame))
-            self.play(FadeIn(animation_group))
+            self.play(FadeIn(removal_group), returning_mobjects_group.animate.set_opacity(1.0))
             self.wait(1)
-            self.play(self.camera.frame.animate.shift(DOWN * 5))
+            self.play(
+                FadeIn(q_prime_brace),
+                FadeIn(r_prime_brace),
+                r_prime_label.animate.shift([(get_len(r_prime_brace) + fraction_offset/2), 0, 0]),
+                q_prime_label.animate.shift([-(get_len(q_prime_brace) + fraction_offset), 0, 0])
+            )
+            self.wait(1)
+            self.play(
+                q_prime_label.animate.shift([-(get_len(q_prime_equation) + fraction_offset/2), 0, 0]),
+                Write(r_prime_equation),
+                Create(r_prime_equation_rectangle, run_time=2.0),
+                Write(q_prime_equation),
+                Create(q_prime_equation_rectangle, run_time=2.0)
+            )
+            self.wait(1)
+            # Copies for transitioning into Scene 5:
+            p_name_second_group_copy = p_name_second_group.copy()
+            p_name_rectangle_copy = p_name_rectangle.copy()
+            q_name_second_group_copy = q_name_second_group.copy() 
+            q_name_rectangle_copy = q_name_rectangle.copy()
+            r_name_second_group_copy = r_name_second_group.copy()
+            r_name_rectangle_copy = r_name_rectangle.copy()
+            s_name_second_group_copy = s_name_second_group.copy()
+            s_name_rectangle_copy = s_name_rectangle.copy()
+            s_name_rectangle_copy.height = get_height(b_third_equation) + fraction_offset/2
+            s_name_rectangle_copy.stretch_to_fit_width(get_len(s_name_second_group) + fraction_offset)
+
+            name_copies = VGroup(p_name_second_group_copy,
+                p_name_rectangle_copy,
+                q_name_second_group_copy,
+                q_name_rectangle_copy,
+                r_name_second_group_copy,
+                r_name_rectangle_copy,
+                s_name_second_group_copy,
+                s_name_rectangle_copy,
+            )
+
+            # Here the anchor is the top right corner of the camera viewport
+            self.play(
+                p_name_second_group_copy.animate.move_to([
+                    self.camera.frame.get_right()[0] - get_len(p_name_second_group)/2 - fraction_offset/2,
+                    self.camera.frame.get_top()[1] - get_height(p_name_second_group)/2 - fraction_offset/2,
+                    p_name_second_group_copy.get_center()[2]
+                ]),
+                p_name_rectangle_copy.animate.move_to([
+                    plane.c2p(3, 0)[0] + get_len(p_name_rectangle_copy)/2 - fraction_offset, # Band-aid fix 
+                    self.camera.frame.get_top()[1] - get_height(p_name_second_group)/2 - fraction_offset/2,
+                    p_name_rectangle_copy.get_center()[2]
+                ]),
+                q_name_second_group_copy.animate.move_to([
+                    self.camera.frame.get_right()[0] - get_len(q_name_second_group_copy)/2 - fraction_offset/2,
+                    self.camera.frame.get_top()[1] - fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group)/2,
+                    q_name_second_group_copy.get_center()[2]
+                ]),
+                q_name_rectangle_copy.animate.move_to([
+                    plane.c2p(3, 0)[0] + get_len(q_name_rectangle_copy)/2 - fraction_offset,
+                    self.camera.frame.get_top()[1] - fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group)/2,
+                    q_name_rectangle_copy.get_center()[2]
+                ]),
+                r_name_second_group_copy.animate.move_to([
+                    self.camera.frame.get_right()[0] - get_len(r_name_second_group_copy)/2 - fraction_offset/2,
+                    self.camera.frame.get_top()[1] - 3/2*fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group) - get_height(r_name_second_group)/2,
+                    r_name_second_group_copy.get_center()[2]
+                ]),
+                r_name_rectangle_copy.animate.move_to([
+                    plane.c2p(3, 0)[0] + get_len(r_name_rectangle_copy)/2 - fraction_offset,
+                    self.camera.frame.get_top()[1] - 3/2*fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group) - get_height(r_name_second_group)/2,
+                    r_name_rectangle_copy.get_center()[2]
+                ]),
+                s_name_second_group_copy.animate.move_to([
+                    self.camera.frame.get_right()[0] - get_len(s_name_second_group_copy)/2 - fraction_offset/2,
+                    self.camera.frame.get_top()[1] - 2*fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group) - get_height(r_name_second_group) - get_height(s_name_second_group)/2,
+                    s_name_second_group_copy.get_center()[2]
+                ]),
+                s_name_rectangle_copy.animate.move_to([
+                    self.camera.frame.get_right()[0] - get_len(s_name_second_group_copy)/2 - fraction_offset/2,
+                    self.camera.frame.get_top()[1] - 2*fraction_offset - get_height(p_name_second_group) - get_height(q_name_second_group) - get_height(r_name_second_group) - get_height(s_name_second_group)/2,
+                    s_name_rectangle_copy.get_center()[2]
+                ]),
+                FadeOut(b_equation_1),
+                FadeOut(b_equation_2),
+            )
+            self.next_section()
+            self.wait(1)
+            shift_value = DOWN * 10
+            self.play(
+                self.camera.frame.animate.shift(shift_value),
+                name_copies.animate.shift(shift_value)
+            )
+            self.remove(p_name_rectangle_copy)
+            self.remove(q_name_rectangle_copy)
+            self.remove(r_name_rectangle_copy)
+            self.remove(s_name_rectangle_copy)
+            name_copies -= [p_name_rectangle_copy, q_name_rectangle_copy, r_name_rectangle_copy, s_name_rectangle_copy]
+            scale_value = 3.8
+            self.play(
+                self.camera.frame.animate.scale(scale_value),
+                name_copies.animate.scale(scale_value)
+            )
+            self.play(name_copies.animate.move_to([
+                self.camera.frame.get_right()[0] - get_len(name_copies)/2,
+                self.camera.frame.get_top()[1] - get_height(name_copies)/2 - 5/4*fraction_offset,
+                name_copies.get_center()[2]
+            ]))
+            # Start of Scene 5:
+            # q:
+            self.next_section()
+            self.wait()
+            q_second_prime_equation.move_to(self.camera.frame.get_center())
+            self.play(Write(q_second_prime_equation))
+            self.wait(1)
+            self.play(FadeToColor(q_second_prime_before_minus, BLUE))
+            self.wait(0.5)
+            # Lower bracket:
+            q_coord_rectangle.move_to([q_name_second_group_copy.get_right()[0] - (get_len(q_name_y)/2 + get_len(q_name_close_brace) + fraction_offset/2)*scale_value, q_name_second_group_copy.get_center()[1], q_name_second_group_copy.get_center()[2]])
+            q_coord_rectangle.scale(scale_value)
+            self.play(Write(q_second_prime_bracket_down.next_to(q_second_prime_before_minus, DOWN, buff=0.1)))
+            self.play(Write(q_second_prime_bottom_text.next_to(q_second_prime_bracket_down, DOWN, buff=0.2)), Create(q_coord_rectangle))
+            self.wait(1)
+            s_coord_rectangle.move_to([s_name_second_group_copy.get_right()[0] - (get_len(b_third_equation)/2 + get_len(s_name_close_brace) + fraction_offset/2)*scale_value, s_name_second_group_copy.get_center()[1], s_name_second_group_copy.get_center()[2]])
+            s_coord_rectangle.stretch_to_fit_width(get_len(s_coord_rectangle)*1.8)
+            s_coord_rectangle.stretch_to_fit_height(get_height(s_coord_rectangle)*1.1)
+            # Upper Bracket:
+            self.play(FadeToColor(q_second_prime_after_minus, GREEN))
+            self.play(
+                Write(q_second_prime_bracket_up.next_to(q_second_prime_after_minus, UP, buff=0.1), runtime = 1.3),
+                Write(q_second_prime_up_text.next_to(q_second_prime_bracket_up, UP, buff=0.2)),
+                Create(s_coord_rectangle)
+            )
+            self.wait(1)
+            # Moving q to the top left corner:
+            self.play(
+                FadeOut(q_coord_rectangle),
+                s_coord_rectangle.animate.set_opacity(0.0),
+                Unwrite(q_second_prime_bracket_down),
+                Unwrite(q_second_prime_bottom_text),
+                Unwrite(q_second_prime_bracket_up),
+                Unwrite(q_second_prime_up_text),
+                q_second_prime_equation.animate.move_to([
+                    self.camera.frame.get_left()[0] + get_len(q_second_prime_equation)/2 + fraction_offset,
+                    self.camera.frame.get_top()[1] - get_height(q_second_prime_equation)/2 - fraction_offset,
+                    q_second_prime_equation.get_center()[2]
+                ])
+            )
+            # R:
+            # Lower bracket:
+            self.play(
+                Write(r_second_prime_equation.move_to(self.camera.frame.get_center())),
+                FadeToColor(q_second_prime_before_minus, WHITE), FadeToColor(q_second_prime_after_minus, WHITE), 
+            )
+            self.wait(1)
+            self.play(FadeToColor(r_second_prime_before_minus, GREEN))
+            self.wait(0.5)
+            self.play(
+                Write(r_second_prime_bracket_down.next_to(r_second_prime_before_minus, DOWN, buff=0.1), runtime = 1.3),
+                Write(r_second_prime_bottom_text.next_to(r_second_prime_bracket_down, DOWN, buff=0.2)),
+                s_coord_rectangle.animate.set_stroke(GREEN, opacity=1.0)
+            )
+            # Upper bracket:
+            self.wait(1)
+            r_coord_rectangle.move_to([r_name_second_group_copy.get_right()[0] - (get_len(r_name_y)/2 + get_len(r_name_close_brace))*scale_value, r_name_second_group_copy.get_center()[1], r_name_second_group_copy.get_center()[2]])
+            r_coord_rectangle.scale(scale_value)
+            self.play(FadeToColor(r_second_prime_after_minus, RED))
+            self.play(
+                Write(r_second_prime_bracket_up.next_to(r_second_prime_after_minus, UP, buff=0.1), runtime = 1.3),
+                Write(r_second_prime_up_text.next_to(r_second_prime_bracket_up, UP, buff=0.2)),
+                Create(r_coord_rectangle)
+            )
+            # Moving r to the top left corner:
+            self.play(
+                Uncreate(r_coord_rectangle),
+                Uncreate(s_coord_rectangle),
+                Unwrite(r_second_prime_bracket_down),
+                Unwrite(r_second_prime_bottom_text),
+                Unwrite(r_second_prime_bracket_up),
+                Unwrite(r_second_prime_up_text),
+                r_second_prime_equation.animate.move_to([
+                    self.camera.frame.get_left()[0] + get_len(r_second_prime_equation)/2 + fraction_offset,
+                    self.camera.frame.get_top()[1] - get_height(q_second_prime_equation) - get_height(r_second_prime_equation)/2 - 3/2*fraction_offset,
+                    r_second_prime_equation.get_center()[2]
+                ]),
+            )
+            self.play(FadeToColor(r_second_prime_before_minus, WHITE), FadeToColor(r_second_prime_after_minus, WHITE), Uncreate(name_copies))
+            self.play(FadeOut(r_second_prime_equation), FadeOut(q_second_prime_equation))
             self.wait(3)
 
 
@@ -1982,12 +2233,6 @@ class SecondScene(MovingCameraScene):
                 return start_coords[1]
             t = (x_value - start_coords[0]) / (end_coords[0] - start_coords[0])
             return (1 - t) * start_coords[1] + t * end_coords[1]
-
-        def get_len(self, mobject):
-            return (mobject.get_right()[0] - mobject.get_left()[0])
-
-        def get_height(self, mobject):
-            return (mobject.get_top()[1] - mobject.get_bottom()[1])
 
 
 class FifthScene(MovingCameraScene):
@@ -2022,10 +2267,7 @@ class FifthScene(MovingCameraScene):
 
         #Animation sextion
 
-        #self.camera.frame.scale(0.4)
-
-
-
+        # self.camera.frame.scale(0.4) <- Not used
         self.play(Write(q_prime_equation))
         self.wait(1)
         #self.play(Write(r_prime_equation))
@@ -2046,5 +2288,21 @@ class FifthScene(MovingCameraScene):
             Write(q_prime_bracket_up.next_to(q_prime_after_minus, UP, buff=0.1), runtime = 1.3),
             Write(q_prime_up_text.next_to(q_prime_bracket_up, UP, buff=0.2))
         )
+        
+        '''
+        q_prime_equation.move_to([
+            self.camera.frame.get_left()[0] + get_len(q_prime_equation)/2,
+            self.camera.frame.get_top()[1] - get_height(q_prime_equation)/2,
+            q_prime_equation.get_center()[2]
+        ])
+        r_prime_equation.move_to([
+            self.camera.frame.get_left()[0] + get_len(r_prime_equation)/2,
+            self.camera.frame.get_top()[1] - get_height(q_prime_equation) - get_height(r_prime_equation)/2,
+            r_prime_equation.get_center()[2]
+        ])
+
+        self.add(r_prime_equation)
+        self.add(q_prime_equation)
+        '''
 
         self.wait(3)
