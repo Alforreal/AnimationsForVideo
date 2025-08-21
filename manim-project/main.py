@@ -2218,7 +2218,7 @@ class SecondScene(MovingCameraScene):
                 ]),
             )
             self.play(FadeToColor(r_second_prime_before_minus, WHITE), FadeToColor(r_second_prime_after_minus, WHITE), Uncreate(name_copies))
-            self.play(FadeOut(r_second_prime_equation), FadeOut(q_second_prime_equation))
+            # self.play(FadeOut(r_second_prime_equation), FadeOut(q_second_prime_equation))
             self.wait(3)
 
 
@@ -2237,8 +2237,8 @@ class SecondScene(MovingCameraScene):
 
 class FifthScene(MovingCameraScene):
     def construct(self):
-        text_size = 42
-
+        text_size = 44
+        text_buff = 0.25
 
         #q_prime_equation = Tex(r"$\boldsymbol{q' = b_1 + 1 - \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
 
@@ -2246,27 +2246,144 @@ class FifthScene(MovingCameraScene):
         q_prime_before_minus = Tex(r"$\boldsymbol{b_1 + 1}$", font_size = text_size)
         q_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
         q_prime_after_minus = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
-        q_prime_equation = VGroup(q_prime, q_prime_before_minus, q_prime_minus, q_prime_after_minus).arrange(RIGHT, buff=0.25)
-        q_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_prime_equation), 0])
-
-
+        q_prime_equation = VGroup(q_prime, q_prime_before_minus, q_prime_minus, q_prime_after_minus).arrange(RIGHT, buff=text_buff)
+        # q_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_prime_equation), 0])
+    
         #curly brackets <3
-
+        '''
         q_prime_bracket_down = Brace(q_prime_before_minus, sharpness=1.0, color = BLUE)
         q_prime_bottom_text = Tex(r"$\textbf{Q vertical coordinate}$", font_size = text_size, color = BLUE)
 
         q_prime_bracket_up = Brace(q_prime_after_minus, sharpness=1.0, color = GREEN).rotate(PI)
         q_prime_up_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
+        '''
 
-        r_prime_before_minus = q_prime_after_minus.copy()
+        # R:
         r_prime = Tex(r"$\boldsymbol{r' =}$", font_size = text_size)
+        r_prime_before_minus = q_prime_after_minus.copy()
         r_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
         r_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
-        r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=0.25)
+        r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=text_buff)
+
+        # Moving q and r to the top right of the screen
+        q_prime_equation.move_to([
+            self.camera.frame.get_left()[0] + get_len(q_prime_equation)/2 + fraction_offset,
+            self.camera.frame.get_top()[1] - get_height(q_prime_equation)/2,
+            q_prime_equation.get_center()[2]
+        ])
+        r_prime_equation.move_to([
+            self.camera.frame.get_left()[0] + get_len(r_prime_equation)/2,
+            self.camera.frame.get_top()[1] - get_height(q_prime_equation) - get_height(r_prime_equation)/2,
+            r_prime_equation.get_center()[2]
+        ])
+
+        prime_equations = VGroup(r_prime_equation, q_prime_equation)
+        # r/q = r'/q'
+        rq_identity = Tex(r"$\boldsymbol{\frac{r}{q}=\frac{r'}{q'}}$", font_size=text_size*4/3)
+        rq_identity.next_to(r_prime_equation, DOWN, buff=fraction_offset)
+        rq_identity.move_to([r_prime_equation.get_left()[0] + get_len(rq_identity)/2, rq_identity.get_center()[1], rq_identity.get_center()[2]])
+        # Shifting out of sight:
+        rq_identity.shift([-3/2*get_len(rq_identity), 0, 0])
+        
+        # nabla = r-q
+        nabla = Tex(r"$\boldsymbol{\nabla = }$", font_size=text_size*4/3)
+        nabla_rq = Tex(r"$\boldsymbol{r-q}$", font_size=text_size*4/3)
+        nabla_expression = VGroup(nabla, nabla_rq).arrange(RIGHT, buff=text_buff)
+        nabla_rq.shift([0, -text_buff/3, 0])
+        # Positioning:
+        nabla_expression.move_to([
+            self.camera.frame.get_right()[0] - get_len(nabla_expression)/2,
+            self.camera.frame.get_top()[1] - get_height(nabla_expression)/2 - text_buff,
+            nabla_expression.get_center()[2]
+        ])
+
+        # Condition with nabla:
+        nabla_condition = Tex(r"$\boldsymbol{\begin{cases}\nabla\ge0\rightarrow diagonally\\\nabla<0\rightarrow horizontally\end{cases}}$", font_size=text_size)
+        # Positioniing that sucker:
+        nabla_condition.move_to([
+            nabla_expression.get_right()[0] - get_len(nabla_condition)/2,
+            nabla_expression.get_bottom()[1] - get_height(nabla_condition)/2 - fraction_offset,
+            nabla_condition.get_center()[2]
+        ])
+
+        nabla_group = VGroup(nabla_expression, nabla_condition)
+        # Shifting out of sight:
+        nabla_group.shift([3/2*get_len(nabla_group), 0, 0])
+
+        '''
+        The idea here is that there is a system of conditions that change from instance to instance.
+        First instance:
+            Nabla >= 0 if r-q >= 0
+            Nabla < 0 if r-q < 0
+
+        Second instance:
+            r-q >= 0 if r >= q
+            r-q < 0 if r < q
+
+        Afterwards the system moves to the right down besides the other conditional (maybe change this?)
+        '''
+        # First Instance:
+        r_q_brace = Tex(r"$\begin{cases}\\\end{cases}$", font_size=4/3*text_size)
+        # nabla >= 0 if r-q >= 0:
+        r_q_nabla_bigger = Tex(r"$\boldsymbol{\nabla \ge 0}$", font_size=text_size)
+        r_q_if_bigger = Tex(r"$\boldsymbol{if}$", font_size=text_size)
+        r_q_zero_bigger = Tex(r"$\boldsymbol{r-q\ge 0}$", font_size=text_size)
+        r_q_bigger_first = VGroup(r_q_nabla_bigger, r_q_if_bigger, r_q_zero_bigger).arrange(RIGHT, buff=text_buff)
+        
+        # nabla < 0 if r-q < 0:
+        r_q_nabla_smaller = Tex(r"$\boldsymbol{\nabla < 0}$", font_size=text_size)
+        r_q_if_smaller = Tex(r"$\boldsymbol{if}$", font_size=text_size)
+        r_q_zero_smaller = Tex(r"$\boldsymbol{r-q<0}$", font_size=text_size)
+        r_q_smaller_first = VGroup(r_q_nabla_smaller, r_q_if_smaller, r_q_zero_smaller).arrange(RIGHT, buff=text_buff)
+
+        # Arranging everything for the first time. Anchor: the brace, after which everything is centered
+        r_q_bigger_first.next_to(r_q_brace, RIGHT, buff=text_buff/2)
+        r_q_bigger_first.shift([0, get_height(r_q_brace)/4, 0])
+
+        r_q_smaller_first.next_to(r_q_brace, RIGHT, buff=text_buff/2)
+        r_q_smaller_first.shift([0, -get_height(r_q_brace)/4, 0])
+
+        r_q_first_instance = VGroup(r_q_brace, r_q_bigger_first, r_q_smaller_first)
+        r_q_first_instance.move_to(self.camera.frame.get_center())
+
+        # Second instance
+        # r - q >= 0 if r >= q:
+        r_q_r_q_bigger = Tex(r"$\boldsymbol{r \ge q}$", font_size=text_size)
+        r_q_bigger_second = VGroup(r_q_zero_bigger, r_q_if_bigger, r_q_r_q_bigger)
+
+
+        # r - q < 0 if r < q:
+        r_q_r_q_smaller = Tex(r"$\boldsymbol{r<q}$", font_size=text_size)
+        r_q_smaller_second = VGroup(r_q_zero_smaller, r_q_if_smaller, r_q_r_q_smaller)
+
+        r_q_second_instance = VGroup(r_q_brace, r_q_bigger_second, r_q_smaller_second)
+
+        # Second condition
+        '''
+        The idea behind this one is as follows:
+        First instance:
+            r/q >= 1 if r >= q
+            r/q < 1 if r < q
+        
+        Second instance:
+            r/q - 1 >= 0 if r >= q
+            r/q - 1 < 0 if r < q
+        
+        Third instance:
+            r'/q' - 1 >= 0 if r >= q
+            r'/q' - 1 < 0 if r < q
+        
+        And then move the system to the left under the definitions for r' and q'
+        '''
+        # First instance:
+        r_div_brace = r_q_brace = Tex(r"$\begin{cases}\\\end{cases}$", font_size=16/9*text_size)
+
+        r_div_rq_bigger = Tex(r"$\boldsymbol{\frac{r}{q}}$", font_size=4/3*text_size)
+        
 
 
         #Animation sextion
-
+        '''
         # self.camera.frame.scale(0.4) <- Not used
         self.play(Write(q_prime_equation))
         self.wait(1)
@@ -2288,21 +2405,83 @@ class FifthScene(MovingCameraScene):
             Write(q_prime_bracket_up.next_to(q_prime_after_minus, UP, buff=0.1), runtime = 1.3),
             Write(q_prime_up_text.next_to(q_prime_bracket_up, UP, buff=0.2))
         )
-        
         '''
-        q_prime_equation.move_to([
-            self.camera.frame.get_left()[0] + get_len(q_prime_equation)/2,
-            self.camera.frame.get_top()[1] - get_height(q_prime_equation)/2,
-            q_prime_equation.get_center()[2]
-        ])
-        r_prime_equation.move_to([
-            self.camera.frame.get_left()[0] + get_len(r_prime_equation)/2,
-            self.camera.frame.get_top()[1] - get_height(q_prime_equation) - get_height(r_prime_equation)/2,
-            r_prime_equation.get_center()[2]
-        ])
 
-        self.add(r_prime_equation)
-        self.add(q_prime_equation)
-        '''
+        self.add(prime_equations)
+
+        # Moving r/q = r'/q' into sight and moving it on top:
+        self.play(rq_identity.animate.shift([3/2*get_len(rq_identity) + text_buff, 0, 0]))
+        self.wait(1)
+        self.play(
+            rq_identity.animate.move_to([
+                rq_identity.get_center()[0],
+                self.camera.frame.get_top()[1] - get_height(rq_identity)/2 - text_buff/2,
+                rq_identity.get_center()[2]
+            ]),
+            prime_equations.animate.move_to([
+                prime_equations.get_center()[0] + text_buff/2,
+                self.camera.frame.get_top()[1] - get_height(rq_identity) - text_buff - get_height(prime_equations)/2,
+                prime_equations.get_center()[2]
+            ])
+        )
+
+        # Moving nabla and its condition into sight:
+        self.play(nabla_group.animate.shift([-3/2*get_len(nabla_group) - text_buff, 0, 0]))
+        self.wait(1)
+
+        # Wiggle 
+        scaling_value = 1.2
+        number_wiggles = 15
+        angle_wiggle = 0.25
+        wiggle_runtime = 1.5
+        # First wiggle (r/q = r'/q'):
+        self.play(FadeToColor(rq_identity, ManimColor("#FFF700")))
+        self.play(Wiggle(rq_identity, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime))
+        self.wait(1)
+
+        # Second wiggle (nabla):
+        self.play(FadeToColor(nabla_expression, ManimColor("#9059FF")))
+        self.play(Wiggle(nabla_expression, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime))
+        self.wait(1)
+        # self.play(FadeToColor(rq_identity, WHITE), FadeToColor(nabla_expression, WHITE))
+
+        # First instance of the conditional:
+        nabla_condition_copy = nabla_condition.copy()
+        self.add(nabla_condition_copy)
+        self.play(ReplacementTransform(nabla_condition, r_q_first_instance))
+        self.wait(1)
+
+        # Transitioning into second instance:
+        self.play(
+            FadeOut(r_q_nabla_bigger),
+            r_q_zero_bigger.animate.move_to([
+                r_q_brace.get_right()[0] + text_buff/2 + get_len(r_q_zero_bigger)/2,
+                r_q_zero_bigger.get_center()[1], r_q_zero_bigger.get_center()[2]
+            ]),
+            FadeOut(r_q_nabla_smaller),
+            r_q_zero_smaller.animate.move_to([
+                r_q_brace.get_right()[0] + text_buff/2 + get_len(r_q_zero_smaller)/2,
+                r_q_zero_smaller.get_center()[1], r_q_zero_smaller.get_center()[2]
+            ]),
+            Write(r_q_r_q_bigger.next_to(r_q_brace, RIGHT, buff=2*text_buff + get_len(r_q_zero_bigger) + get_len(r_q_if_bigger)).shift([0, get_height(r_q_brace)/4, 0])),
+
+            r_q_if_bigger.animate.move_to([
+                r_q_brace.get_right()[0] + 3/2*text_buff + get_len(r_q_zero_smaller) + get_len(r_q_if_bigger)/2,
+                r_q_if_bigger.get_center()[1], r_q_if_bigger.get_center()[2]
+            ]),
+            Write(r_q_r_q_smaller.next_to(r_q_brace, RIGHT, buff=2*text_buff + get_len(r_q_zero_smaller) + get_len(r_q_if_smaller)).shift([0, -get_height(r_q_brace)/4, 0])),
+            r_q_if_smaller.animate.move_to([
+                r_q_brace.get_right()[0] + 3/2*text_buff + get_len(r_q_zero_smaller) + get_len(r_q_if_smaller)/2,
+                r_q_if_smaller.get_center()[1], r_q_if_smaller.get_center()[2]
+            ]),
+        )
+        self.wait(1.5)
+        # Moving the conditional:
+        self.play(r_q_second_instance.animate.next_to(nabla_condition_copy, DOWN, buff=text_buff/2).shift([- get_len(nabla_condition_copy)/2 + get_len(r_q_second_instance)/2, 0, 0]))
+        self.wait(1)
+
+        # Second conditional:
+        # First instance:
+
 
         self.wait(3)
