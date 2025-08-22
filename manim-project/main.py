@@ -2030,7 +2030,7 @@ class SecondScene(MovingCameraScene):
                 s_name_close_brace.animate.next_to(s_name_x, RIGHT, buff = get_len(s_name_coma) + get_len(b_third_equation) + 2.5*fraction_offset),
                 FadeIn(s_name_rectangle)
             )
-            self.next_section()
+            self.next_section(skip_animations=True)
             self.wait(1)
             # Restoring everything back to 'normal' - even though the mobjects in animation_group are not responding anymore :(
             self.play(Restore(self.camera.frame))
@@ -2071,7 +2071,7 @@ class SecondScene(MovingCameraScene):
                 FadeOut(b_equation_1),
                 FadeOut(b_equation_2),
             )
-            self.next_section()
+            self.next_section(skip_animations=True)
             self.wait(1)
             shift_value = DOWN * 10
             self.play(self.camera.frame.animate.shift(shift_value))
@@ -2126,14 +2126,17 @@ class FifthScene(MovingCameraScene):
         r_prime_up_text = Tex(r"$\textbf{R vertical coordinate}$", font_size = text_size, color = RED)
 
         # Moving q and r to the top right of the screen
-
         prime_equations = VGroup(r_prime_equation, q_prime_equation)
+
         # r/q = r'/q'
         rq_identity = Tex(r"$\boldsymbol{\frac{r}{q}=\frac{r'}{q'}}$", font_size=text_size*4/3)
-        rq_identity.next_to(r_prime_equation, DOWN, buff=fraction_offset)
-        rq_identity.move_to([r_prime_equation.get_left()[0] + get_len(rq_identity)/2, rq_identity.get_center()[1], rq_identity.get_center()[2]])
+        rq_identity.move_to([
+            self.camera.frame.get_left()[0],
+            self.camera.frame.get_top()[1] - 3/2*fraction_offset - get_height(r_prime_equation) - get_height(q_prime_equation) - get_height(rq_identity)/2,
+            rq_identity.get_center()[2]
+        ])
         # Shifting out of sight:
-        rq_identity.shift([-3/2*get_len(rq_identity), 0, 0])
+        rq_identity.shift([-get_len(rq_identity), 0, 0])
         
         # nabla = r-q
         nabla = Tex(r"$\boldsymbol{\nabla = }$", font_size=text_size*4/3)
@@ -2177,13 +2180,17 @@ class FifthScene(MovingCameraScene):
         # nabla >= 0 if r-q >= 0:
         r_q_nabla_bigger = Tex(r"$\boldsymbol{\nabla \ge 0}$", font_size=text_size)
         r_q_if_bigger = Tex(r"$\boldsymbol{if}$", font_size=text_size)
-        r_q_zero_bigger = Tex(r"$\boldsymbol{r-q\ge 0}$", font_size=text_size)
+        r_q_zero_rq_bigger = Tex(r"$\boldsymbol{r-q}$", font_size=text_size)
+        r_q_zero_zero_bigger = Tex(r"$\boldsymbol{\ge 0}$", font_size=text_size)
+        r_q_zero_bigger = VGroup(r_q_zero_rq_bigger, r_q_zero_zero_bigger).arrange(RIGHT, buff=text_buff)
         r_q_bigger_first = VGroup(r_q_nabla_bigger, r_q_if_bigger, r_q_zero_bigger).arrange(RIGHT, buff=text_buff)
         
         # nabla < 0 if r-q < 0:
         r_q_nabla_smaller = Tex(r"$\boldsymbol{\nabla < 0}$", font_size=text_size)
         r_q_if_smaller = Tex(r"$\boldsymbol{if}$", font_size=text_size)
-        r_q_zero_smaller = Tex(r"$\boldsymbol{r-q<0}$", font_size=text_size)
+        r_q_zero_rq_smaller = Tex(r"$\boldsymbol{r-q}$", font_size=text_size)
+        r_q_zero_zero_smaller = Tex(r"$\boldsymbol{\ge 0}$", font_size=text_size)
+        r_q_zero_smaller = VGroup(r_q_zero_rq_smaller, r_q_zero_zero_smaller).arrange(RIGHT, buff=text_buff)
         r_q_smaller_first = VGroup(r_q_nabla_smaller, r_q_if_smaller, r_q_zero_smaller).arrange(RIGHT, buff=text_buff)
 
         # Arranging everything for the first time. Anchor: the brace, after which everything is centered
@@ -2235,12 +2242,117 @@ class FifthScene(MovingCameraScene):
             r' - q' >= q if r < q
         '''
         # First instance:
-        r_div_brace = r_q_brace = Tex(r"$\begin{cases}\\\end{cases}$", font_size=16/9*text_size)
-
+        r_div_brace = Tex(r"$\begin{cases}\\\end{cases}$", font_size=4/3*4/3*4/3*text_size)
+        
+        # r/q >= 1 if r >= q
         r_div_rq_bigger = Tex(r"$\boldsymbol{\frac{r}{q}}$", font_size=4/3*text_size)
+        r_div_sign_bigger = Tex(r"$\boldsymbol{\ge}$", font_size=text_size)
+        r_div_one_bigger = Tex(r"$\boldsymbol{1}$", font_size=text_size)
+        r_div_if_bigger = Tex(r"$\boldsymbol{if \; r \ge q}$", font_size=text_size)
+        
+        r_div_bigger_first = VGroup(r_div_rq_bigger, r_div_sign_bigger, r_div_one_bigger, r_div_if_bigger).arrange(RIGHT, buff=text_buff)
+
+        # r/q < 1 if r < q:
+        r_div_rq_smaller = Tex(r"$\boldsymbol{\frac{r}{q}}$", font_size=4/3*text_size)
+        r_div_sign_smaller = Tex(r"$\boldsymbol{<}$", font_size=text_size)
+        r_div_one_smaller = Tex(r"$\boldsymbol{1}$", font_size=text_size)
+        r_div_if_smaller = Tex(r"$\boldsymbol{if \; r<q}$", font_size=text_size)
+
+        r_div_smaller_first = VGroup(r_div_rq_smaller, r_div_sign_smaller, r_div_one_smaller, r_div_if_smaller).arrange(RIGHT, buff=text_buff)
+
+        # Aligning everything:
+        r_div_bigger_first.next_to(r_div_brace, RIGHT, buff=text_buff/2)
+        r_div_bigger_first.shift([0, get_height(r_div_brace)/4, 0])
+
+        r_div_smaller_first.next_to(r_div_brace, RIGHT, buff=text_buff/2)
+        r_div_smaller_first.shift([0, -get_height(r_div_brace)/4, 0])
+
+        r_div_first = VGroup(r_div_bigger_first, r_div_smaller_first, r_div_brace)
+        r_div_first.move_to(self.camera.frame.get_center())
+
+        # Second instance:
+        # r/q - 1 >= 0 if r >= q
+        r_div_minus_bigger = Tex(r"$\boldsymbol{-}$", font_size=text_size)
+        r_div_zero_bigger = Tex(r"$\boldsymbol{0}$", font_size=text_size)
+        r_div_bigger_second = VGroup(r_div_rq_bigger, r_div_minus_bigger, r_div_one_bigger, r_div_sign_bigger, r_div_zero_bigger, r_div_if_bigger)
+
+        # r/q - 1 < 0 if r < q
+        r_div_minus_smaller = Tex(r"$\boldsymbol{-}$", font_size=text_size)
+        r_div_zero_smaller = Tex(r"$\boldsymbol{0}$", font_size=text_size)
+        r_div_smaller_second = VGroup(r_div_rq_smaller, r_div_minus_smaller, r_div_one_smaller, r_div_sign_smaller, r_div_zero_smaller, r_div_if_smaller)
+
+        # Positioning:
+        r_div_minus_bigger.next_to(r_div_rq_bigger, RIGHT, buff=text_buff)
+        r_div_minus_smaller.next_to(r_div_rq_smaller, RIGHT, buff=text_buff)
+
+        r_div_second = VGroup(r_div_bigger_second, r_div_smaller_second, r_div_brace)
+
+        # Third instance:
+        # r'/q' - 1 >= 0 if r >= q
+        r_div_prime_bigger = Tex(r"$\boldsymbol{\frac{r'}{q'}}$", font_size=4/3*text_size)
+        r_div_bigger_third = VGroup(r_div_prime_bigger, r_div_minus_bigger, r_div_one_bigger, r_div_sign_bigger, r_div_zero_bigger, r_div_if_bigger)
+        r_div_replacement_group_bigger = VGroup(r_div_prime_bigger, r_div_minus_bigger, r_div_one_bigger)
+        r_div_replacement_group_bigger_copy = r_div_replacement_group_bigger.copy()
+
+        # r'/q' - 1 < 0 if r < q
+        r_div_prime_smaller = Tex(r"$\boldsymbol{\frac{r'}{q'}}$", font_size=4/3*text_size)
+        r_div_smaller_third = VGroup(r_div_prime_smaller, r_div_minus_smaller, r_div_one_smaller, r_div_sign_smaller, r_div_zero_smaller, r_div_if_smaller)
+        r_div_replacement_group_smaller = VGroup(r_div_prime_smaller, r_div_minus_smaller, r_div_one_smaller)
+
+        r_div_third = VGroup(r_div_bigger_third, r_div_smaller_third, r_div_brace)
+        
+        # Break for an equation:
+        '''
+        Reminder: this is how the equation should look like:
+        r'/q' - 1 = r'/q' - q'/q' = (r'-q')/q'   
+        '''
+        r_eq_first = Tex(r"$\boldsymbol{\frac{r'}{q'}-1}$", font_size=4/3*text_size)
+        r_eq_second = Tex(r"$\boldsymbol{=\frac{r'}{q'}-\frac{q'}{q'}}$", font_size=4/3*text_size)
+        r_eq_equals = Tex(r"$\boldsymbol{=}$", font_size=4/3*text_size)
+
+        r_eq_final_rq = Tex(r"$\boldsymbol{r'-q'}$", font_size=text_size)
+        r_eq_final_q = Tex(r"$\boldsymbol{q'}$", font_size=text_size)
+        r_eq_final_line = Line(start=ORIGIN, end=[fraction_offset*2 + get_len(r_eq_final_rq), 0, 0], color=WHITE, stroke_width=2)
+        r_eq_final = VGroup(r_eq_final_rq, r_eq_final_line, r_eq_final_q).arrange(DOWN, buff=fraction_offset)
+
+        r_eq_final_bottom_rq = Tex(r"$\boldsymbol{r'-q'}$", font_size=text_size)
+        r_eq_final_bottom_q = Tex(r"$\boldsymbol{q'}$", font_size=text_size)
+        r_eq_final_bottom_line = Line(start=ORIGIN, end=[fraction_offset*2 + get_len(r_eq_final_bottom_rq), 0, 0], color=WHITE, stroke_width=2)
+        r_eq_final_bottom = VGroup(r_eq_final_bottom_rq, r_eq_final_bottom_line, r_eq_final_bottom_q).arrange(DOWN, buff=fraction_offset)
+
+        r_eq_final_top_rq = Tex(r"$\boldsymbol{r'-q'}$", font_size=text_size)
+        r_eq_final_top_q = Tex(r"$\boldsymbol{q'}$", font_size=text_size)
+        r_eq_final_top_line = Line(start=ORIGIN, end=[fraction_offset*2 + get_len(r_eq_final_top_rq), 0, 0], color=WHITE, stroke_width=2)
+        r_eq_final_top = VGroup(r_eq_final_top_rq, r_eq_final_top_line, r_eq_final_top_q).arrange(DOWN, buff=fraction_offset)
+
+        r_eq_first_group = VGroup(r_eq_first, r_eq_second)
+        r_eq_group = VGroup(r_eq_first, r_eq_second, r_eq_equals, r_eq_final).arrange(RIGHT, buff=text_buff)
+
+        # Sign:
+        '''
+        The equation has the following form:
+        q>0 => Sign((r'-q')/q') = Sign(r'-q')
+        '''
+        r_sign_left = Tex(r"$\boldsymbol{\Rightarrow \textbf{Sign}(}$", font_size=text_size)
+        q_bigger_than_zero = Tex(r"$\boldsymbol{q'>0}$", font_size=text_size)
+        r_brace_left = Tex(r"$\boldsymbol{)=}$", font_size=text_size)
+        r_sign_right = Tex(r"$\boldsymbol{\textbf{Sign}(}$", font_size=text_size)
+        r_minus_q = Tex(r"$\boldsymbol{r'-q'}$", font_size=text_size)
+        r_brace_right = Tex(r"$\boldsymbol{)}$", font_size=text_size)
+
+        q_bigger_group = VGroup(r_sign_left, r_brace_left, r_sign_right, r_minus_q, r_brace_right)
+
+        # Fourth instance:
+        r_div_smaller_brace = r_q_brace.copy()
+        r_div_fourth_bigger = VGroup(r_eq_final_top_rq, r_div_sign_bigger, r_div_zero_bigger, r_div_if_bigger)
+        r_div_fourth_smaller = VGroup(r_eq_final_bottom_rq, r_div_sign_smaller, r_div_zero_smaller, r_div_if_smaller)
+
+        r_div_fourth = VGroup(r_div_smaller_brace, r_div_fourth_bigger, r_div_fourth_smaller)
+        
 
 
-        #Animation sextion
+        #                                                                           Animation sextion
+        self.next_section(skip_animations=True)
         # self.camera.frame.scale(0.4) <- Not used
         self.play(Write(q_prime_equation))
         self.wait(1)
@@ -2303,7 +2415,11 @@ class FifthScene(MovingCameraScene):
         )
 
         # Moving r/q = r'/q' into sight and moving it on top:
-        self.play(rq_identity.animate.shift([3/2*get_len(rq_identity) + text_buff, 0, 0]))
+        self.play(
+            rq_identity.animate.shift([3/2*get_len(rq_identity) + text_buff, 0, 0]),
+            FadeToColor(r_prime_after_minus, WHITE),
+            FadeToColor(r_prime_before_minus, WHITE)
+        )
         self.wait(1)
         self.play(
             rq_identity.animate.move_to([
@@ -2317,11 +2433,16 @@ class FifthScene(MovingCameraScene):
                 prime_equations.get_center()[2]
             ])
         )
-
-        # Moving nabla and its condition into sight:
-        self.play(nabla_group.animate.shift([-3/2*get_len(nabla_group) - text_buff, 0, 0]))
         self.wait(1)
 
+        # Moving nabla and its condition into sight:
+        self.play(
+            nabla_group.animate.shift([-3/2*get_len(nabla_group) - text_buff, 0, 0]),
+            prime_equations.animate.set_opacity(0.0)
+        )
+        self.wait(1)
+        self.next_section(skip_animations=True)
+        self.wait()
         # Wiggle 
         scaling_value = 1.2
         number_wiggles = 15
@@ -2335,6 +2456,7 @@ class FifthScene(MovingCameraScene):
         # Second wiggle (nabla):
         self.play(FadeToColor(nabla_expression, ManimColor("#9059FF")))
         self.play(Wiggle(nabla_expression, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime))
+        self.next_section(skip_animations=True)
         self.wait(1)
         # self.play(FadeToColor(rq_identity, WHITE), FadeToColor(nabla_expression, WHITE))
 
@@ -2367,17 +2489,124 @@ class FifthScene(MovingCameraScene):
                 r_q_brace.get_right()[0] + 3/2*text_buff + get_len(r_q_zero_smaller) + get_len(r_q_if_smaller)/2,
                 r_q_if_smaller.get_center()[1], r_q_if_smaller.get_center()[2]
             ]),
+            nabla_condition_copy.animate.set_opacity(0.0)
+
         )
         self.wait(1.5)
         # Moving the conditional:
-        self.play(r_q_second_instance.animate.next_to(nabla_condition_copy, DOWN, buff=text_buff/2).shift([- get_len(nabla_condition_copy)/2 + get_len(r_q_second_instance)/2, 0, 0]))
+        self.play(
+            r_q_second_instance.animate.next_to(nabla_expression, DOWN, buff=text_buff/2).shift([get_len(nabla_expression)/2 - get_len(r_q_second_instance)/2, 0, 0]),
+        )
+        self.play(
+            FadeToColor(r_q_zero_rq_bigger, ManimColor("#9059FF")),
+            FadeToColor(r_q_zero_rq_smaller, ManimColor("#9059FF"))
+        )
+        self.next_section(skip_animations=True)
         self.wait(1)
 
         # Second conditional:
         # First instance:
+        self.play(Write(r_div_first))
 
-
-        self.wait(3)
-        
+        # Second instance:
+        self.wait(1)
+        self.play(
+            # bigger:
+            Create(r_div_minus_bigger),
+            r_div_one_bigger.animate.next_to(r_div_minus_bigger, RIGHT, buff=text_buff),
+            r_div_sign_bigger.animate.next_to(r_div_minus_bigger, RIGHT, buff=2*text_buff + get_len(r_div_one_bigger)),
+            Create(r_div_zero_bigger.next_to(r_div_minus_bigger, RIGHT, buff=3*text_buff + get_len(r_div_one_bigger) + get_len(r_div_sign_bigger))),
+            r_div_if_bigger.animate.next_to(r_div_minus_bigger, RIGHT, buff=4*text_buff + get_len(r_div_one_bigger) + get_len(r_div_sign_bigger) + get_len(r_div_zero_bigger)),
+            # smaller:
+            Create(r_div_minus_smaller),
+            r_div_one_smaller.animate.next_to(r_div_minus_smaller, RIGHT, buff=text_buff),
+            r_div_sign_smaller.animate.next_to(r_div_minus_smaller, RIGHT, buff=2*text_buff + get_len(r_div_one_smaller)),
+            Create(r_div_zero_smaller.next_to(r_div_minus_smaller, RIGHT, buff=3*text_buff + get_len(r_div_one_smaller) + get_len(r_div_sign_smaller))),
+            r_div_if_smaller.animate.next_to(r_div_minus_smaller, RIGHT, buff=4*text_buff + get_len(r_div_one_smaller) + get_len(r_div_sign_smaller) + get_len(r_div_zero_smaller)),
+        )
+        self.play(
+            r_div_second.animate.move_to(self.camera.frame.get_center())
+        )
+        self.wait(1)
+        # Third instance:
+        r_div_prime_bigger.move_to(r_div_rq_bigger.get_center())
+        r_div_prime_smaller.move_to(r_div_rq_smaller.get_center())
+        self.play(
+            ReplacementTransform(r_div_rq_bigger, r_div_prime_bigger),
+            ReplacementTransform(r_div_rq_smaller, r_div_prime_smaller),
+        )
+        self.wait(1)
+        self.play(
+            r_div_third.animate.next_to(rq_identity, DOWN, buff=text_buff).shift([-get_len(rq_identity)/2 + get_len(r_div_third)/2 - text_buff/2, 0, 0])
+        )
+        self.play(
+            FadeToColor(r_div_prime_bigger, ManimColor("#FFF700")), FadeToColor(r_div_prime_smaller, ManimColor("#FFF700")),
+            rq_identity.animate.shift([get_len(r_div_prime_bigger), 0, 0])
+        )
+        self.next_section()
+        self.wait(1)
+        # Writing the equation
+        r_eq_first.move_to(self.camera.frame.get_center())
+        r_div_replacement_group_smaller_copy = r_div_replacement_group_smaller.copy()
+        self.play(ReplacementTransform(r_div_replacement_group_smaller_copy, r_eq_first))        
+        self.wait(1)
+        self.play(
+            Write(r_eq_second.next_to(r_eq_first, RIGHT, buff=text_buff)),
+            Write(r_eq_equals.next_to(r_eq_first_group, RIGHT, buff=text_buff)),
+            Write(r_eq_final.next_to(r_eq_first_group, RIGHT, buff=2*text_buff + get_len(r_eq_equals)))
+        )
+        self.play(
+            r_eq_group.animate.move_to(self.camera.frame.get_center())
+        )
+        # Replacing r'/q' -1 with (r'-q')/q':
+        r_eq_final_bottom.move_to(r_eq_final) 
+        self.wait(1)
+        self.play(
+            r_eq_final_bottom.animate.move_to(r_div_replacement_group_smaller.get_center()),
+            FadeOut(r_div_replacement_group_smaller),
+            FadeOut(r_eq_first_group),
+            FadeOut(r_eq_equals),
+            r_eq_final.animate.move_to(self.camera.frame.get_center())
+        )
+        r_eq_final_top.move_to(r_eq_final_bottom)
+        self.play(
+            FadeToColor(r_eq_final_bottom, ManimColor("#FFF700")),
+            FadeOut(r_div_replacement_group_bigger),
+            r_eq_final_top.animate.move_to(r_div_replacement_group_bigger)
+        )
+        self.play(FadeToColor(r_eq_final_top, ManimColor("#FFF700")))
+        self.wait(1)
+        # q>0 => Sign((r'-q')/q') = Sign(r'-q')
+        r_sign_left.next_to(r_eq_final, LEFT, buff=text_buff/2)
+        q_bigger_than_zero.next_to(r_sign_left, LEFT, buff=text_buff)
+        r_brace_left.next_to(r_eq_final, RIGHT, buff=text_buff/2)
+        r_sign_right.next_to(r_brace_left, RIGHT, buff=text_buff)
+        r_minus_q.next_to(r_sign_right, RIGHT, buff=text_buff/4)
+        r_brace_right.next_to(r_minus_q, RIGHT, buff=text_buff/4)
+        self.play(Write(q_bigger_than_zero))
+        self.wait(0.5)
+        self.play(Write(q_bigger_group), run_time=3)
+        self.wait(1)
+        self.play(
+            FadeOut(r_eq_final_top_q),
+            FadeOut(r_eq_final_top_line),
+            FadeOut(r_eq_final_bottom_q),
+            FadeOut(r_eq_final_bottom_line)
+        )
+        self.play(
+            r_eq_final_top_rq.animate.match_y(r_div_sign_bigger),
+            r_eq_final_bottom_rq.animate.match_y(r_div_sign_smaller)
+        )
+        self.wait(1)
+        # Adapting to the new brace:
+        r_div_smaller_brace.move_to([r_div_brace.get_center()[0], r_div_brace.get_top()[1] - get_height(r_div_smaller_brace)/2, r_div_brace.get_center()[2]])
+        self.play(
+            ReplacementTransform(r_div_brace, r_div_smaller_brace),
+            r_div_fourth_bigger.animate.move_to([r_div_fourth_bigger.get_center()[0], r_div_smaller_brace.get_center()[1] + get_height(r_div_smaller_brace)/4, r_div_fourth_bigger.get_center()[2]]),
+            r_div_fourth_smaller.animate.move_to([r_div_fourth_smaller.get_center()[0], r_div_smaller_brace.get_center()[1] - get_height(r_div_smaller_brace)/4, r_div_fourth_smaller.get_center()[2]]),
+            FadeOut(q_bigger_group),
+            FadeOut(r_eq_final),
+            FadeOut(q_bigger_than_zero)
+        )
 
         self.wait(3)
