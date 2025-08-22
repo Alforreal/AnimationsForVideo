@@ -1,2 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/home/alex/Documents/manim/AnimationsForVideo/manim-project/media/videos/main/480p15/partial_movie_files/FifthScene/2020560109_3879069619_1331816982.mp4'
