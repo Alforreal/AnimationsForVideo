@@ -2357,7 +2357,6 @@ class FifthScene(MovingCameraScene):
         r_q_smaller_second = VGroup(r_q_zero_smaller, r_q_if_smaller, r_q_r_q_smaller)
 
         r_q_second_instance = VGroup(r_q_brace, r_q_bigger_second, r_q_smaller_second)
-
         # Second condition
         '''
         The idea behind this one is as follows:
@@ -2373,13 +2372,23 @@ class FifthScene(MovingCameraScene):
             r'/q' - 1 >= 0 if r >= q
             r'/q' - 1 < 0 if r < q
         
-        And then move the system to the left under the definitions for r' and q'
+        (Here is should move to the left side and change there)
+        After third instance in the center make the following equation (in a different set of variables):
+        r'/q' - 1 = r'/q' - q'/q' = (r'-q')/q'
+
+        Fourth instance:
+            (r'-q')/q' >= 0 if r >= q
+            (r'-q')/q' < 0 if r < q
+        
+        Fifth instance:
+            r' - q' >= 0 if r >= q
+            r' - q' >= q if r < q
         '''
         # First instance:
         r_div_brace = r_q_brace = Tex(r"$\begin{cases}\\\end{cases}$", font_size=16/9*text_size)
 
         r_div_rq_bigger = Tex(r"$\boldsymbol{\frac{r}{q}}$", font_size=4/3*text_size)
-        
+
 
 
         #Animation sextion
