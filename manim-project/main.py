@@ -2367,8 +2367,43 @@ class FifthScene(MovingCameraScene):
 
         r_q_third_instance = VGroup(r_q_brace, r_q_third_instance_bigger, r_q_third_instance_smaller)
         
+        #******************************************************Long equations simplification part******************************************************
 
+        
+        #new_nabla_rq.shift([0, -text_buff/3, 0])
+        nabla_rq_prime = Tex(r"$\boldsymbol{r'}$", 
+                             r"$- $",  
+                             r"$\boldsymbol{q'}$", font_size=text_size*4/3, color = ManimColor("#9059FF"))
+        
+        nabla_rq_equals = Tex(r"$\boldsymbol{\vphantom{\nabla} = }$", font_size=text_size*4/3, color = ManimColor("#9059FF"))
+        new_nabla_expression = VGroup(nabla_rq_equals, nabla_rq_prime).arrange(RIGHT, buff=text_buff)
 
+        r_prime_stuff_color = GREEN
+        q_prime_stuff_color = BLUE_B
+
+        brace_one = Tex(r"$\boldsymbol{(}$", font_size=text_size)
+        r_prime_phantom = Tex(r"$\boldsymbol{b_1 + 1 - \frac{\Delta a}{\Delta b}(a_1 + 1)}$", font_size=text_size)
+        brace_two = Tex(r"$\boldsymbol{)}$", font_size=text_size)
+        phantom_minus = Tex(r"$\boldsymbol{-}$", font_size=text_size)
+        brace_three = brace_one.copy()
+        q_prime_phantom = Tex(r"$\boldsymbol{b_1 + 1 - \frac{\Delta a}{\Delta b}(a_1 + 1)}$", font_size=text_size)
+        brace_four = brace_two.copy()
+
+        new_q_prime_before_equal = Tex(r"$\boldsymbol{q' = }$", font_size=text_size)
+        new_q_prime_after_equal = q_prime_phantom.copy()
+        new_q_prime = VGroup(new_q_prime_before_equal, new_q_prime_after_equal).arrange(RIGHT, buff=text_buff)
+
+        new_r_prime_before_equal = Tex(r"$\boldsymbol{r' = }$", font_size=text_size)
+        new_r_prime_after_equal = r_prime_phantom.copy()
+        new_r_prime = VGroup(new_r_prime_before_equal, new_r_prime_after_equal).arrange(RIGHT, buff=text_buff)
+
+        new_prime_equations = VGroup(new_r_prime, new_q_prime).arrange(DOWN, buff = text_buff).move_to(prime_equations.get_center())
+
+        equal_before_phantom = Tex(r"$\boldsymbol{ = }$", font_size=text_size)
+        equal_after_phantom = equal_before_phantom.copy()
+        equal_after_new_nabla = nabla_rq_equals.copy().set_color(WHITE)
+
+        phantom_equation = VGroup(equal_before_phantom, brace_one, r_prime_phantom, brace_two, phantom_minus, brace_three, q_prime_phantom, brace_four, equal_after_phantom).arrange(RIGHT, buff=text_buff).move_to(self.camera.frame.get_center()).shift(DOWN * get_height(new_q_prime) * 1.4)
         #**************************************************************Animation sextion***********************************************
         self.next_section(skip_animations=True)
         # self.camera.frame.scale(0.4) <- Not used
@@ -2615,7 +2650,7 @@ class FifthScene(MovingCameraScene):
             r_eq_final_top_rq.animate.match_y(r_div_sign_bigger),
             r_eq_final_bottom_rq.animate.match_y(r_div_sign_smaller)
         )
-        self.next_section()
+        self.next_section(skip_animations=True)
         self.wait(1)
         # Adapting to the new brace:
         r_div_smaller_brace.move_to([r_div_brace.get_center()[0], r_div_brace.get_top()[1] - get_height(r_div_smaller_brace)/2, r_div_brace.get_center()[2]])
@@ -2665,13 +2700,14 @@ class FifthScene(MovingCameraScene):
                 r_div_smaller_brace.get_center()[1], r_div_smaller_brace.get_center()[2]
             ]),
         )
+        self.next_section()
         self.wait(1)
         self.play(
             rq_identity.animate.set_opacity(0.0),
             r_div_fifth.animate.set_opacity(0.0),
             r_q_third_instance.animate.set_opacity(0.0),
             nabla_condition_copy.animate.set_opacity(0.0),
-            nabla_expression.animate.move_to(self.camera.frame.get_center()).scale(2)
+            nabla_expression.animate.move_to(self.camera.frame.get_center())
         )
 
         '''
@@ -2686,6 +2722,8 @@ class FifthScene(MovingCameraScene):
 
         self.play(prime_equations.animate.set_opacity(1.0))
 
+        prime_equations = VGroup(r_prime_equation, q_prime_equation)
+
         ****************************************************************************************************************************************
         The variable that was used for the expression nabla = r - q is called nabla_expression, and it is a VGroup that is composed of two parts:
     
@@ -2697,9 +2735,68 @@ class FifthScene(MovingCameraScene):
         nabla_rq = Tex(r"$\boldsymbol{r-q}$", font_size=text_size*4/3)
         nabla_expression = VGroup(nabla, nabla_rq).arrange(RIGHT, buff=text_buff)
 
+        nabla = Tex(r"$\boldsymbol{\nabla = }$", font_size=text_size*4/3)
+        nabla_rq = Tex(r"$\boldsymbol{r-q}$", font_size=text_size*4/3)
+
         Don't forget that you can use nabla_expression.add() or nabla_expression.remove() for ease of use when changing from r-q to r'-q'
         as it is a VGroup!
 
         ****************************************************************************************************************************************
         '''
+
+        
+        self.wait(1.5)
+        self.play(nabla_expression.animate.shift(LEFT * get_len(new_nabla_expression)/2))
+        self.play(Write(new_nabla_expression.next_to(nabla_expression, RIGHT, buff = text_buff)))
+        self.wait(2)
+
+        self.play(Unwrite(nabla_rq), Unwrite(nabla_rq_equals))
+        self.play(nabla.animate.shift(RIGHT * get_len(nabla_rq)), nabla_rq_prime.animate.shift(LEFT * get_len(nabla_rq)))
+        nabla_expression.remove(nabla_rq)
+        nabla_expression.add(nabla_rq_prime)
+        self.wait(1)
+
+
+        self.wait(1.5)
+        self.add(new_prime_equations.move_to(self.camera.frame.get_left()).shift(LEFT * get_len(new_prime_equations)).shift(UP * get_height(new_prime_equations)*2))
+
+        self.play(new_prime_equations.animate.shift(RIGHT * get_len(new_prime_equations) *1.6))
+
+        self.wait(1)
+
+        self.play(
+            #Write(equal_after_new_nabla.move_to(nabla_expression.get_center()).shift(RIGHT * (get_len(nabla_expression)/2 + get_len(equal_after_new_nabla)))),
+            Write(equal_after_new_nabla.next_to(nabla_expression, RIGHT, buff = text_buff)),
+            Write(equal_before_phantom),
+            Write(brace_one), 
+            Write(brace_two), 
+            Write(phantom_minus),
+            Write(brace_three), 
+            Write(brace_four) 
+        )
+        self.wait(1)
+
+        self.play(
+            nabla_rq_prime[0].animate.set_color(r_prime_stuff_color),
+            new_r_prime.animate.set_color(r_prime_stuff_color),
+        )
+        self.wait(1)
+
+        self.wait(1)
+        self.play( 
+            new_r_prime_after_equal.animate.move_to(r_prime_phantom.get_center()),
+            FadeOut(new_r_prime_before_equal)
+        )
+        self.wait(1)
+        self.play(
+            nabla_rq_prime[2].animate.set_color(q_prime_stuff_color),
+            new_q_prime.animate.set_color(q_prime_stuff_color) 
+        )
+        self.wait(1)
+        self.play( 
+            new_q_prime_after_equal.animate.move_to(q_prime_phantom.get_center()),
+            FadeOut(new_q_prime_before_equal)
+        )
+
+
         self.wait(3)
