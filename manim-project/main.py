@@ -3173,8 +3173,8 @@ class SixthScene(MovingCameraScene):
                 self.camera.frame.get_top()[1] - text_buff - 1/2*get_height(nabla_i_group) * nabla_i_scale,
                 nabla_i_group.get_center()[2]
             ]),
-            Create(nabla_i_rectangle)
         )
+        self.play(Create(nabla_i_rectangle))
         # Creating a plane:
         self.next_section()
         self.wait(1)
@@ -3246,7 +3246,6 @@ class SixthScene(MovingCameraScene):
         )
         self.next_section()
         self.wait(1)
-        # self.play(FadeOut(plane_box), FadeOut(d1_group))
         # Moving to 'If you move diagonally/horizontally':
         self.play(Create(d1_d2_line_diagonally))
         self.play(Create(starting_arrow))
