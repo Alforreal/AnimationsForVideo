@@ -2835,7 +2835,7 @@ class FifthScene(MovingCameraScene):
             FadeOut(equal_before_phantom),
         )
         self.wait(1)
-        self.play(equation_one.animate.move_to(row1.get_center()))
+        #self.play(equation_one.animate.move_to(row1.get_center()))
         self.play(equation_one.animate.set_color(WHITE))
         self.wait(1)
         # self.play(
