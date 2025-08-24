@@ -1288,47 +1288,6 @@ class SecondScene(MovingCameraScene):
             r_prime_equation_rectangle = Rectangle(width=get_len(r_prime_equation), height=get_height(r_prime_equation), fill_opacity=0.75, fill_color=BLACK, stroke_opacity=0.0)
             r_prime_equation_rectangle.move_to(r_prime_equation.get_center())
             r_prime_equation_rectangle.set_z_index(3)
-            '''
-            # Transitioning into Scene 5:
-            text_size=42
-            # Q:
-            q_prime = Tex(r"$\boldsymbol{q' =}$", font_size = text_size)
-            q_prime_before_minus = Tex(r"$\boldsymbol{b_1 + 1}$", font_size = text_size)
-            q_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
-            q_prime_after_minus = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size = text_size)
-            q_prime_equation = VGroup(q_prime, q_prime_before_minus, q_prime_minus, q_prime_after_minus).arrange(RIGHT, buff=0.25)
-            q_prime_equation.move_to([self.camera.frame.get_center()[0], self.camera.frame.get_top()[1] - get_height(q_prime_equation), 0])
-    
-    
-            #curly brackets <3 (q)
-            q_prime_bracket_down = Brace(q_prime_before_minus, sharpness=1.0, color = BLUE)
-            q_prime_bottom_text = Tex(r"$\textbf{Q vertical coordinate}$", font_size = text_size, color = BLUE)
-    
-            q_prime_bracket_up = Brace(q_prime_after_minus, sharpness=1.0, color = GREEN).rotate(PI)
-            q_prime_up_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
-
-            # R:
-            r_prime = Tex(r"$\boldsymbol{r' =}$", font_size = text_size)
-            r_prime_before_minus = q_prime_after_minus.copy()
-            r_prime_minus = Tex(r"$\boldsymbol{-}$", font_size = text_size)
-            r_prime_after_minus = Tex(r"$\boldsymbol{b_1}$", font_size = text_size)
-            r_prime_equation = VGroup(r_prime, r_prime_before_minus, r_prime_minus, r_prime_after_minus).arrange(RIGHT, buff=0.25)
-            
-            #curly brackets <3 (r)
-            r_prime_bracket_down = Brace(r_prime_before_minus, sharpness=1.0, color = GREEN)
-            r_prime_bottom_text = Tex(r"$\textbf{S vertical coordinate}$", font_size = text_size, color = GREEN)
-    
-            r_prime_bracket_up = Brace(r_prime_after_minus, sharpness=1.0, color = RED).rotate(PI)
-            r_prime_up_text = Tex(r"$\textbf{R vertical coordinate}$", font_size = text_size, color = RED)
-
-            # Squares for intro to Scene 5:
-            q_coord_rectangle = Rectangle(width=get_len(q_name_y) + fraction_offset, height=get_height(q_name_y) + fraction_offset, color=BLUE, stroke_width=3)
-            q_coord_rectangle.set_z_index(3)
-            s_coord_rectangle = Rectangle(width=get_len(b_third_equation) + fraction_offset/2, height=get_height(b_third_equation) + fraction_offset/2, color=GREEN, stroke_width=3)
-            s_coord_rectangle.set_z_index(3)
-            r_coord_rectangle = Rectangle(width=get_len(r_name_y) + fraction_offset/2, height=get_height(r_name_y) + fraction_offset/2, color=RED, stroke_width=3)
-            r_coord_rectangle.set_z_index(3)
-            '''
 
             #                                                                       ANIMATIONS
             self.next_section(skip_animations=True)
