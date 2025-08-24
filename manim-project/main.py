@@ -2382,11 +2382,11 @@ class FifthScene(MovingCameraScene):
         q_prime_stuff_color = BLUE_B
 
         brace_one = Tex(r"$\boldsymbol{(}$", font_size=text_size)
-        r_prime_phantom = Tex(r"$\boldsymbol{b_1 + 1 - \frac{\Delta a}{\Delta b}(a_1 + 1)}$", font_size=text_size)
+        r_prime_phantom = Tex(r"$\boldsymbol{\frac{\Delta b}{\Delta a}(a_1 + 1) - b_1}$", font_size=text_size)
         brace_two = Tex(r"$\boldsymbol{)}$", font_size=text_size)
         phantom_minus = Tex(r"$\boldsymbol{-}$", font_size=text_size)
         brace_three = brace_one.copy()
-        q_prime_phantom = Tex(r"$\boldsymbol{b_1 + 1 - \frac{\Delta a}{\Delta b}(a_1 + 1)}$", font_size=text_size)
+        q_prime_phantom = Tex(r"$\boldsymbol{b_1 + 1 - \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size=text_size)
         brace_four = brace_two.copy()
 
         new_q_prime_before_equal = Tex(r"$\boldsymbol{q' = }$", font_size=text_size)
@@ -2401,9 +2401,39 @@ class FifthScene(MovingCameraScene):
 
         equal_before_phantom = Tex(r"$\boldsymbol{ = }$", font_size=text_size)
         equal_after_phantom = equal_before_phantom.copy()
+        equal_after_phantom.add_updater(lambda x: x.next_to(equation_one, RIGHT * text_buff))
         equal_after_new_nabla = nabla_rq_equals.copy().set_color(WHITE)
 
         phantom_equation = VGroup(equal_before_phantom, brace_one, r_prime_phantom, brace_two, phantom_minus, brace_three, q_prime_phantom, brace_four, equal_after_phantom).arrange(RIGHT, buff=text_buff).move_to(self.camera.frame.get_center()).shift(DOWN * get_height(new_q_prime) * 1.4)
+
+        row1 = Tex(r"$anchor$", font_size = text_size).move_to(self.camera.frame.get_center()) 
+        row2 = Tex(r"$anchor$", font_size = text_size)
+        row3 = Tex(r"$anchor$", font_size = text_size)
+        row4 = Tex(r"$anchor$", font_size = text_size)
+        row5 = Tex(r"$anchor$", font_size = text_size)
+
+        rows = VGroup(row1, row2, row3, row4, row5).arrange(UP, buff = 0.35)
+
+        equations_gap = 3
+
+        equation_one = VGroup (brace_one, new_r_prime_after_equal, brace_two, phantom_minus, brace_three, new_q_prime_after_equal, brace_four)
+
+        equation_two = Tex(r"$\boldsymbol{= \frac{\Delta b}{\Delta a}(a_1 + 1) - b_1 - b_1 - 1 + \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size=text_size)
+
+        equal_after_two = equal_before_phantom.copy()
+        equal_after_two.add_updater(lambda x: x.next_to(equation_two, RIGHT * text_buff))
+
+        equation_three = Tex(r"$\boldsymbol{= \frac{\Delta b}{\Delta a}(a_1 + 1) - \frac{b_1\Delta a}{\Delta a} - \frac{\Delta a}{\Delta a} + \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size=text_size)
+
+        equal_after_three = equal_before_phantom.copy()
+        equal_after_three.add_updater(lambda x: x.next_to(equation_three, RIGHT * text_buff))
+
+        equation_four = Tex(r"$\boldsymbol{= \frac{2\Delta b(a_1 + 1) - 2\Delta ab_1 - \Delta a}{\Delta a} }$", font_size=text_size)
+
+        equal_after_four = equal_after_phantom.copy()
+        equal_after_four.add_updater(lambda x: x.next_to(equation_four, RIGHT * text_buff))
+
+        equation_five = Tex(r"$\boldsymbol{= \frac{2a_1\Delta b + 2\Delta b - 2\Delta ab_1 -  \Delta a}{\Delta a} }$", font_size=text_size)
         #**************************************************************Animation sextion***********************************************
         self.next_section(skip_animations=True)
         # self.camera.frame.scale(0.4) <- Not used
@@ -2798,5 +2828,74 @@ class FifthScene(MovingCameraScene):
             FadeOut(new_q_prime_before_equal)
         )
 
+        self.play(
+            FadeOut(nabla_expression),
+            FadeOut(equal_after_new_nabla),
+            FadeOut(equal_before_phantom),
+        )
+        self.wait(1)
+
+        self.play(equation_one.animate.move_to(row1.get_center()))
+        self.play(equation_one.animate.set_color(WHITE))
+        self.wait(1)
+        # self.play(
+        #     equation_one.animate.move_to(row2.get_center()).scale(0.8)
+        # )
+
+        # self.play(
+        #     equation_one.animate.move_to(row3.get_center()).scale(0.8)
+        # )
+
+        # self.play(
+        #     equation_one.animate.move_to(row4.get_center()).scale(0.8)
+        # )
+        #equation_one.add(equal_after_phantom)
+        self.play(FadeIn(equal_after_phantom.next_to(equation_one, RIGHT * text_buff)))
+        self.play(
+            equation_one.animate.move_to(row2.get_center()).scale(0.8),
+            FadeIn(equation_two.move_to(row1.get_center()))
+        )
+        self.wait(1)
+
+
+        self.play(FadeIn(equal_after_two))
+
+        self.play(
+            equation_one.animate.move_to(row3.get_center()).scale(0.8),
+            equal_after_phantom.animate.scale(0.8),
+            equation_two.animate.move_to(row2.get_center()).scale(0.8),
+            equal_after_two.animate.scale(0.8),
+            FadeIn(equation_three.move_to(row1.get_center()))
+        )
+
+        self.wait(1)
+
+        self.play(FadeIn(equal_after_three))
+
+        self.play(
+            equation_one.animate.move_to(row4.get_center()).scale(0.8),
+            equal_after_phantom.animate.scale(0.8),
+            equation_two.animate.move_to(row3.get_center()).scale(0.8),
+            equal_after_two.animate.scale(0.8),
+            equation_three.animate.move_to(row2.get_center()).scale(0.8),
+            equal_after_three.animate.scale(0.8),
+            FadeIn(equation_four.move_to(row1.get_center()))
+
+        )
+
+        self.wait(1)
+
+        self.play(FadeIn(equal_after_four))
+
+        self.play(
+            equation_one.animate.move_to(row5.get_center()).scale(0.8),
+            equation_two.animate.move_to(row4.get_center()).scale(0.8),
+            equal_after_two.animate.scale(0.8),
+            equation_three.animate.move_to(row3.get_center()).scale(0.8),
+            equal_after_three.animate.scale(0.8),
+            equation_four.animate.move_to(row2.get_center()).scale(0.8),
+            equal_after_four.animate.scale(0.8),
+            FadeIn(equation_five.move_to(row1.get_center()))
+        )
 
         self.wait(3)
