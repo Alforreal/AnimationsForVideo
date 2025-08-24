@@ -2406,15 +2406,16 @@ class FifthScene(MovingCameraScene):
 
         phantom_equation = VGroup(equal_before_phantom, brace_one, r_prime_phantom, brace_two, phantom_minus, brace_three, q_prime_phantom, brace_four, equal_after_phantom).arrange(RIGHT, buff=text_buff).move_to(self.camera.frame.get_center()).shift(DOWN * get_height(new_q_prime) * 1.4)
 
-        row1 = Tex(r"$anchor$", font_size = text_size).move_to(self.camera.frame.get_center()) 
+        #Those are anchors.
+        row1 = Tex(r"$anchor$", font_size = text_size).move_to(self.camera.frame.get_center())
         row2 = Tex(r"$anchor$", font_size = text_size)
         row3 = Tex(r"$anchor$", font_size = text_size)
         row4 = Tex(r"$anchor$", font_size = text_size)
-        row5 = Tex(r"$anchor$", font_size = text_size)
 
-        rows = VGroup(row1, row2, row3, row4, row5).arrange(UP, buff = 0.35)
+        rows = VGroup(row1, row2, row3, row4).arrange(UP, buff = 0.35)
 
-        equations_gap = 3
+        #A variable used with scale()
+        shrink = 0.8
 
         equation_one = VGroup (brace_one, new_r_prime_after_equal, brace_two, phantom_minus, brace_three, new_q_prime_after_equal, brace_four)
 
@@ -2834,7 +2835,6 @@ class FifthScene(MovingCameraScene):
             FadeOut(equal_before_phantom),
         )
         self.wait(1)
-
         self.play(equation_one.animate.move_to(row1.get_center()))
         self.play(equation_one.animate.set_color(WHITE))
         self.wait(1)
@@ -2852,7 +2852,7 @@ class FifthScene(MovingCameraScene):
         #equation_one.add(equal_after_phantom)
         self.play(FadeIn(equal_after_phantom.next_to(equation_one, RIGHT * text_buff)))
         self.play(
-            equation_one.animate.move_to(row2.get_center()).scale(0.8),
+            equation_one.animate.move_to(row2.get_center()).scale(shrink),
             FadeIn(equation_two.move_to(row1.get_center()))
         )
         self.wait(1)
@@ -2861,10 +2861,10 @@ class FifthScene(MovingCameraScene):
         self.play(FadeIn(equal_after_two))
 
         self.play(
-            equation_one.animate.move_to(row3.get_center()).scale(0.8),
-            equal_after_phantom.animate.scale(0.8),
-            equation_two.animate.move_to(row2.get_center()).scale(0.8),
-            equal_after_two.animate.scale(0.8),
+            equation_one.animate.move_to(row3.get_center()).scale(shrink),
+            equal_after_phantom.animate.scale(shrink),
+            equation_two.animate.move_to(row2.get_center()).scale(shrink),
+            equal_after_two.animate.scale(shrink),
             FadeIn(equation_three.move_to(row1.get_center()))
         )
 
@@ -2873,12 +2873,12 @@ class FifthScene(MovingCameraScene):
         self.play(FadeIn(equal_after_three))
 
         self.play(
-            equation_one.animate.move_to(row4.get_center()).scale(0.8),
-            equal_after_phantom.animate.scale(0.8),
-            equation_two.animate.move_to(row3.get_center()).scale(0.8),
-            equal_after_two.animate.scale(0.8),
-            equation_three.animate.move_to(row2.get_center()).scale(0.8),
-            equal_after_three.animate.scale(0.8),
+            equation_one.animate.move_to(row4.get_center()).scale(shrink).set_opacity(0),
+            equal_after_phantom.animate.scale(shrink).set_opacity(0),
+            equation_two.animate.move_to(row3.get_center()).scale(shrink),
+            equal_after_two.animate.scale(shrink),
+            equation_three.animate.move_to(row2.get_center()).scale(shrink),
+            equal_after_three.animate.scale(shrink),
             FadeIn(equation_four.move_to(row1.get_center()))
 
         )
@@ -2888,13 +2888,12 @@ class FifthScene(MovingCameraScene):
         self.play(FadeIn(equal_after_four))
 
         self.play(
-            equation_one.animate.move_to(row5.get_center()).scale(0.8),
-            equation_two.animate.move_to(row4.get_center()).scale(0.8),
-            equal_after_two.animate.scale(0.8),
-            equation_three.animate.move_to(row3.get_center()).scale(0.8),
-            equal_after_three.animate.scale(0.8),
-            equation_four.animate.move_to(row2.get_center()).scale(0.8),
-            equal_after_four.animate.scale(0.8),
+            equation_two.animate.move_to(row4.get_center()).scale(shrink).set_opacity(0),
+            equal_after_two.animate.scale(shrink).set_opacity(0),
+            equation_three.animate.move_to(row3.get_center()).scale(shrink),
+            equal_after_three.animate.scale(shrink),
+            equation_four.animate.move_to(row2.get_center()).scale(shrink),
+            equal_after_four.animate.scale(shrink),
             FadeIn(equation_five.move_to(row1.get_center()))
         )
 
