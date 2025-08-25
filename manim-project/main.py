@@ -3066,7 +3066,13 @@ class SixthScene(MovingCameraScene):
         # 'If you move diagonally/horizontally' labels and text:
         # Diagonally:
 
-        diagonal_explanation_if = Tex(r"$\boldsymbol{\textbf{if you move diagonally:}}$", font_size = text_size)
+        diagonal_explanation_if_if = Tex(r"$\boldsymbol{\textbf{if}}$", font_size=text_size)
+        diagonal_explanation_if_move = Tex(r"$\boldsymbol{\textbf{you move diagonally:}}$", font_size=text_size).next_to(diagonal_explanation_if_if, RIGHT, buff=text_buff/2)
+        diagonal_explanation_if = VGroup(diagonal_explanation_if_if, diagonal_explanation_if_move)
+
+        diagonal_explanation_if_nabla = Tex(r"$\boldsymbol{\nabla \ge 0:}$", font_size=text_size).set_z_index(2)
+        
+        # diagonal_explanation_if = Tex(r"$\boldsymbol{\textbf{if you move diagonally:}}$", font_size = text_size)
         diagonal_explanation_a = Tex(r"$\boldsymbol{a_i = a_{i-1}+1}$", font_size=text_size).next_to(diagonal_explanation_if, DOWN, buff=text_buff/2)
         diagonal_explanation_a.shift([-1/2*get_len(diagonal_explanation_if) + 1/2*get_len(diagonal_explanation_a), 0, 0])
 
@@ -3077,6 +3083,8 @@ class SixthScene(MovingCameraScene):
         diagonal_explanation.move_to(plane.c2p(3,1.75)).set_z_index(2)
 
         diagonal_bullet = Tex(r"$\bullet$", font_size=text_size).next_to(diagonal_explanation_if, LEFT, buff=text_buff/2).set_z_index(2)
+
+        diagonal_movement_group = VGroup(diagonal_bullet, diagonal_explanation_if_if, diagonal_explanation_if_nabla, diagonal_explanation_a, diagonal_explanation_b)
 
         # Horizontally:
         horizontal_dot = Dot(plane.c2p(2, 1), radius = 0.1, color=GREEN).set_z_index(2)
@@ -3090,8 +3098,13 @@ class SixthScene(MovingCameraScene):
             buff = get_len(horizontal_dot)/2
         ).set_z_index(1)
 
-        horizontal_explanation_if = Tex(r"$\boldsymbol{\textbf{if you move horizontally:}}$", font_size = text_size).next_to(diagonal_explanation, DOWN, buff=text_buff)
-        horizontal_explanation_if.shift([-1/2*get_len(diagonal_explanation_if) + 1/2*get_len(horizontal_explanation_if), 0, 0])
+        horizontal_explanation_if_if = Tex(r"$\boldsymbol{\textbf{if}}$", font_size=text_size).next_to(diagonal_explanation, DOWN, buff=text_buff)
+        horizontal_explanation_if_if.match_x(diagonal_explanation_if_if)
+        horizontal_explanation_if_move = Tex(r"$\boldsymbol{\textbf{you move horizontally:}}$", font_size=text_size).next_to(horizontal_explanation_if_if, RIGHT, buff=text_buff/2)
+        horizontal_explanation_if = VGroup(horizontal_explanation_if_if, horizontal_explanation_if_move)
+
+        horizontal_explanation_if_nabla = Tex(r"$\boldsymbol{\nabla < 0:}$", font_size=text_size).set_z_index(2)
+        
         horizontal_explanation_a = Tex(r"$\boldsymbol{a_i = a_{i-1}+1}$", font_size=text_size).next_to(horizontal_explanation_if, DOWN, buff=text_buff/2)
         horizontal_explanation_a.shift([-1/2*get_len(horizontal_explanation_if) + 1/2*get_len(horizontal_explanation_a), 0, 0])
 
@@ -3116,8 +3129,33 @@ class SixthScene(MovingCameraScene):
         ]).set_z_index(1)
         explanation_movement_group = VGroup(diagonal_explanation, diagonal_bullet, horizontal_explanation, horizontal_bullet, explanation_rectangle)
 
+        horizontal_movement_group = VGroup(horizontal_bullet, horizontal_explanation_if_if, horizontal_explanation_if_nabla, horizontal_explanation_a, horizontal_explanation_b)
+
+        explanation_second_movement_group = VGroup(diagonal_movement_group, horizontal_movement_group)
+
+        # Comparing "if you move diagonally" with nabla:
+        # nabla >= 0 -> move diagonally:
+        nabla_condition = Tex(r"$\boxed{\boldsymbol{\begin{cases}\nabla\ge0\rightarrow move\;diagonally\\\nabla<0\rightarrow move\;horizontally\end{cases}}}$", font_size=text_size * nabla_i_scale)
+        nabla_condition.set_z_index(2)
+        nabla_condition_rectangle = Rectangle(
+            width = get_len(nabla_condition),
+            height = get_height(nabla_condition),
+            fill_opacity = 0.7,
+            fill_color = BLACK,
+            stroke_opacity = 0.0
+        ).move_to(nabla_condition.get_center())
+        nabla_condition_group = VGroup(nabla_condition, nabla_condition_rectangle)
+
+        # Connecting nabla_i and nabla_{i+1}:
+        nabla_i_start = Tex(r"$\boldsymbol{\nabla_{i+1} = 2}$", r"$\boldsymbol{a_i}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{b_i}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
+        
+        nabla_i_copy = Tex(r"$\boldsymbol{=2}$", r"$\boldsymbol{a_i}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{b_i}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
+        variables = VGroup(Tex(r"$\boldsymbol{(a_{i-1}+1)}$", font_size=text_size), Tex(r"$\boldsymbol{(b_{i-1}+1)}$", font_size=text_size))
+        
+        nabla_i_plus_transformed = Tex(r"$\boldsymbol{=2}$", r"$\boldsymbol{(a_{i-1}+1)}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{(b_{i-1}+1)}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
+
         ################################################################################## ANIMATION ##################################################################################
-        self.next_section()
+        self.next_section(skip_animations=True)
         # Adding the equations:
         self.play(Write(nabla_i))
         self.wait(1)
@@ -3135,7 +3173,7 @@ class SixthScene(MovingCameraScene):
         )
         self.play(Create(nabla_i_rectangle))
         # Creating a plane:
-        self.next_section()
+        self.next_section(skip_animations=True)
         self.wait(1)
         self.play(Create(plane_box), run_time=2)
         self.play(Create(d1_dot), Write(d1_label))
@@ -3162,7 +3200,7 @@ class SixthScene(MovingCameraScene):
         self.play(
             Wiggle(d1_label, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime)
         )
-        self.next_section()
+        self.next_section(skip_animations=True)
         self.wait(1)
         self.play(
             ReplacementTransform(d1_label.copy(), group_is_zero)
@@ -3203,7 +3241,7 @@ class SixthScene(MovingCameraScene):
             ]),
             FadeOut(plane_rectangle)
         )
-        self.next_section()
+        self.next_section(skip_animations=True)
         self.wait(1)
         # Moving to 'If you move diagonally/horizontally':
         self.play(Create(d1_d2_line_diagonally))
@@ -3254,5 +3292,65 @@ class SixthScene(MovingCameraScene):
         # If you move horizontally:
         self.play(Write(horizontal_explanation_if), Write(horizontal_bullet))
         self.play(Write(horizontal_explanation_a), Write(horizontal_explanation_b))
+        self.wait(1)
+
+        # Nabla condition group:
+        nabla_condition_group.move_to([
+            self.camera.frame.get_right()[0] + 1/2* get_len(nabla_condition_group),
+            self.camera.frame.get_top()[1] - text_buff - 1/2*get_height(nabla_condition_group),
+            self.camera.frame.get_center()[2]
+        ])
+        nabla_condition_group.save_state()
+        diagonal_explanation_if_nabla.next_to(diagonal_explanation_if_if, RIGHT, buff=text_buff*3/4).shift([0, - 3/16 * text_buff, 0])
+        horizontal_explanation_if_nabla.next_to(horizontal_explanation_if_if, RIGHT, buff=text_buff*3/4).shift([0, - 3/16 * text_buff, 0])
+        self.play(nabla_condition_group.animate.shift([- get_len(nabla_condition_group) - text_buff, 0, 0]))
+        self.wait(1)
+        self.play(
+            FadeOut(diagonal_explanation_if_move),
+            FadeOut(horizontal_explanation_if_move),
+            Write(diagonal_explanation_if_nabla),
+            Write(horizontal_explanation_if_nabla)
+        )
+        self.next_section()
+        self.wait(1)
+        self.play(
+            Restore(nabla_condition_group),
+            FadeOut(plane),
+            FadeOut(horizontal_arrow),
+            FadeOut(horizontal_label),
+            FadeOut(horizontal_rectangle),
+            FadeOut(starting_label),
+            FadeOut(starting_rectangle),
+            FadeOut(explanation_rectangle),
+            FadeOut(starting_dot),
+            FadeOut(horizontal_dot),
+            FadeOut(d1_d2_line_diagonally),
+            diagonal_movement_group.animate.move_to([
+                self.camera.frame.get_center()[0] - 1/4*get_len(self.camera.frame),
+                self.camera.frame.get_center()[1] + 1/8 * get_height(self.camera.frame), self.camera.frame.get_center()[2]
+            ]),
+            horizontal_movement_group.animate.move_to([
+                self.camera.frame.get_center()[0] + 1/4*get_len(self.camera.frame),
+                self.camera.frame.get_center()[1] + 1/8 * get_height(self.camera.frame), self.camera.frame.get_center()[2]
+            ]),
+        )
+        self.play(
+            diagonal_movement_group.animate.shift([1/4*get_len(self.camera.frame), 0, 0]),
+            horizontal_movement_group.animate.shift([1/4*get_len(self.camera.frame) + 1/2*get_len(horizontal_movement_group), 0, 0])
+        )
+
+        # Connecting nabla_i and nabla_{i+1}:
+        nabla_i_start.move_to(nabla_i_plus.get_center()).scale(nabla_i_scale)
+        self.play(nabla_i_start.animate.next_to(diagonal_movement_group, DOWN, buff=text_buff).scale(1/nabla_i_scale))
+
+        nabla_i_plus_transformed.next_to(nabla_i_start, DOWN, buff=text_buff/2)
+        variables[0].move_to(diagonal_explanation_a.get_center()).shift([1/2*get_len(diagonal_explanation_a) - 1/2*get_len(variables[0]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        variables[1].move_to(diagonal_explanation_b.get_center()).shift([1/2*get_len(diagonal_explanation_b) - 1/2*get_len(variables[1]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        nabla_i_copy.move_to(nabla_i_start.get_center()).shift([1/2*get_len(nabla_i_start) - 1/2*get_len(nabla_i_copy), 0, 0])
+
+        self.add(nabla_i_copy)
+        self.play(nabla_i_copy.animate.move_to(nabla_i_plus_transformed.get_center()).shift([1/2*get_len(Tex(r"$\boldsymbol{\nabla_{i+1}}$", font_size=text_size)), 0, 0]))
+        self.play(ReplacementTransform(nabla_i_copy, nabla_i_plus_transformed))
+        
 
         self.wait(3)
