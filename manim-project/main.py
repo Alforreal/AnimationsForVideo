@@ -3148,12 +3148,56 @@ class SixthScene(MovingCameraScene):
 
         # Connecting nabla_i and nabla_{i+1}:
         nabla_i_start = Tex(r"$\boldsymbol{\nabla_{i+1} = 2}$", r"$\boldsymbol{a_i}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{b_i}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
+        nabla_i_start_equals = Tex(r"$\boldsymbol{=}$", font_size=text_size)
         
-        nabla_i_copy = Tex(r"$\boldsymbol{=2}$", r"$\boldsymbol{a_i}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{b_i}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
-        variables = VGroup(Tex(r"$\boldsymbol{(a_{i-1}+1)}$", font_size=text_size), Tex(r"$\boldsymbol{(b_{i-1}+1)}$", font_size=text_size))
-        
-        nabla_i_plus_transformed = Tex(r"$\boldsymbol{=2}$", r"$\boldsymbol{(a_{i-1}+1)}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{(b_{i-1}+1)}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
-
+        nabla_i_copy = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{a_i}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{b_i}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_plus_transformed = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{(a_{i-1}+1)}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{(b_{i-1}+1)}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_plus_transformed_equals = nabla_i_start_equals.copy()
+        nabla_i_opened_braces = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{a_{i-1}\Delta b + 2}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{b_{i-1}+2\Delta a}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_opened_braces_equals = nabla_i_start_equals.copy()
+        nabla_i_opened_braces_copy = Tex(
+            r"$\boldsymbol{\,=\>}$",
+            r"$\boldsymbol{2a_{i-1}\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,-\,2\Delta ab_{i-1}}$",
+            r"$\boldsymbol{\,+\,2\Delta a}$",
+            r"$\boldsymbol{\,-\,\Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_reordered = Tex(
+            r"$\boldsymbol{\,=\>}$",
+            r"$\boldsymbol{2a_{i-1}\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,-\,2\Delta ab_{i-1}}$",
+            r"$\boldsymbol{\,-\,\Delta a}$",
+            r"$\boldsymbol{\,+\,2\Delta a}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            font_size = text_size
+        )
+        nabla_i_reordered_open_brace = Tex(r"$\boldsymbol{(}$", font_size=text_size)
+        nabla_i_reordered_close_brace = Tex(r"$\boldsymbol{)}$", font_size=text_size)
         ################################################################################## ANIMATION ##################################################################################
         self.next_section(skip_animations=True)
         # Adding the equations:
@@ -3241,7 +3285,7 @@ class SixthScene(MovingCameraScene):
             ]),
             FadeOut(plane_rectangle)
         )
-        self.next_section(skip_animations=True)
+        self.next_section()
         self.wait(1)
         # Moving to 'If you move diagonally/horizontally':
         self.play(Create(d1_d2_line_diagonally))
@@ -3344,13 +3388,43 @@ class SixthScene(MovingCameraScene):
         self.play(nabla_i_start.animate.next_to(diagonal_movement_group, DOWN, buff=text_buff).scale(1/nabla_i_scale))
 
         nabla_i_plus_transformed.next_to(nabla_i_start, DOWN, buff=text_buff/2)
-        variables[0].move_to(diagonal_explanation_a.get_center()).shift([1/2*get_len(diagonal_explanation_a) - 1/2*get_len(variables[0]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
-        variables[1].move_to(diagonal_explanation_b.get_center()).shift([1/2*get_len(diagonal_explanation_b) - 1/2*get_len(variables[1]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        # variables[0].move_to(diagonal_explanation_a.get_center()).shift([1/2*get_len(diagonal_explanation_a) - 1/2*get_len(variables[0]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        # variables[1].move_to(diagonal_explanation_b.get_center()).shift([1/2*get_len(diagonal_explanation_b) - 1/2*get_len(variables[1]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
         nabla_i_copy.move_to(nabla_i_start.get_center()).shift([1/2*get_len(nabla_i_start) - 1/2*get_len(nabla_i_copy), 0, 0])
-
+        nabla_i_start_equals.next_to(nabla_i_start, RIGHT, buff=text_buff/4)
         self.add(nabla_i_copy)
-        self.play(nabla_i_copy.animate.move_to(nabla_i_plus_transformed.get_center()).shift([1/2*get_len(Tex(r"$\boldsymbol{\nabla_{i+1}}$", font_size=text_size)), 0, 0]))
+        self.play(
+            nabla_i_copy.animate.shift([0, -text_buff/2 - get_height(nabla_i_copy), 0]),
+            FadeIn(nabla_i_start_equals)
+        )
         self.play(ReplacementTransform(nabla_i_copy, nabla_i_plus_transformed))
+        nabla_i_opened_braces.next_to(nabla_i_plus_transformed, DOWN, buff=text_buff/2)
+        nabla_i_plus_transformed_equals.next_to(nabla_i_plus_transformed, RIGHT, buff=text_buff/4)
+        self.wait(1)
+        self.play(
+            ReplacementTransform(nabla_i_plus_transformed.copy(), nabla_i_opened_braces),
+            FadeIn(nabla_i_plus_transformed_equals)
+        )
+        self.wait(1)
+        nabla_i_opened_braces_copy.move_to(nabla_i_opened_braces.get_center()).shift([0, -text_buff/2 - get_height(nabla_i_opened_braces), 0])
+        nabla_i_reordered.next_to(nabla_i_opened_braces, DOWN, buff=text_buff/2)
+        nabla_i_opened_braces_equals.next_to(nabla_i_opened_braces, RIGHT, buff=text_buff/4)
+        self.play(
+            TransformMatchingShapes(nabla_i_opened_braces.copy(), nabla_i_opened_braces_copy),
+            FadeIn(nabla_i_opened_braces_equals)
+        )
+        self.play(TransformMatchingTex(nabla_i_opened_braces_copy, nabla_i_reordered))
+        self.wait(1)
+        nabla_i_reordered_open_brace.next_to(nabla_i_reordered[1], LEFT, buff=text_buff/4)
+        nabla_i_reordered_close_brace.next_to(nabla_i_reordered[4], RIGHT, buff=text_buff/4).match_y(nabla_i_reordered[0])
+        self.play(
+            FadeIn(nabla_i_reordered_open_brace),
+            FadeIn(nabla_i_reordered_close_brace),
+            nabla_i_reordered[0].animate.shift([-get_len(nabla_i_reordered_open_brace), 0, 0]),
+            nabla_i_reordered[5].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
+            nabla_i_reordered[6].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
+        )
+
         
 
         self.wait(3)
