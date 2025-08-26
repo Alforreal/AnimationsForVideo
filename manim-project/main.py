@@ -2371,9 +2371,12 @@ class FifthScene(MovingCameraScene):
 
         
         #new_nabla_rq.shift([0, -text_buff/3, 0])
-        nabla_rq_prime = Tex(r"$\boldsymbol{r'}$", 
-                             r"$- $",  
-                             r"$\boldsymbol{q'}$", font_size=text_size*4/3, color = ManimColor("#9059FF"))
+        nabla_rq_prime = Tex(
+            r"$\boldsymbol{r'}$", 
+            r"$- $",  
+            r"$\boldsymbol{q'}$", 
+            font_size=text_size*4/3, color = ManimColor("#9059FF")
+        )
         
         nabla_rq_equals = Tex(r"$\boldsymbol{\vphantom{\nabla} = }$", font_size=text_size*4/3, color = ManimColor("#9059FF"))
         new_nabla_expression = VGroup(nabla_rq_equals, nabla_rq_prime).arrange(RIGHT, buff=text_buff)
@@ -2412,11 +2415,12 @@ class FifthScene(MovingCameraScene):
         row3 = Tex(r"$anchor$", font_size = text_size)
         row4 = Tex(r"$anchor$", font_size = text_size)
 
-        rows = VGroup(row1, row2, row3, row4).arrange(UP, buff = 0.35)
+        rows = VGroup(row1, row2, row3, row4).arrange(UP, buff = 0.35) # change buff to set distance between equations
 
-        #A variable used with scale()
+        #variable used with scale()
         shrink = 0.8
 
+        #simplification steps
         equation_one = VGroup (brace_one, new_r_prime_after_equal, brace_two, phantom_minus, brace_three, new_q_prime_after_equal, brace_four)
 
         equation_two = Tex(r"$\boldsymbol{= \frac{\Delta b}{\Delta a}(a_1 + 1) - b_1 - b_1 - 1 + \frac{\Delta b}{\Delta a}(a_1 + 1)}$", font_size=text_size)
@@ -2434,7 +2438,67 @@ class FifthScene(MovingCameraScene):
         equal_after_four = equal_after_phantom.copy()
         equal_after_four.add_updater(lambda x: x.next_to(equation_four, RIGHT * text_buff))
 
-        equation_five = Tex(r"$\boldsymbol{= \frac{2a_1\Delta b + 2\Delta b - 2\Delta ab_1 -  \Delta a}{\Delta a} }$", font_size=text_size)
+        equal_before_five = Tex(r"$\boldsymbol{=}$", font_size=text_size)
+        equation_five = Tex(r"$\boldsymbol{\frac{2a_1\Delta b + 2\Delta b - 2\Delta ab_1 -  \Delta a}{\Delta a} }$", font_size=text_size)
+        
+        equation_five_group = VGroup(equal_before_five, equation_five).arrange(RIGHT, buff = text_buff)
+
+
+        #------ Делаем новую фантомную штуку ------
+
+        # phantom final nabla Expression
+        final_nabla_phantom = Tex(r"$\boldsymbol{\nabla}$", font_size=text_size)
+
+        final_nabla_equals_phantom = Tex(r"$\boldsymbol{=}$", font_size=text_size)
+
+        delta_a_1_phantom = Tex(r"$\boldsymbol{\Delta a}$", font_size=text_size)
+
+        delta_bracket_1_phantom = Tex(r"$\boldsymbol{(}$", font_size=text_size).set_color(BLUE)
+
+        new_rq_prime_phantom = Tex(r"$\boldsymbol{r'-q'}$", font_size=text_size)
+
+        delta_bracket_2_phantom = Tex(r"$\boldsymbol{)}$", font_size=text_size).set_color(BLUE)
+
+        phantom_final_nabla_group = VGroup( final_nabla_phantom, final_nabla_equals_phantom, new_rq_prime_phantom)
+        phantom_final_nabla_group.set_color(GREEN)
+
+        # phantom 5th equation 
+
+        equal_before_five_phantom = final_nabla_equals_phantom.copy()
+
+
+        delta_a_2_phantom = delta_a_1_phantom.copy()
+
+        delta_bracket_3_phantom = delta_bracket_1_phantom.copy()
+
+        equation_five_phantom = equation_five.copy() # Выглядит забавно, я знаю. Это чтобы не забыть порядок
+
+        delta_bracket_4_phantom = delta_bracket_2_phantom.copy()
+
+        phantom_delta_equation = VGroup(final_nabla_phantom, final_nabla_equals_phantom, delta_a_1_phantom, delta_bracket_1_phantom, new_rq_prime_phantom,  delta_bracket_2_phantom, equal_before_five_phantom, delta_a_2_phantom, delta_bracket_3_phantom, equation_five_phantom, delta_bracket_4_phantom).arrange(RIGHT, buff = text_buff)
+
+        phantom_delta_equation.move_to(row2.get_center())
+
+        #------ Теперь не фантомную штуку ------
+
+        # final nabla Expression
+        new_nabla = final_nabla_phantom.copy()
+
+        new_nabla_equals = final_nabla_equals_phantom.copy()
+
+        new_rq_prime = new_rq_prime_phantom.copy()
+
+        final_nabla_expression = VGroup(new_nabla, new_nabla_equals, new_rq_prime).arrange(RIGHT, buff = text_buff)
+
+        #final form
+
+        
+        equal_after_five = final_nabla_equals_phantom.copy()
+        equal_before_final = final_nabla_equals_phantom.copy()
+        final_form = Tex(r"$\boldsymbol{2a_1\Delta b + 2\Delta b - 2\Delta ab_1 -  \Delta a}$", font_size=3.5/4 * text_size)
+
+        final_form_group = VGroup(equal_before_final, final_form).arrange(RIGHT, buff = text_buff)
+
         #**************************************************************Animation sextion***********************************************
         self.next_section(skip_animations=True)
         # self.camera.frame.scale(0.4) <- Not used
@@ -2731,7 +2795,7 @@ class FifthScene(MovingCameraScene):
                 r_div_smaller_brace.get_center()[1], r_div_smaller_brace.get_center()[2]
             ]),
         )
-        self.next_section()
+        self.next_section(skip_animations=True)
         self.wait(1)
         self.play(
             rq_identity.animate.set_opacity(0.0),
@@ -2775,12 +2839,15 @@ class FifthScene(MovingCameraScene):
         ****************************************************************************************************************************************
         '''
 
-        
+        self.next_section()
         self.wait(1.5)
+        
+        #Приписываем прайм штуки
         self.play(nabla_expression.animate.shift(LEFT * get_len(new_nabla_expression)/2))
         self.play(Write(new_nabla_expression.next_to(nabla_expression, RIGHT, buff = text_buff)))
         self.wait(2)
 
+        #Заменяем
         self.play(Unwrite(nabla_rq), Unwrite(nabla_rq_equals))
         self.play(nabla.animate.shift(RIGHT * get_len(nabla_rq)), nabla_rq_prime.animate.shift(LEFT * get_len(nabla_rq)))
         nabla_expression.remove(nabla_rq)
@@ -2789,12 +2856,14 @@ class FifthScene(MovingCameraScene):
 
 
         self.wait(1.5)
+        #Спавним за камерой, потом двигаем на место
         self.add(new_prime_equations.move_to(self.camera.frame.get_left()).shift(LEFT * get_len(new_prime_equations)).shift(UP * get_height(new_prime_equations)*2))
 
         self.play(new_prime_equations.animate.shift(RIGHT * get_len(new_prime_equations) *1.6))
 
         self.wait(1)
 
+        # Рисуем скобочки и штучки
         self.play(
             #Write(equal_after_new_nabla.move_to(nabla_expression.get_center()).shift(RIGHT * (get_len(nabla_expression)/2 + get_len(equal_after_new_nabla)))),
             Write(equal_after_new_nabla.next_to(nabla_expression, RIGHT, buff = text_buff)),
@@ -2807,6 +2876,7 @@ class FifthScene(MovingCameraScene):
         )
         self.wait(1)
 
+        # Меняем цвет 
         self.play(
             nabla_rq_prime[0].animate.set_color(r_prime_stuff_color),
             new_r_prime.animate.set_color(r_prime_stuff_color),
@@ -2814,87 +2884,150 @@ class FifthScene(MovingCameraScene):
         self.wait(1)
 
         self.wait(1)
+        # Двигаем в между скобочек
         self.play( 
             new_r_prime_after_equal.animate.move_to(r_prime_phantom.get_center()),
             FadeOut(new_r_prime_before_equal)
         )
         self.wait(1)
+
+        # Меняем цвет
         self.play(
             nabla_rq_prime[2].animate.set_color(q_prime_stuff_color),
             new_q_prime.animate.set_color(q_prime_stuff_color) 
         )
+
         self.wait(1)
+        # Двигаем в между скобочек
         self.play( 
             new_q_prime_after_equal.animate.move_to(q_prime_phantom.get_center()),
             FadeOut(new_q_prime_before_equal)
         )
 
+        # Убираем лишнее
         self.play(
-            FadeOut(nabla_expression),
+            nabla_expression.animate.set_opacity(0),
             FadeOut(equal_after_new_nabla),
             FadeOut(equal_before_phantom),
         )
         self.wait(1)
-        #self.play(equation_one.animate.move_to(row1.get_center()))
+
         self.play(equation_one.animate.set_color(WHITE))
         self.wait(1)
-        # self.play(
-        #     equation_one.animate.move_to(row2.get_center()).scale(0.8)
-        # )
 
-        # self.play(
-        #     equation_one.animate.move_to(row3.get_center()).scale(0.8)
-        # )
-
-        # self.play(
-        #     equation_one.animate.move_to(row4.get_center()).scale(0.8)
-        # )
+        #Итерация упрощений 1 (ниже закоментил знаки "=" после каждого equation, чтобы сравнить как лучше)
         #equation_one.add(equal_after_phantom)
-        self.play(FadeIn(equal_after_phantom.next_to(equation_one, RIGHT * text_buff)))
+        #self.play(FadeIn(equal_after_phantom.next_to(equation_one, RIGHT * text_buff)))
         self.play(
             equation_one.animate.move_to(row2.get_center()).scale(shrink),
             FadeIn(equation_two.move_to(row1.get_center()))
         )
         self.wait(1)
 
-
-        self.play(FadeIn(equal_after_two))
+        #Итерация упрощений 2
+        #self.play(FadeIn(equal_after_two))
 
         self.play(
             equation_one.animate.move_to(row3.get_center()).scale(shrink),
-            equal_after_phantom.animate.scale(shrink),
+            #equal_after_phantom.animate.scale(shrink),
             equation_two.animate.move_to(row2.get_center()).scale(shrink),
-            equal_after_two.animate.scale(shrink),
+            #equal_after_two.animate.scale(shrink),
             FadeIn(equation_three.move_to(row1.get_center()))
         )
 
         self.wait(1)
 
-        self.play(FadeIn(equal_after_three))
+        #Итерация упрощений 3
+        #self.play(FadeIn(equal_after_three))
 
         self.play(
             equation_one.animate.move_to(row4.get_center()).scale(shrink).set_opacity(0),
-            equal_after_phantom.animate.scale(shrink).set_opacity(0),
+            #equal_after_phantom.animate.scale(shrink).set_opacity(0),
             equation_two.animate.move_to(row3.get_center()).scale(shrink),
-            equal_after_two.animate.scale(shrink),
+            #equal_after_two.animate.scale(shrink),
             equation_three.animate.move_to(row2.get_center()).scale(shrink),
-            equal_after_three.animate.scale(shrink),
+            #equal_after_three.animate.scale(shrink),
             FadeIn(equation_four.move_to(row1.get_center()))
 
         )
 
         self.wait(1)
 
-        self.play(FadeIn(equal_after_four))
+        #Итерация упрощений 4
+        #self.play(FadeIn(equal_after_four))
 
         self.play(
             equation_two.animate.move_to(row4.get_center()).scale(shrink).set_opacity(0),
-            equal_after_two.animate.scale(shrink).set_opacity(0),
+            #equal_after_two.animate.scale(shrink).set_opacity(0),
             equation_three.animate.move_to(row3.get_center()).scale(shrink),
-            equal_after_three.animate.scale(shrink),
+            #equal_after_three.animate.scale(shrink),
             equation_four.animate.move_to(row2.get_center()).scale(shrink),
-            equal_after_four.animate.scale(shrink),
-            FadeIn(equation_five.move_to(row1.get_center()))
+            #equal_after_four.animate.scale(shrink),
+            FadeIn(equation_five_group.move_to(row1.get_center()))
+        )
+        
+        self.wait(2)
+
+        #Итерация упрощений 5. Тут оставляем только 5 equation
+        self.play(
+            equation_five_group.animate.move_to(row2.get_center()),
+            equation_four.animate.move_to(row3.get_center()).scale(shrink).set_opacity(0),
+            #equal_after_four.animate.scale(shrink).set_opacity(0),
+            equation_three.animate.move_to(row4.get_center()).scale(shrink).set_opacity(0),
+            #equal_after_three.animate.scale(shrink).set_opacity(0),
+
+        )
+        
+        self.next_section()
+
+        #Спавним наблу за камерой
+        final_nabla_expression.move_to([
+            self.camera.frame.get_left()[0] - get_len(final_nabla_expression) * 4/3,
+            row2.get_center()[1],
+            0
+        ])
+
+        final_nabla_expression.set_color(GREEN_C)
+
+        # Вставляем на место так, чтобы все было по центру
+        self.play(
+            equation_five_group.animate.shift(RIGHT * ((get_len(final_nabla_expression) + text_buff )/2 )),
+            final_nabla_expression.animate.next_to(equation_five_group, LEFT, buff = text_buff/2 - (get_len(final_nabla_expression)/2))
         )
 
+
+        self.wait(3)
+        
+        #Група которая меняется на phantom_delta_equation. Решил именно тут в секции анимаций делать, чтобы было понятнее
+        preinstance = VGroup(final_nabla_expression, equation_five_group)
+
+        self.play(TransformMatchingTex(preinstance, phantom_delta_equation))
+
+        self.wait(1)
+
+        # Чуть подімаем
+        self.play(
+            phantom_delta_equation.animate.move_to(row3.get_center()),
+        )
+
+        # Рисуем знак "="
+        self.play(
+            phantom_delta_equation.animate.shift(LEFT * ((get_len(equal_after_five) + text_buff )/2 )),
+            FadeIn(equal_after_five.next_to(phantom_delta_equation, RIGHT, buff = text_buff/2 - (get_len(equal_after_five)/2)))
+        )
+
+        # Спваним финальную форму
+        self.play(
+            FadeIn(final_form_group.move_to(row2.get_center()))
+        )
+
+        self.wait(2)
+
+        # убираем все лишнее и ставим уравнение в нужное место
+        self.play(
+            FadeOut(phantom_delta_equation),
+            FadeOut(equal_after_five),
+            FadeOut(equal_before_final),
+            final_form.animate.shift(LEFT * ((get_len(equal_before_final)/2) + text_buff/2))
+        )
         self.wait(3)
