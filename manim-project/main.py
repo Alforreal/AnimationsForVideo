@@ -3561,3 +3561,568 @@ class SixthScene(MovingCameraScene):
         
 
         self.wait(3)
+
+
+class SixthScene(MovingCameraScene):
+    def construct(self):
+        # border = always_redraw(lambda: Rectangle(width=get_len(self.camera.frame), height=get_height(self.camera.frame), stroke_width=1)) # For ease of debugging
+        text_size = 44
+        text_buff = 0.25
+        # "Let’s re-write the indices to make everything look a bit more like computer code rather than some maths:"
+        # The first equation:
+        nabla_i = Tex(r"$\boldsymbol{\nabla_i = 2a_{i-1}\Delta b + 2\Delta b - 2\Delta ab_{i-1} - \Delta a}$", font_size=text_size)
+        nabla_i.move_to(self.camera.frame.get_center()) # Maybe redundant, but just to be sure
+
+        # The second equation:
+        nabla_i_plus = Tex(r"$\boldsymbol{\nabla_{i+1} = 2a_i\Delta b + 2\Delta b - 2\Delta ab_i - \Delta a}$", font_size=text_size)
+        nabla_i_plus.next_to(nabla_i, DOWN, buff=text_buff).shift([- 1/2*get_len(nabla_i) + 1/2*get_len(nabla_i_plus), 0, 0])
+
+        # i є [1, \Delta a]:
+        nabla_i_e = Tex(r"$\boldsymbol{for\;i\; \epsilon\;[1, \Delta a]:}$", font_size=text_size)
+        nabla_i_e.next_to(nabla_i, UP, buff=text_buff).shift([- 1/2*get_len(nabla_i) + 1/2*get_len(nabla_i_e), 0, 0])
+
+        nabla_i_group = VGroup(nabla_i, nabla_i_plus, nabla_i_e).set_z_index(2)
+
+        # Rectangle for the equations:
+        nabla_i_scale = 0.7
+        nabla_i_rectangle = Rectangle(
+            width = get_len(nabla_i_group) * nabla_i_scale + text_buff/2,
+            height = get_height(nabla_i_group) * nabla_i_scale + text_buff/4,
+            stroke_width = 1,
+            fill_opacity = 0.7,
+            fill_color=BLACK
+        ).move_to([
+            self.camera.frame.get_left()[0] + text_buff + 1/2*get_len(nabla_i_group) * nabla_i_scale,
+            self.camera.frame.get_top()[1] - text_buff - 1/2*get_height(nabla_i_group) * nabla_i_scale,
+            nabla_i_group.get_center()[2]
+        ]).set_z_index(1)
+
+        # Grid and points on the grid:
+        # Plane:
+        plane_square_size = 4.5
+        num_squares_x = 4
+        num_squares_y = 3
+        tick_size = 0.15
+        line_stroke_width = 5
+        background_stroke_width = 3
+        plane = NumberPlane(
+            x_range = [0, num_squares_x, 1],
+            y_range = [0, num_squares_y, 1],
+            x_length = plane_square_size * num_squares_x,
+            y_length = plane_square_size * num_squares_y,
+            axis_config = {
+                "include_numbers": True,
+                "font_size": text_size,
+                "include_ticks": True,
+                "tick_size": tick_size,
+                "line_to_number_buff": text_buff,
+                "stroke_width": line_stroke_width
+            },
+            x_axis_config = {
+                "label_direction": DOWN
+            },
+            y_axis_config = {
+                "label_direction": LEFT
+            },
+            background_line_style={
+                "stroke_width": background_stroke_width
+            },
+
+        )
+        plane_upper_line = Line(start=plane.c2p(0, num_squares_x*plane_square_size), end=plane.c2p(num_squares_x*plane_square_size, num_squares_y*plane_square_size), stroke_width= 2, color=WHITE)
+        plane_right_line = Line(start=plane.c2p(num_squares_x*plane_square_size, num_squares_y*plane_square_size), end=plane.c2p(num_squares_x*plane_square_size,0), stroke_width= 2, color=WHITE)
+
+        plane_box = VGroup(plane, plane_upper_line, plane_right_line)
+        plane_box.move_to([
+            self.camera.frame.get_left()[0] + 3/16*get_len(self.camera.frame) + 1/2*get_len(plane_box),
+            self.camera.frame.get_bottom()[1] + 1/4*get_height(self.camera.frame) + 1/2*get_len(plane_box), plane_box.get_center()[2]
+        ]).set_z_index(0)
+
+        # Points:
+        d1_dot = Dot(plane.c2p(0, 0), radius= 0.1, color=GREEN).set_z_index(2)
+        d1_label = Tex(r"$\boldsymbol{D_1 (0, 0)}$", font_size=text_size).next_to(d1_dot, DOWN, buff=text_buff/2)
+        d1_group = VGroup(d1_dot, d1_label)
+
+        # Rectangle for the equations on the number plane:
+        plane_rectangle = Rectangle(
+            width = pixels_to_munits(background_stroke_width) + text_buff,
+            height = plane_square_size - tick_size - pixels_to_munits(background_stroke_width) - 0.01,
+            fill_opacity = 0.7,
+            stroke_opacity = 0.0,
+            stroke_width = 0.0,
+            fill_color = BLACK
+        ).move_to([
+            plane.c2p(2, 0.5)[0],
+            plane.c2p(2, 0.5)[1] + 1/2*tick_size,
+            plane.c2p(2, 0.5)[2]
+        ]).set_z_index(1)
+
+        # Nabla equation in the rectangle:
+        nabla_plane_temp = Tex(r"$\boldsymbol{a}$", font_size=text_size)
+        # nabla_i: \boldsymbol{\nabla_i = 2a_{i-1}\Delta b + 2\Delta b - 2\Delta ab_{i-1} - \Delta a
+        nabla_plane_nabla = Tex(r"$\boldsymbol{\nabla_i}$", font_size = nabla_i_scale * text_size)
+        nabla_plane_equals_equals = Tex(r"$\boldsymbol{=}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_nabla, RIGHT, buff=text_buff)
+        nabla_plane_equals_two = Tex(r"$\boldsymbol{2}$", font_size= nabla_i_scale * text_size).next_to(nabla_plane_equals_equals, RIGHT, buff=text_buff/2)
+        nabla_plane_equals = VGroup(nabla_plane_equals_equals, nabla_plane_equals_two)
+        nabla_plane_a = Tex(r"$\boldsymbol{a_{i-1}}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_equals, RIGHT, buff=text_buff/4).shift([0, -0.05, 0])
+        nabla_plane_delta_b_b = Tex(r"$\boldsymbol{\Delta b \;+}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_a, RIGHT, buff=text_buff/4).shift([0, -0.0125, 0])
+        nabla_plane_delta_b_2b = Tex(r"$\boldsymbol{2\Delta b}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_delta_b_b, RIGHT, buff=text_buff/2).shift([0, 0.0125, 0])
+        nabla_plane_delta_b_a = Tex(r"$\boldsymbol{-\;2\Delta a}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_delta_b_2b, RIGHT, buff=text_buff/2)
+        nabla_plane_delta_b = VGroup(nabla_plane_delta_b_b, nabla_plane_delta_b_2b, nabla_plane_delta_b_a)
+        nabla_plane_b = Tex(r"$\boldsymbol{b_{i-1}}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_delta_b, RIGHT, buff=text_buff/4).shift([0, -0.025, 0])
+        nabla_plane_delta_a = Tex(r"$\boldsymbol{- \Delta a}$", font_size = nabla_i_scale * text_size).next_to(nabla_plane_b, RIGHT, buff=text_buff/4).match_y(nabla_plane_nabla)
+
+        nabla_plane_remove = VGroup(nabla_plane_nabla, nabla_plane_a, nabla_plane_b)
+
+        nabla_plane_group = VGroup(nabla_plane_nabla, nabla_plane_equals, nabla_plane_a, nabla_plane_delta_b, nabla_plane_b, nabla_plane_delta_a)
+        nabla_plane_group.move_to(plane.c2p(2, 0.5)).set_z_index(2)
+
+        # Second instance of the equation:
+        i_is_one = Tex(r"$\boldsymbol{i=1:}$", font_size= nabla_i_scale * text_size).next_to(nabla_plane_nabla, LEFT, buff=text_buff/2)
+        nabla_one_nabla = Tex(r"$\boldsymbol{\nabla_1}$", font_size = nabla_i_scale * text_size).move_to(nabla_plane_nabla.get_center())
+        nabla_one_a = Tex(r"$\boldsymbol{\times a_0 \times}$", font_size = nabla_i_scale * text_size).move_to(nabla_plane_a.get_center())
+        nabla_one_a.next_to(nabla_one_nabla, RIGHT, buff=text_buff + get_len(nabla_plane_equals)).shift([0, -0.025, 0])
+        nabla_one_b = Tex(r"$\boldsymbol{\times b_0}$", font_size = nabla_i_scale * text_size).move_to(nabla_plane_b.get_center())
+        nabla_one_b.next_to(nabla_one_nabla, RIGHT, buff=6/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_one_a) + get_len(nabla_plane_delta_b))
+
+        nabla_one_remove = VGroup(nabla_one_nabla, nabla_one_a, nabla_one_b)
+
+        nabla_one_group = VGroup(i_is_one, nabla_one_nabla, nabla_plane_equals, nabla_one_a, nabla_plane_delta_b, nabla_one_b, nabla_plane_delta_a).set_z_index(2)
+
+        # a0 = 0, b0 = 0:
+        a_is_zero = Tex(r"$\boldsymbol{a_0=0}$", font_size = nabla_i_scale * text_size)
+        b_is_zero = Tex(r"$\boldsymbol{b_0=0}$", font_size = nabla_i_scale * text_size).next_to(a_is_zero, DOWN, buff=text_buff/2)
+        group_is_zero = VGroup(a_is_zero, b_is_zero)
+        group_is_zero.next_to(i_is_one, UP, buff=text_buff/2)
+
+        # Third instance of the equation:
+        nabla_zero_a = Tex(r"$\boldsymbol{\times 0 \times}$", font_size = nabla_i_scale * text_size).next_to(nabla_one_nabla, RIGHT, buff=3/4*text_buff + get_len(nabla_plane_equals))
+        nabla_zero_b = Tex(r"$\boldsymbol{\times 0}$", font_size = nabla_i_scale * text_size)
+        nabla_zero_b.next_to(nabla_one_nabla, RIGHT, buff=5/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_zero_a) + get_len(nabla_plane_delta_b))
+
+        # Removal group:
+        nabla_removal_group = VGroup(nabla_plane_equals_two, nabla_zero_a, nabla_plane_delta_b_b, nabla_plane_delta_b_a, nabla_zero_b)
+        nabla_simplified = VGroup(nabla_one_nabla, nabla_plane_equals_equals, nabla_plane_delta_b_2b, nabla_plane_delta_a)
+
+        # Bigger rectangle for the top left:
+        nabla_i_bigger_rectangle = Rectangle(
+            width = get_len(nabla_i_group) * nabla_i_scale + text_buff/2,
+            height = get_height(nabla_i_group) * nabla_i_scale + get_height(nabla_simplified) + 3/4*text_buff,
+            stroke_width = 1,
+            fill_opacity = 0.7,
+            fill_color=BLACK
+        ).move_to([
+            self.camera.frame.get_left()[0] + text_buff + 1/2*get_len(nabla_i_group) * nabla_i_scale,
+            self.camera.frame.get_top()[1] - 5/4*text_buff - 1/2*get_height(nabla_i_group) * nabla_i_scale - 1/2*get_height(nabla_simplified),
+            nabla_i_group.get_center()[2]
+        ]).set_z_index(1)
+
+        nabla_i_movement_group = VGroup(nabla_i_group, nabla_i_bigger_rectangle, nabla_simplified)
+
+        # 'If we have just moved diagonally':
+        starting_dot = Dot(plane.c2p(1, 1), radius = 0.1, color=GREEN).set_z_index(2)
+        starting_label = Tex(r"$\boldsymbol{(a_{i-1}, \; b_{i-1})}$", font_size=text_size).next_to(starting_dot, DOWN, buff=text_buff).set_z_index(2)
+        starting_rectangle = Rectangle(
+            width = get_len(starting_label),
+            height = get_height(starting_label),
+            fill_opacity = 0.7,
+            fill_color = BLACK,
+            stroke_opacity = 0.0
+        ).move_to(starting_label.get_center()).set_z_index(1)
+
+        d1_d2_line_diagonally = Line(
+            start = d1_dot.get_center(),
+            end = plane.c2p(4, 3.6),
+            stroke_width = 10,
+            color = WHITE
+        )
+
+        starting_arrow = Arrow(
+            start = d1_dot.get_center(),
+            end = plane.c2p(1, 1),
+            color = ManimColor("#FF0000"),
+            buff = 1/2*get_len(starting_dot)
+        ).set_z_index(-1)
+
+        diagonal_dot = Dot(plane.c2p(2, 2), radius = 0.1, color=GREEN).set_z_index(2)
+        diagonal_label = Tex(r"$\boldsymbol{(a_i, \; b_i)}$", font_size=text_size).next_to(diagonal_dot, UP, buff=text_buff).set_z_index(2)
+        diagonal_rectangle = Rectangle(
+            width = get_len(diagonal_label),
+            height = get_height(diagonal_label),
+            fill_opacity = 0.7,
+            fill_color = BLACK,
+            stroke_opacity = 0.0
+        ).move_to(diagonal_label.get_center()).set_z_index(1)
+
+        diagonal_arrow = Arrow(
+            start = starting_dot.get_center(),
+            end = diagonal_dot.get_center(),
+            color = ManimColor("#FF0000"),
+            buff = get_len(diagonal_dot)/2
+        )
+
+        # 'If you move diagonally/horizontally' labels and text:
+        # Diagonally:
+
+        diagonal_explanation_if_if = Tex(r"$\boldsymbol{\textbf{if}}$", font_size=text_size)
+        diagonal_explanation_if_move = Tex(r"$\boldsymbol{\textbf{you move diagonally:}}$", font_size=text_size).next_to(diagonal_explanation_if_if, RIGHT, buff=text_buff/2)
+        diagonal_explanation_if = VGroup(diagonal_explanation_if_if, diagonal_explanation_if_move)
+
+        diagonal_explanation_if_nabla = Tex(r"$\boldsymbol{\nabla \ge 0:}$", font_size=text_size).set_z_index(2)
+        
+        # diagonal_explanation_if = Tex(r"$\boldsymbol{\textbf{if you move diagonally:}}$", font_size = text_size)
+        diagonal_explanation_a = Tex(r"$\boldsymbol{a_i = a_{i-1}+1}$", font_size=text_size).next_to(diagonal_explanation_if, DOWN, buff=text_buff/2)
+        diagonal_explanation_a.shift([-1/2*get_len(diagonal_explanation_if) + 1/2*get_len(diagonal_explanation_a), 0, 0])
+
+        diagonal_explanation_b = Tex(r"$\boldsymbol{b_i = b_{i-1}+1}$", font_size=text_size).next_to(diagonal_explanation_a, DOWN, buff=text_buff/2)
+        diagonal_explanation_b.shift([-1/2*get_len(diagonal_explanation_a) + 1/2*get_len(diagonal_explanation_b), 0, 0])
+
+        diagonal_explanation = VGroup(diagonal_explanation_if, diagonal_explanation_a, diagonal_explanation_b)
+        diagonal_explanation.move_to(plane.c2p(3,1.75)).set_z_index(2)
+
+        diagonal_bullet = Tex(r"$\bullet$", font_size=text_size).next_to(diagonal_explanation_if, LEFT, buff=text_buff/2).set_z_index(2)
+
+        diagonal_movement_group = VGroup(diagonal_bullet, diagonal_explanation_if_if, diagonal_explanation_if_nabla, diagonal_explanation_a, diagonal_explanation_b)
+
+        # Horizontally:
+        horizontal_dot = Dot(plane.c2p(2, 1), radius = 0.1, color=GREEN).set_z_index(2)
+        horizontal_label = diagonal_label.copy().next_to(horizontal_dot, DOWN, buff=text_buff)
+        horizontal_rectangle = diagonal_rectangle.copy().move_to(horizontal_label.get_center())
+
+        horizontal_arrow = Arrow(
+            start = starting_dot.get_center(),
+            end = horizontal_dot.get_center(),
+            color = ManimColor("#FF0000"),
+            buff = get_len(horizontal_dot)/2
+        ).set_z_index(1)
+
+        horizontal_explanation_if_if = Tex(r"$\boldsymbol{\textbf{if}}$", font_size=text_size).next_to(diagonal_explanation, DOWN, buff=text_buff)
+        horizontal_explanation_if_if.match_x(diagonal_explanation_if_if)
+        horizontal_explanation_if_move = Tex(r"$\boldsymbol{\textbf{you move horizontally:}}$", font_size=text_size).next_to(horizontal_explanation_if_if, RIGHT, buff=text_buff/2)
+        horizontal_explanation_if = VGroup(horizontal_explanation_if_if, horizontal_explanation_if_move)
+
+        horizontal_explanation_if_nabla = Tex(r"$\boldsymbol{\nabla < 0:}$", font_size=text_size).set_z_index(2)
+        
+        horizontal_explanation_a = Tex(r"$\boldsymbol{a_i = a_{i-1}+1}$", font_size=text_size).next_to(horizontal_explanation_if, DOWN, buff=text_buff/2)
+        horizontal_explanation_a.shift([-1/2*get_len(horizontal_explanation_if) + 1/2*get_len(horizontal_explanation_a), 0, 0])
+
+        horizontal_explanation_b = Tex(r"$\boldsymbol{b_i = b_{i-1}}$", font_size=text_size).next_to(horizontal_explanation_a, DOWN, buff=text_buff/2)
+        horizontal_explanation_b.shift([-1/2*get_len(horizontal_explanation_a) + 1/2*get_len(horizontal_explanation_b), 0, 0])
+
+        horizontal_explanation = VGroup(horizontal_explanation_if, horizontal_explanation_a, horizontal_explanation_b)
+        horizontal_explanation.set_z_index(2)
+
+        horizontal_bullet = Tex(r"$\bullet$", font_size=text_size).next_to(horizontal_explanation_if, LEFT, buff=text_buff/2).set_z_index(2)
+
+        explanation_rectangle = Rectangle(
+            width = horizontal_explanation_if.get_right()[0] - diagonal_bullet.get_left()[0],
+            height = plane_square_size - pixels_to_munits(background_stroke_width) - 0.01,
+            fill_opacity = 0.7,
+            stroke_opacity = 0.0,
+            stroke_width = 0.0,
+            fill_color = BLACK
+        ).move_to([
+            diagonal_bullet.get_left()[0] + 1/2*(horizontal_explanation_if.get_right()[0] - diagonal_bullet.get_left()[0]),
+            plane.c2p(3, 1.5)[1], plane.c2p(3, 1.5)[2]
+        ]).set_z_index(1)
+        explanation_movement_group = VGroup(diagonal_explanation, diagonal_bullet, horizontal_explanation, horizontal_bullet, explanation_rectangle)
+
+        horizontal_movement_group = VGroup(horizontal_bullet, horizontal_explanation_if_if, horizontal_explanation_if_nabla, horizontal_explanation_a, horizontal_explanation_b)
+
+        explanation_second_movement_group = VGroup(diagonal_movement_group, horizontal_movement_group)
+
+        # Comparing "if you move diagonally" with nabla:
+        # nabla >= 0 -> move diagonally:
+        nabla_condition = Tex(r"$\boxed{\boldsymbol{\begin{cases}\nabla\ge0\rightarrow move\;diagonally\\\nabla<0\rightarrow move\;horizontally\end{cases}}}$", font_size=text_size * nabla_i_scale)
+        nabla_condition.set_z_index(2)
+        nabla_condition_rectangle = Rectangle(
+            width = get_len(nabla_condition),
+            height = get_height(nabla_condition),
+            fill_opacity = 0.7,
+            fill_color = BLACK,
+            stroke_opacity = 0.0
+        ).move_to(nabla_condition.get_center())
+        nabla_condition_group = VGroup(nabla_condition, nabla_condition_rectangle)
+
+        # Connecting nabla_i and nabla_{i+1}:
+        nabla_i_start = Tex(r"$\boldsymbol{\nabla_{i+1} = 2}$", r"$\boldsymbol{a_i}$", r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$", r"$\boldsymbol{b_i}$", r"$\boldsymbol{ - \Delta a}$", font_size = text_size)
+        nabla_i_start_equals = Tex(r"$\boldsymbol{=}$", font_size=text_size)
+        
+        nabla_i_copy = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{a_i}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{b_i}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_plus_transformed = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{(a_{i-1}+1)}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{(b_{i-1}+1)}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_plus_transformed_equals = nabla_i_start_equals.copy()
+        nabla_i_opened_braces = Tex(
+            r"$\boldsymbol{=2}$",
+            r"$\boldsymbol{a_{i-1}\Delta b + 2}$",
+            r"$\boldsymbol{\Delta b + 2\Delta b - 2\Delta a}$",
+            r"$\boldsymbol{b_{i-1}+2\Delta a}$",
+            r"$\boldsymbol{ - \Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_opened_braces_equals = nabla_i_start_equals.copy()
+        nabla_i_opened_braces_copy = Tex(
+            r"$\boldsymbol{\,=\>}$",
+            r"$\boldsymbol{2a_{i-1}\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,-\,2\Delta ab_{i-1}}$",
+            r"$\boldsymbol{\,+\,2\Delta a}$",
+            r"$\boldsymbol{\,-\,\Delta a}$",
+            font_size = text_size
+        )
+        nabla_i_reordered = Tex(
+            r"$\boldsymbol{\,=\>}$",
+            r"$\boldsymbol{2a_{i-1}\Delta b}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            r"$\boldsymbol{\,-\,2\Delta ab_{i-1}}$",
+            r"$\boldsymbol{\,-\,\Delta a}$",
+            r"$\boldsymbol{\,+\,2\Delta a}$",
+            r"$\boldsymbol{\,+\,2\Delta b}$",
+            font_size = text_size
+        )
+        nabla_i_reordered_open_brace = Tex(r"$\boldsymbol{(}$", font_size=text_size)
+        nabla_i_reordered_close_brace = Tex(r"$\boldsymbol{)}$", font_size=text_size)
+        ################################################################################## ANIMATION ##################################################################################
+        self.next_section(skip_animations=True)
+        # Adding the equations:
+        self.play(Write(nabla_i))
+        self.wait(1)
+        self.play(Write(nabla_i_plus))
+        self.wait(1)
+        self.play(Write(nabla_i_e))
+
+        # Putting the equations aside:
+        self.play(
+            nabla_i_group.animate.scale(nabla_i_scale).move_to([
+                self.camera.frame.get_left()[0] + text_buff + 1/2*get_len(nabla_i_group) * nabla_i_scale,
+                self.camera.frame.get_top()[1] - text_buff - 1/2*get_height(nabla_i_group) * nabla_i_scale,
+                nabla_i_group.get_center()[2]
+            ]),
+        )
+        self.play(Create(nabla_i_rectangle))
+        # Creating a plane:
+        self.next_section(skip_animations=True)
+        self.wait(1)
+        self.play(Create(plane_box), run_time=2)
+        self.play(Create(d1_dot), Write(d1_label))
+        self.wait(1)
+        self.play(
+            Create(plane_rectangle),
+            ReplacementTransform(nabla_i.copy(), nabla_plane_group)
+        )
+        self.wait(1)
+        self.play(Write(i_is_one))
+        self.play(
+            FadeOut(nabla_plane_remove),
+            Write(nabla_one_remove),
+            nabla_plane_equals.animate.next_to(nabla_one_nabla, RIGHT, buff=1/2*text_buff),
+            nabla_plane_delta_b.animate.next_to(nabla_one_nabla, RIGHT, buff=5/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_one_a)),
+            nabla_plane_delta_a.animate.next_to(nabla_one_nabla, RIGHT, buff=7/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_one_a) + get_len(nabla_plane_delta_b) + get_len(nabla_one_b)),
+        )
+        self.wait(1)
+        # Wiggle D1:
+        scaling_value = 1.5
+        number_wiggles = 15
+        angle_wiggle = 0.25
+        wiggle_runtime = 1
+        self.play(
+            Wiggle(d1_label, scale_value=scaling_value, n_wiggles=number_wiggles, rotation_angle=angle_wiggle, run_time=wiggle_runtime)
+        )
+        self.next_section(skip_animations=True)
+        self.wait(1)
+        self.play(
+            ReplacementTransform(d1_label.copy(), group_is_zero)
+        )
+        self.wait(1)
+        self.play(
+            FadeOut(nabla_one_a),
+            FadeOut(nabla_one_b),
+            Write(nabla_zero_a),
+            Write(nabla_zero_b),
+            nabla_plane_delta_b.animate.next_to(nabla_one_nabla, RIGHT, buff=4/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_zero_a)),
+            nabla_plane_delta_a.animate.next_to(nabla_one_nabla, RIGHT, buff=6/4*text_buff + get_len(nabla_plane_equals) + get_len(nabla_zero_a) + get_len(nabla_plane_delta_b) + get_len(nabla_zero_b)).shift([0, 0.025, 0]),
+        )
+        self.play(
+            FadeOut(nabla_removal_group),
+            nabla_plane_delta_b_2b.animate.move_to([
+                nabla_plane_equals_equals.get_center()[0] + text_buff + 1/2*get_len(nabla_plane_delta_b_2b),
+                nabla_plane_delta_b_2b.get_center()[1],
+                nabla_plane_delta_b_2b.get_center()[2]
+            ]),
+            nabla_plane_delta_a.animate.move_to([
+                nabla_plane_equals_equals.get_center()[0] + 3/2*text_buff + get_len(nabla_plane_delta_b_2b) + 1/2*get_len(nabla_plane_delta_a),
+                nabla_plane_delta_a.get_center()[1],
+                nabla_plane_delta_a.get_center()[2]
+            ])
+        )
+        self.wait(1)
+        self.play(
+            FadeOut(i_is_one),
+            FadeOut(group_is_zero),
+            ReplacementTransform(nabla_i_rectangle, nabla_i_bigger_rectangle),
+            nabla_i.animate.shift([0, -get_height(nabla_simplified) - 1/2*text_buff, 0]),
+            nabla_i_plus.animate.shift([0, -get_height(nabla_simplified) - 1/2*text_buff, 0]),
+            nabla_simplified.animate.move_to([
+                nabla_i_group.get_left()[0] + 1/2*get_len(nabla_simplified),
+                nabla_i_group.get_top()[1] - 1/2*text_buff - get_height(nabla_i_e) - 1/2*get_height(nabla_simplified),
+                nabla_simplified.get_center()[2]
+            ]),
+            FadeOut(plane_rectangle)
+        )
+        self.next_section()
+        self.wait(1)
+        # Moving to 'If you move diagonally/horizontally':
+        self.play(Create(d1_d2_line_diagonally))
+        self.play(Create(starting_arrow))
+        self.play(
+            self.camera.frame.animate.shift([1.4*plane_square_size, 1.3*plane_square_size, 0]),
+            nabla_i_movement_group.animate.shift([1.4*plane_square_size, 1.3*plane_square_size, 0]),
+            Create(starting_dot)
+        )
+        self.play(
+            FadeOut(starting_arrow),
+            Create(diagonal_arrow),
+            Create(diagonal_dot)
+        )
+        self.wait(1)
+        self.play(
+            Write(starting_label),
+            FadeIn(starting_rectangle),
+            Write(diagonal_label),
+            FadeIn(diagonal_rectangle)
+        )
+        self.wait(1)
+        # If you move diagonally:
+        self.play(FadeIn(explanation_rectangle), Write(diagonal_explanation_if), Write(diagonal_bullet))
+        self.play(Write(diagonal_explanation_a), Write(diagonal_explanation_b))
+        self.wait(1)
+        # Moving the line horizontally:
+        self.play(
+            FadeOut(diagonal_rectangle),
+            FadeOut(diagonal_label),
+            FadeOut(diagonal_arrow),
+            FadeOut(diagonal_dot),
+            d1_d2_line_diagonally.animate.put_start_and_end_on(d1_dot.get_center(), plane.c2p(4, 2.6))
+        )
+        self.play(
+            Create(horizontal_arrow),
+            Create(horizontal_label),
+            Create(horizontal_dot),
+            FadeIn(horizontal_rectangle),
+            self.camera.frame.animate.shift([0, -0.6*plane_square_size, 0]),
+            nabla_i_movement_group.animate.shift([0, -0.6*plane_square_size, 0]),
+            diagonal_explanation.animate.shift([0, -0.6*plane_square_size, 0]),
+            diagonal_bullet.animate.shift([0, -0.6*plane_square_size, 0]),
+            explanation_rectangle.animate.shift([0, -0.6*plane_square_size, 0]),
+        )
+        horizontal_explanation.shift([0, -0.6*plane_square_size, 0])
+        horizontal_bullet.shift([0, -0.6*plane_square_size, 0])
+        # If you move horizontally:
+        self.play(Write(horizontal_explanation_if), Write(horizontal_bullet))
+        self.play(Write(horizontal_explanation_a), Write(horizontal_explanation_b))
+        self.wait(1)
+
+        # Nabla condition group:
+        nabla_condition_group.move_to([
+            self.camera.frame.get_right()[0] + 1/2* get_len(nabla_condition_group),
+            self.camera.frame.get_top()[1] - text_buff - 1/2*get_height(nabla_condition_group),
+            self.camera.frame.get_center()[2]
+        ])
+        nabla_condition_group.save_state()
+        diagonal_explanation_if_nabla.next_to(diagonal_explanation_if_if, RIGHT, buff=text_buff*3/4).shift([0, - 3/16 * text_buff, 0])
+        horizontal_explanation_if_nabla.next_to(horizontal_explanation_if_if, RIGHT, buff=text_buff*3/4).shift([0, - 3/16 * text_buff, 0])
+        self.play(nabla_condition_group.animate.shift([- get_len(nabla_condition_group) - text_buff, 0, 0]))
+        self.wait(1)
+        self.play(
+            FadeOut(diagonal_explanation_if_move),
+            FadeOut(horizontal_explanation_if_move),
+            Write(diagonal_explanation_if_nabla),
+            Write(horizontal_explanation_if_nabla)
+        )
+        self.next_section()
+        self.wait(1)
+        self.play(
+            Restore(nabla_condition_group),
+            FadeOut(plane),
+            FadeOut(horizontal_arrow),
+            FadeOut(horizontal_label),
+            FadeOut(horizontal_rectangle),
+            FadeOut(starting_label),
+            FadeOut(starting_rectangle),
+            FadeOut(explanation_rectangle),
+            FadeOut(starting_dot),
+            FadeOut(horizontal_dot),
+            FadeOut(d1_d2_line_diagonally),
+            diagonal_movement_group.animate.move_to([
+                self.camera.frame.get_center()[0] - 1/4*get_len(self.camera.frame),
+                self.camera.frame.get_center()[1] + 1/8 * get_height(self.camera.frame), self.camera.frame.get_center()[2]
+            ]),
+            horizontal_movement_group.animate.move_to([
+                self.camera.frame.get_center()[0] + 1/4*get_len(self.camera.frame),
+                self.camera.frame.get_center()[1] + 1/8 * get_height(self.camera.frame), self.camera.frame.get_center()[2]
+            ]),
+        )
+        self.play(
+            diagonal_movement_group.animate.shift([1/4*get_len(self.camera.frame), 0, 0]),
+            horizontal_movement_group.animate.shift([1/4*get_len(self.camera.frame) + 1/2*get_len(horizontal_movement_group), 0, 0])
+        )
+
+        # Connecting nabla_i and nabla_{i+1}:
+        nabla_i_start.move_to(nabla_i_plus.get_center()).scale(nabla_i_scale)
+        self.play(nabla_i_start.animate.next_to(diagonal_movement_group, DOWN, buff=text_buff).scale(1/nabla_i_scale))
+
+        nabla_i_plus_transformed.next_to(nabla_i_start, DOWN, buff=text_buff/2)
+        # variables[0].move_to(diagonal_explanation_a.get_center()).shift([1/2*get_len(diagonal_explanation_a) - 1/2*get_len(variables[0]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        # variables[1].move_to(diagonal_explanation_b.get_center()).shift([1/2*get_len(diagonal_explanation_b) - 1/2*get_len(variables[1]) + get_len(Tex(r"$)$", font_size=text_size)), 0, 0])
+        nabla_i_copy.move_to(nabla_i_start.get_center()).shift([1/2*get_len(nabla_i_start) - 1/2*get_len(nabla_i_copy), 0, 0])
+        nabla_i_start_equals.next_to(nabla_i_start, RIGHT, buff=text_buff/4)
+        self.add(nabla_i_copy)
+        self.play(
+            nabla_i_copy.animate.shift([0, -text_buff/2 - get_height(nabla_i_copy), 0]),
+            FadeIn(nabla_i_start_equals)
+        )
+        self.play(ReplacementTransform(nabla_i_copy, nabla_i_plus_transformed))
+        nabla_i_opened_braces.next_to(nabla_i_plus_transformed, DOWN, buff=text_buff/2)
+        nabla_i_plus_transformed_equals.next_to(nabla_i_plus_transformed, RIGHT, buff=text_buff/4)
+        self.wait(1)
+        self.play(
+            ReplacementTransform(nabla_i_plus_transformed.copy(), nabla_i_opened_braces),
+            FadeIn(nabla_i_plus_transformed_equals)
+        )
+        self.wait(1)
+        nabla_i_opened_braces_copy.move_to(nabla_i_opened_braces.get_center()).shift([0, -text_buff/2 - get_height(nabla_i_opened_braces), 0])
+        nabla_i_reordered.next_to(nabla_i_opened_braces, DOWN, buff=text_buff/2)
+        nabla_i_opened_braces_equals.next_to(nabla_i_opened_braces, RIGHT, buff=text_buff/4)
+        self.play(
+            TransformMatchingShapes(nabla_i_opened_braces.copy(), nabla_i_opened_braces_copy),
+            FadeIn(nabla_i_opened_braces_equals)
+        )
+        self.play(TransformMatchingTex(nabla_i_opened_braces_copy, nabla_i_reordered))
+        self.wait(1)
+        nabla_i_reordered_open_brace.next_to(nabla_i_reordered[1], LEFT, buff=text_buff/4)
+        nabla_i_reordered_close_brace.next_to(nabla_i_reordered[4], RIGHT, buff=text_buff/4).match_y(nabla_i_reordered[0])
+        self.play(
+            FadeIn(nabla_i_reordered_open_brace),
+            FadeIn(nabla_i_reordered_close_brace),
+            nabla_i_reordered[0].animate.shift([-get_len(nabla_i_reordered_open_brace), 0, 0]),
+            nabla_i_reordered[5].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
+            nabla_i_reordered[6].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
+        )
+
+        
+
+        self.wait(3)
