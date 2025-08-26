@@ -3198,6 +3198,10 @@ class SixthScene(MovingCameraScene):
         )
         nabla_i_reordered_open_brace = Tex(r"$\boldsymbol{(}$", font_size=text_size)
         nabla_i_reordered_close_brace = Tex(r"$\boldsymbol{)}$", font_size=text_size)
+        nabla_i_replacement_group = VGroup(nabla_i_reordered[1], nabla_i_reordered[2], nabla_i_reordered[3], nabla_i_reordered[4], nabla_i_reordered_open_brace, nabla_i_reordered_close_brace)
+        replacement_nabla = Tex(r"$\boldsymbol{\nabla{i}}$", font_size=text_size)
+        nabla_i_movement_group = VGroup(replacement_nabla, nabla_i_reordered[5], nabla_i_reordered[6])
+	
         ################################################################################## ANIMATION ##################################################################################
         self.next_section(skip_animations=True)
         # Adding the equations:
@@ -3424,7 +3428,24 @@ class SixthScene(MovingCameraScene):
             nabla_i_reordered[5].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
             nabla_i_reordered[6].animate.shift([get_len(nabla_i_reordered_open_brace), 0, 0]),
         )
-
+        self.wait(1)
+        nabla_i_copy = nabla_i.copy()
+        self.play(
+                nabla_i_copy.animate.next_to(nabla_i_reordered, DOWN, buff=text_buff).scale(1/nabla_i_scale).shift([- 1/2*get_len(nabla_i_reodered) + 1/2*get_len(nabla_i) - get_len(Tex(r"$\boldsymbol{\nabla_{i+1}}$", font_size=text_size)]),
+                FadeToColor(nabla_i_copy, GREEN),
+                for i in range(1, 4):
+                        FadeToColor(nabla_i_reordered[i], GREEN),
+                FadeToColor(nabla_i_reordered_open_brace, GREEN),
+                FadeToColor(nabla_i_reordered_close_brace, GREEN),
+        )
+        self.wait(1)
+        replacement_nabla.next_to(nabla_i_reordered[0], RIGHT, buff=text_buff/4)
+        self.play(
+                ReplacementTransform(nabla_i_replacement_group, replacement_nabla),
+                nabla_i_reordered[5].animate.shift([-get_len(nabla_i_replacement_group) + get_len(replacement_nabla), 0, 0]),
+                nabla_i_reordered[6].animate.shift([-get_len(nabla_i_replacement_group) + get_len(replacement_nabla), 0, 0]),
+        )
+        self.wait(1)
         
 
         self.wait(3)
