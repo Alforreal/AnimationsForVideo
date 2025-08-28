@@ -3813,3 +3813,123 @@ class SixthScene(MovingCameraScene):
 
 
         self.wait(3)
+
+class EightthScene(MovingCameraScene):
+    def construct(self):
+        text_size = 20
+
+        triangle_octant_size = 3
+        triangle_octant_stroke = 3
+
+        triangle_octant_one_positions = [
+            ORIGIN,
+            [triangle_octant_size, 0, 0],
+            [triangle_octant_size, triangle_octant_size,  0]
+        ]
+        triangle_octant_one = Polygon(*triangle_octant_one_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        
+        triangle_octant_two_positions = [
+            ORIGIN,
+            [triangle_octant_size, triangle_octant_size,  0],
+            [0, triangle_octant_size, 0]
+        ]
+        triangle_octant_two = Polygon(*triangle_octant_two_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangle_octant_three_positions = [
+            ORIGIN,
+            [0, triangle_octant_size, 0],
+            [-triangle_octant_size, triangle_octant_size,  0]
+        ]
+        triangle_octant_three = Polygon(*triangle_octant_three_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangle_octant_four_positions = [
+            ORIGIN,
+            [-triangle_octant_size, triangle_octant_size,  0],
+            [-triangle_octant_size, 0, 0]
+        ]
+        triangle_octant_four = Polygon(*triangle_octant_four_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        
+        triangle_octant_five_positions = [
+            ORIGIN,
+            [-triangle_octant_size, 0, 0],
+            [-triangle_octant_size, -triangle_octant_size,  0]
+        ]
+        triangle_octant_five = Polygon(*triangle_octant_five_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangle_octant_six_positions = [
+            ORIGIN,
+            [-triangle_octant_size, -triangle_octant_size,  0],
+            [0, -triangle_octant_size, 0]
+        ]
+        triangle_octant_six = Polygon(*triangle_octant_six_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangle_octant_seven_positions = [
+            ORIGIN,
+            [0, -triangle_octant_size, 0],
+            [triangle_octant_size, -triangle_octant_size,  0]
+        ]
+        triangle_octant_seven = Polygon(*triangle_octant_seven_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangle_octant_eight_positions = [
+            ORIGIN,
+            [triangle_octant_size, -triangle_octant_size,  0],
+            [triangle_octant_size, 0, 0]
+        ]
+        triangle_octant_eight = Polygon(*triangle_octant_eight_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+
+        triangles_octant = VGroup(
+            triangle_octant_one,
+            triangle_octant_two,
+            triangle_octant_three,
+            triangle_octant_four,
+            triangle_octant_five,
+            triangle_octant_six,
+            triangle_octant_seven,
+            triangle_octant_eight
+        )
+
+        triangle_octant_labels = Tex(
+            r"$1$",
+            r"$2$",
+            r"$3$",
+            r"$4$",
+            r"$5$",
+            r"$6$",
+            r"$7$",
+            r"$8$",
+            font_size=text_size
+        )
+
+        octant_label_distance_from_origin = 0.7
+        octant_label_starting_angle = PI/8
+        octant_label_angle = octant_label_starting_angle
+        for i in range(0, 8):
+            triangle_octant_labels[i].move_to([
+                octant_label_distance_from_origin * np.cos(octant_label_angle),
+                octant_label_distance_from_origin * np.sin(octant_label_angle),
+                triangle_octant_labels[i].get_center()[2]
+            ])
+            octant_label_angle += PI/4
+        
+        octant_arrow_length = 1
+        octant_arrow_distance = 0.5
+
+        octant_base_arrow_group = VGroup(
+            Arrow(start=ORIGIN, end=[octant_arrow_length, 0, 0]),
+            Arrow(start=ORIGIN, end=[0, octant_arrow_length, 0]),
+            Arrow(start=ORIGIN, end=[octant_arrow_length, octant_arrow_length, 0]),
+        )
+
+        octant_arrow_group = VGroup()
+
+        ###############################ANIMATIONS###############################
+
+        self.play(
+            Create(triangles_octant),
+            Write(triangle_octant_labels),
+        )
+
+
+        self.wait(3)
+
+
