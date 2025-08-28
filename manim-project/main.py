@@ -3911,22 +3911,48 @@ class EightthScene(MovingCameraScene):
             ])
             octant_label_angle += PI/4
         
-        octant_arrow_length = 1
-        octant_arrow_distance = 0.5
+        octant_arrow_length = 0.5
+        octant_arrow_distance = 2.2
+        text_buff = 0.1
 
         octant_base_arrow_group = VGroup(
-            Arrow(start=ORIGIN, end=[octant_arrow_length, 0, 0]),
-            Arrow(start=ORIGIN, end=[0, octant_arrow_length, 0]),
-            Arrow(start=ORIGIN, end=[octant_arrow_length, octant_arrow_length, 0]),
+            Arrow(start=ORIGIN, end=[octant_arrow_length, 0, 0], buff=0),
+            Arrow(start=ORIGIN, end=[0, octant_arrow_length, 0], buff=0),
+            Arrow(start=ORIGIN, end=[octant_arrow_length, octant_arrow_length, 0], buff=0),
+            Tex(r"$a$", font_size=text_size).move_to([octant_arrow_length, - text_buff, 0]),
+            Tex(r"$b$", font_size=text_size).move_to([-text_buff, octant_arrow_length, 0]),
+            Tex(r"$m_1$", font_size=text_size).move_to([1/2*octant_arrow_length, -text_buff, 0]),
+            Tex(r"$m_2$", font_size=text_size).move_to([octant_arrow_length/2 - text_buff, octant_arrow_length/2, 0])
         )
 
         octant_arrow_group = VGroup()
+        octant_arrow_angle = PI/8
+
+        for i in range(0, 8):
+            # if i == 3:
+            #     octant_arrow_group.add(octant_base_arrow_group.copy().rotate(PI/2*(i % 2 + int(i/2)), about_point=ORIGIN).move_to([
+            #         octant_arrow_distance * np.cos(octant_arrow_angle),
+            #         octant_arrow_distance * np.sin(octant_arrow_angle), 0
+            #     ]))
+            if i % 2 == 0:
+                octant_arrow_group.add(octant_base_arrow_group.copy().rotate(PI/2*(i % 2 + int(i/2)), about_point=ORIGIN).move_to([
+                    octant_arrow_distance * np.cos(octant_arrow_angle),
+                    octant_arrow_distance * np.sin(octant_arrow_angle), 0
+                ]))
+            else:
+                octant_arrow_group.add(octant_base_arrow_group.copy().flip().rotate(PI/2, about_point=ORIGIN).move_to([
+                    octant_arrow_distance * np.cos(octant_arrow_angle),
+                    octant_arrow_distance * np.sin(octant_arrow_angle), 0
+                ]))
+            octant_arrow_angle += PI/4
+
 
         ###############################ANIMATIONS###############################
 
         self.play(
             Create(triangles_octant),
             Write(triangle_octant_labels),
+            Create(octant_arrow_group)
         )
 
 
