@@ -3856,21 +3856,21 @@ class SeventhScene(MovingCameraScene):
         a_group_first.shift(DOWN * 0.2).set_opacity(0.8)
 
         #Not Original Arrows_on_sides
-        arrow_b_second = Arrow(start = plane.c2p(1.2, 4.0), end = plane.c2p(1.7, 4.0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
-        b_name_second = Text("b", font_size=14).next_to(arrow_b_second, UP * 0.1)
+        arrow_b_second = Arrow(start = plane.c2p(0, 2.7), end = plane.c2p(0, 2.2), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        b_name_second = Text("b", font_size=14).next_to(arrow_b_second, LEFT * 0.1)
 
           #Идея на потом
           #b_name_second_add = Tex(r"$\boldsymbol{b}$", font_size=14).next_to(arrow_b_second, RIGHT * 0.0625) #0.0625 => textbuff
 
         b_group_second = VGroup(arrow_b_second, b_name_second)
         b_group_second.set_z_index(2)
-        b_group_second.shift(UP * 0.2).set_opacity(0.8)
+        b_group_second.shift(LEFT * 0.2).set_opacity(0.8)
 
-        arrow_a_second = Arrow(start = plane.c2p(0, 2.7), end = plane.c2p(0, 2.2), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
-        a_name_second = Text("a", font_size=14).next_to(arrow_a_second, LEFT * 0.1)
+        arrow_a_second = Arrow(start = plane.c2p(1.2, 4.0), end = plane.c2p(1.7, 4.0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        a_name_second = Text("a", font_size=14).next_to(arrow_a_second, UP * 0.1)
         a_group_second = VGroup(arrow_a_second, a_name_second)
         a_group_second.set_z_index(2)
-        a_group_second.shift(LEFT * 0.2).set_opacity(0.8)
+        a_group_second.shift(UP * 0.2).set_opacity(0.8)
 
         #D1D2
         d1_first_coord = [0, 0, 0]
@@ -3967,8 +3967,8 @@ class SeventhScene(MovingCameraScene):
         self.play(
             TransformMatchingShapes(grid_diag_numbers, new_grid_horizontal_numbers),
             TransformMatchingShapes(grid_vertical_numbers, new_grid_vertical_numbers),
-            TransformMatchingShapes(a_group_first, a_group_second),
-            TransformMatchingShapes(b_group_first, b_group_second)
+            TransformMatchingShapes(b_group_first, b_group_second),
+            TransformMatchingShapes(a_group_first, a_group_second)
         )
 
         self.wait(2)
