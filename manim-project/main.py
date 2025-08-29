@@ -3825,7 +3825,24 @@ class SeventhScene(MovingCameraScene):
         box = VGroup(plane, upper_line, right_line)
         box.set_z_index(1)
 
-        #Arrows_on_sides
+
+        #Original Grid_Numbers
+        grid_diag_numbers = VGroup()
+        grid_vertical_numbers = VGroup()
+        for i in range(1, 6):
+            grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
+        for i in range(1, 5):
+            grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
+
+        #Not original(xd) Grid Numbers
+        new_grid_horizontal_numbers = VGroup()
+        new_grid_vertical_numbers = VGroup()
+        for i in range(1, 6):
+            new_grid_horizontal_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 4), UP * 0.17))
+        for i in range(1, 5):
+            new_grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, 4 - i), LEFT * 0.17))
+
+        #Original Arrows_on_sides
         arrow_b_first = Arrow(start = plane.c2p(0, 2.2), end = plane.c2p(0, 2.7), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
         b_name_first = Text("b", font_size=14).next_to(arrow_b_first, LEFT * 0.1)
         b_group_first = VGroup(arrow_b_first, b_name_first)
@@ -3838,13 +3855,22 @@ class SeventhScene(MovingCameraScene):
         a_group_first.set_z_index(2)
         a_group_first.shift(DOWN * 0.2).set_opacity(0.8)
 
-        #Grid_Numbers
-        grid_diag_numbers = VGroup()
-        grid_vertical_numbers = VGroup()
-        for i in range(1, 6):
-            grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
-        for i in range(1, 5):
-            grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
+        #Not Original Arrows_on_sides
+        arrow_b_second = Arrow(start = plane.c2p(1.2, 4.0), end = plane.c2p(1.7, 4.0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        b_name_second = Text("b", font_size=14).next_to(arrow_b_second, UP * 0.1)
+
+          #Идея на потом
+          #b_name_second_add = Tex(r"$\boldsymbol{b}$", font_size=14).next_to(arrow_b_second, RIGHT * 0.0625) #0.0625 => textbuff
+
+        b_group_second = VGroup(arrow_b_second, b_name_second)
+        b_group_second.set_z_index(2)
+        b_group_second.shift(UP * 0.2).set_opacity(0.8)
+
+        arrow_a_second = Arrow(start = plane.c2p(0, 2.7), end = plane.c2p(0, 2.2), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        a_name_second = Text("a", font_size=14).next_to(arrow_a_second, LEFT * 0.1)
+        a_group_second = VGroup(arrow_a_second, a_name_second)
+        a_group_second.set_z_index(2)
+        a_group_second.shift(LEFT * 0.2).set_opacity(0.8)
 
         #D1D2
         d1_first_coord = [0, 0, 0]
@@ -3884,6 +3910,7 @@ class SeventhScene(MovingCameraScene):
         d1_d2_lines = VGroup(d1d2_line_first, d1d2_line_second)
         d1_d2_lines.set_z_index(2)
 
+
         #________________________*Animation seeeeex_tion*________________________
         #---------------https://www.youtube.com/watch?v=ViXSzU8UjbI--------------
 
@@ -3915,13 +3942,16 @@ class SeventhScene(MovingCameraScene):
         self.play(Create(d1d2_line_first), run_time=2)
         self.wait(3)
 
+        #removing the original line
         self.play(Uncreate(d1d2_line_first))
 
+
+        #removing updaters to replace them with new ones
         d1_name.clear_updaters()
         d2_name.clear_updaters()
 
 
-
+        #moving things to the position of the 7th octave
         self.play(
             d1.animate.move_to(plane.c2p(d1_second_coord[0], d1_second_coord[1])),
             d2.animate.move_to(plane.c2p(d2_second_coord[0], d2_second_coord[1])),
@@ -3931,8 +3961,22 @@ class SeventhScene(MovingCameraScene):
             d2_name.animate.add_updater(lambda x: x.next_to(d2, d2_name_second_pos))
         )
 
-        self.wait(1)
+        self.wait(2)
 
+        #Changing grid things to match 7th octave
+        self.play(
+            TransformMatchingShapes(grid_diag_numbers, new_grid_horizontal_numbers),
+            TransformMatchingShapes(grid_vertical_numbers, new_grid_vertical_numbers),
+            TransformMatchingShapes(a_group_first, a_group_second),
+            TransformMatchingShapes(b_group_first, b_group_second)
+        )
+
+        self.wait(2)
+
+        #Create d1d2 line of 7th octave
+        self.play(Create(d1d2_line_second))
+
+        self.wait(3)
 
 
 
