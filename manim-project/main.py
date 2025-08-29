@@ -6,6 +6,7 @@ fraction_offset = 0.05
 transition_scene_4_5 = VGroup()
 SCREEN_HEIGHT = 1080
 SCREEN_WIDTH = 1920
+FPS = 60
 MUNIT_WIDTH = 14.22
 MUNIT_HEIGHT = 8
 
@@ -27,6 +28,7 @@ class Introduction(MovingCameraScene):
 
         self.play(self.camera.frame.animate.move_to(circle.point_at_angle(3 * np.pi / 4)).scale(0.01), run_time=2)
         self.wait(2)
+
 
 class FirstScene(Scene):
 
@@ -81,6 +83,127 @@ class FirstScene(Scene):
 
 
         self.play(Create(box), run_time=4)
+        self.wait(2)
+
+        for arrow in arrows:
+            self.play(Create(arrow), run_time=0.5)
+
+        self.wait(3)
+
+        for arrow in reversed(arrows):
+            self.play(FadeOut(arrow), run_time=0.3)
+
+        self.play(Uncreate(d1), Uncreate(d2), Uncreate(d1_text), Uncreate(d2_text), Uncreate(d1d2_line), run_time=2)
+        self.wait(1)
+
+        self.play(Uncreate(box),  run_time=2)
+
+
+class FirstSceneBetter(MovingCameraScene):
+
+    def construct(self):
+
+        #creating box
+        plane = NumberPlane(x_range=(0, 5, 1), y_range=(0, 3, 1))
+        upper_line = Line(start=plane.c2p(0, 3), end=plane.c2p(5, 3), stroke_width= 2, color=WHITE)
+        right_line = Line(start=plane.c2p(5, 3), end=plane.c2p(5,0), stroke_width= 2, color=WHITE)
+        box = VGroup(plane, upper_line, right_line)
+        box.set_z_index(1)
+
+        #Initial Line
+
+        d1_coord = [0, 0, 0]
+        d2_coord = [5, 3, 0]
+
+        d1 = Dot(plane.c2p(d1_coord[0], d1_coord[1]), radius= 0.05, color=GREEN)
+        d2 = Dot(plane.c2p(d2_coord[0], d2_coord[1]), radius= 0.05, color=GREEN)
+
+        d1_text = Tex(r"$D_1$", font_size=21).next_to(d1, DOWN)
+        d2_text = Tex(r"$D_2$", font_size=21).next_to(d2, UP)
+
+        d1d2_line= Line(start=d1.get_center(), end=d2.get_center(), color=WHITE)
+        line_stuff = VGroup(d1, d2, d1_text, d2_text)
+
+        d1d2_line.set_z_index(3)
+        line_stuff.set_z_index(5)
+
+
+
+
+        #Calculate arrows (уже не рекурсивно, но все же)
+
+        start = time.perf_counter_ns()
+        arrows = self.algorithm(d1_coord, d2_coord, plane)
+        end = time.perf_counter_ns()
+        print(f"Time taken: {(end - start) / 1e6} ns")
+        arrows.set_z_index(4)
+
+        zoom_rectangle = Rectangle(
+            width = get_len(d1d2_line),
+            height = get_height(d1d2_line),
+            color=WHITE,
+            stroke_width = 3.0,
+            fill_opacity = 0
+        )
+
+        viewfinder_width = 4
+        viewfinder_height = viewfinder_width
+
+        zoom_viewfinder = Rectangle(
+            width = viewfinder_width,
+            height = viewfinder_height,
+            color = WHITE,
+            stroke_width = 3.0,
+            fill_opacity = 0
+        )
+
+        zoom_line_boven = Line(
+            start=d1d2_line.get_center(),
+            end = [1/2*get_len(self.camera.frame) - 1/2*viewfinder_width, 1/2*viewfinder_height, 0],
+            color = WHITE,
+            stroke_width = 3.0
+        )
+
+        zoom_line_onder = Line(
+            start=d1d2_line.get_center(),
+            end = [1/2*get_len(self.camera.frame) - 1/2*viewfinder_width, -1/2*viewfinder_height, 0],
+            color = WHITE,
+            stroke_width = 3.0
+        )
+
+
+        #Animation
+
+
+        # self.play(Create(d1), Create(d2), run_time=2)
+        # self.play(Write(d1_text), Write(d2_text), run_time=1)
+        # self.wait(2)
+        self.play(Create(d1d2_line), run_time=2)
+        self.wait(1)
+
+        self.play(FadeIn(zoom_rectangle))
+        self.play(zoom_rectangle.animate.move_to(d1d2_line.get_center()).scale(1/100))
+        self.camera.frame.save_state()
+        self.play(
+            self.camera.frame.animate.shift([1/4*get_len(self.camera.frame), 0, 0]),
+            ReplacementTransform(zoom_rectangle, zoom_viewfinder.move_to([1/2*get_len(self.camera.frame), 0, 0])),
+            Create(zoom_line_boven),
+            Create(zoom_line_onder)
+        )
+
+        self.wait(3)
+        self.play(
+            Restore(self.camera.frame),
+            Create(box),
+            FadeOut(zoom_line_boven),
+            FadeOut(zoom_line_onder),
+            FadeOut(zoom_viewfinder),
+            Create(d1),
+            Create(d2),
+            Write(d1_text),
+            Write(d2_text),
+            run_time=4
+        )
         self.wait(2)
 
         for arrow in arrows:
@@ -3421,8 +3544,8 @@ class SixthScene(MovingCameraScene):
         )
         self.wait(1)
         # Wiggle D1:
-        scaling_value = 1.5
-        number_wiggles = 15
+        scaling_value = 1.25
+        number_wiggles = 8
         angle_wiggle = 0.25
         wiggle_runtime = 1
         self.play(
@@ -3701,7 +3824,7 @@ class SixthScene(MovingCameraScene):
             nabla_horizontal_reordered[5].animate.shift([get_len(nabla_horizontal_reordered_open_brace), 0, 0]),
         )
         self.next_section()
-        replacement_nabla = Tex(r"$\boldsymbol{\nabla_i}$", font_size=text_size, color=GREEN).next_to(nabla_horizontal_reordered[0], RIGHT, buff=text_buff/2)
+        replacement_nabla = Tex(r"$\boldsymbol{\nabla_i}$", font_size=text_size, color=WHITE).next_to(nabla_horizontal_reordered[0], RIGHT, buff=text_buff/2)
         nabla_horizontal_copy = nabla_i.copy()
         nabla_horizontal_replacement_group = VGroup(nabla_horizontal_reordered[1], nabla_horizontal_reordered[2], nabla_horizontal_reordered[3], nabla_horizontal_reordered[4], nabla_horizontal_reordered_open_brace, nabla_horizontal_reordered_close_brace)
         nabla_horizontal_movement_group = VGroup(replacement_nabla, nabla_horizontal_reordered[5])
@@ -3713,17 +3836,10 @@ class SixthScene(MovingCameraScene):
             ]).scale(1/nabla_i_scale)
         )
         self.play(
-            FadeToColor(nabla_horizontal_reordered[1], GREEN),
-            FadeToColor(nabla_horizontal_reordered[2], GREEN),
-            FadeToColor(nabla_horizontal_reordered[3], GREEN),
-            FadeToColor(nabla_horizontal_reordered[4], GREEN),
-        )
-        self.play(
             ReplacementTransform(nabla_horizontal_replacement_group, replacement_nabla),
             nabla_horizontal_reordered[5].animate.shift([-get_len(nabla_horizontal_replacement_group) + get_len(replacement_nabla) + text_buff/4, 0, 0]),
             FadeOut(nabla_horizontal_copy)
         )
-        self.play(FadeToColor(replacement_nabla, WHITE))
         self.play(
             FadeOut(nabla_horizontal_plus_transformed),
             FadeOut(nabla_horizontal_plus_transformed_equals),
@@ -3816,66 +3932,67 @@ class SixthScene(MovingCameraScene):
 
 class EightthScene(MovingCameraScene):
     def construct(self):
-        text_size = 20
+        text_size = 15
 
         triangle_octant_size = 3
         triangle_octant_stroke = 3
+        triangle_octant_fill = YELLOW
 
         triangle_octant_one_positions = [
             ORIGIN,
             [triangle_octant_size, 0, 0],
             [triangle_octant_size, triangle_octant_size,  0]
         ]
-        triangle_octant_one = Polygon(*triangle_octant_one_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_one = Polygon(*triangle_octant_one_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
         
         triangle_octant_two_positions = [
             ORIGIN,
             [triangle_octant_size, triangle_octant_size,  0],
             [0, triangle_octant_size, 0]
         ]
-        triangle_octant_two = Polygon(*triangle_octant_two_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_two = Polygon(*triangle_octant_two_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangle_octant_three_positions = [
             ORIGIN,
             [0, triangle_octant_size, 0],
             [-triangle_octant_size, triangle_octant_size,  0]
         ]
-        triangle_octant_three = Polygon(*triangle_octant_three_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_three = Polygon(*triangle_octant_three_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangle_octant_four_positions = [
             ORIGIN,
             [-triangle_octant_size, triangle_octant_size,  0],
             [-triangle_octant_size, 0, 0]
         ]
-        triangle_octant_four = Polygon(*triangle_octant_four_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_four = Polygon(*triangle_octant_four_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
         
         triangle_octant_five_positions = [
             ORIGIN,
             [-triangle_octant_size, 0, 0],
             [-triangle_octant_size, -triangle_octant_size,  0]
         ]
-        triangle_octant_five = Polygon(*triangle_octant_five_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_five = Polygon(*triangle_octant_five_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangle_octant_six_positions = [
             ORIGIN,
             [-triangle_octant_size, -triangle_octant_size,  0],
             [0, -triangle_octant_size, 0]
         ]
-        triangle_octant_six = Polygon(*triangle_octant_six_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_six = Polygon(*triangle_octant_six_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangle_octant_seven_positions = [
             ORIGIN,
             [0, -triangle_octant_size, 0],
             [triangle_octant_size, -triangle_octant_size,  0]
         ]
-        triangle_octant_seven = Polygon(*triangle_octant_seven_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_seven = Polygon(*triangle_octant_seven_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangle_octant_eight_positions = [
             ORIGIN,
             [triangle_octant_size, -triangle_octant_size,  0],
             [triangle_octant_size, 0, 0]
         ]
-        triangle_octant_eight = Polygon(*triangle_octant_eight_positions, color=WHITE, stroke_width=triangle_octant_stroke)
+        triangle_octant_eight = Polygon(*triangle_octant_eight_positions, color=WHITE, stroke_width=triangle_octant_stroke, fill_opacity=0, fill_color=triangle_octant_fill)
 
         triangles_octant = VGroup(
             triangle_octant_one,
@@ -3898,7 +4015,7 @@ class EightthScene(MovingCameraScene):
             r"$7$",
             r"$8$",
             font_size=text_size
-        )
+        ).set_z_index(1)
 
         octant_label_distance_from_origin = 0.7
         octant_label_starting_angle = PI/8
@@ -3913,47 +4030,209 @@ class EightthScene(MovingCameraScene):
         
         octant_arrow_length = 0.5
         octant_arrow_distance = 2.2
-        text_buff = 0.1
+        text_buff = 0.05
 
         octant_base_arrow_group = VGroup(
-            Arrow(start=ORIGIN, end=[octant_arrow_length, 0, 0], buff=0),
-            Arrow(start=ORIGIN, end=[0, octant_arrow_length, 0], buff=0),
-            Arrow(start=ORIGIN, end=[octant_arrow_length, octant_arrow_length, 0], buff=0),
-            Tex(r"$a$", font_size=text_size).move_to([octant_arrow_length, - text_buff, 0]),
-            Tex(r"$b$", font_size=text_size).move_to([-text_buff, octant_arrow_length, 0]),
-            Tex(r"$m_1$", font_size=text_size).move_to([1/2*octant_arrow_length, -text_buff, 0]),
-            Tex(r"$m_2$", font_size=text_size).move_to([octant_arrow_length/2 - text_buff, octant_arrow_length/2, 0])
+            Arrow(start=ORIGIN, end=[octant_arrow_length, 0, 0], buff=0, color=RED), # a
+            Arrow(start=ORIGIN, end=[0, octant_arrow_length, 0], buff=0, color=GREEN), # b
+            Arrow(start=ORIGIN, end=[octant_arrow_length, octant_arrow_length, 0], buff=0, color=YELLOW), #m2
         )
-
         octant_arrow_group = VGroup()
         octant_arrow_angle = PI/8
 
         for i in range(0, 8):
-            # if i == 3:
-            #     octant_arrow_group.add(octant_base_arrow_group.copy().rotate(PI/2*(i % 2 + int(i/2)), about_point=ORIGIN).move_to([
-            #         octant_arrow_distance * np.cos(octant_arrow_angle),
-            #         octant_arrow_distance * np.sin(octant_arrow_angle), 0
-            #     ]))
             if i % 2 == 0:
-                octant_arrow_group.add(octant_base_arrow_group.copy().rotate(PI/2*(i % 2 + int(i/2)), about_point=ORIGIN).move_to([
+                octant_arrow_group.add(octant_base_arrow_group.copy().rotate_about_origin(PI/2*(int(i/2))).move_to([
                     octant_arrow_distance * np.cos(octant_arrow_angle),
                     octant_arrow_distance * np.sin(octant_arrow_angle), 0
                 ]))
             else:
-                octant_arrow_group.add(octant_base_arrow_group.copy().flip().rotate(PI/2, about_point=ORIGIN).move_to([
+                octant_arrow_group.add(octant_base_arrow_group.copy().flip().rotate_about_origin(5/4*PI + 1/4*PI*i).move_to([
                     octant_arrow_distance * np.cos(octant_arrow_angle),
                     octant_arrow_distance * np.sin(octant_arrow_angle), 0
                 ]))
             octant_arrow_angle += PI/4
 
+        octant_label_a_group = VGroup()
+        for i in range(8):
+            if i == 6 or i == 1:
+                octant_label_a_group.add(Tex(r"$a$", font_size=text_size).next_to(octant_arrow_group[i][0], LEFT, buff=text_buff).shift([0, 1/2*octant_arrow_length*np.power(-1, int(i/6)), 0]))
+            elif i % 3 == 0:
+                octant_label_a_group.add(Tex(r"$a$", font_size=text_size).next_to(octant_arrow_group[i][0], DOWN, buff=text_buff).shift([1/2*octant_arrow_length*np.power(-1, int(i/3)), 0, 0]))
+            elif i % 3 == 1:
+                octant_label_a_group.add(Tex(r"$a$", font_size=text_size).next_to(octant_arrow_group[i][0], UP, buff=text_buff).shift([1/2*octant_arrow_length*np.power(-1, int(i/3)), 0, 0]))
+            elif i % 3 == 2:
+                octant_label_a_group.add(Tex(r"$a$", font_size=text_size).next_to(octant_arrow_group[i][0], RIGHT, buff=text_buff).shift([0, 1/2*octant_arrow_length*np.power(-1, int(i/3)), 0]))
+        
+        octant_label_m1_group = VGroup()
+        for i in range(8):
+            if i == 6 or i == 1:
+                octant_label_m1_group.add(Tex(r"$m_1$", font_size=text_size).next_to(octant_arrow_group[i][0], LEFT, buff=text_buff))
+            elif i % 3 == 0:
+                octant_label_m1_group.add(Tex(r"$m_1$", font_size=text_size).next_to(octant_arrow_group[i][0], DOWN, buff=text_buff))
+            elif i % 3 == 1:
+                octant_label_m1_group.add(Tex(r"$m_1$", font_size=text_size).next_to(octant_arrow_group[i][0], UP, buff=text_buff))
+            elif i % 3 == 2:
+                octant_label_m1_group.add(Tex(r"$m_1$", font_size=text_size).next_to(octant_arrow_group[i][0], RIGHT, buff=text_buff))
+        
+        octant_label_b_group = VGroup(
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[0][1], LEFT, buff=text_buff).shift([0, 1/2*octant_arrow_length, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[1][1], DOWN, buff=text_buff).shift([1/2*octant_arrow_length, 0, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[2][1], DOWN, buff=text_buff).shift([-1/2*octant_arrow_length, 0, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[3][1], RIGHT, buff=text_buff).shift([0, 1/2*octant_arrow_length, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[4][1], RIGHT, buff=text_buff).shift([0, -1/2*octant_arrow_length, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[5][1], UP, buff=text_buff).shift([-1/2*octant_arrow_length, 0, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[6][1], UP, buff=text_buff).shift([1/2*octant_arrow_length, 0, 0]),
+            Tex(r"$b$", font_size=text_size).next_to(octant_arrow_group[7][1], LEFT, buff=text_buff).shift([0, -1/2*octant_arrow_length, 0]),
+        )
+
+        octant_label_m2_group = VGroup()
+        for i in range(8):
+            if i < 4:
+                octant_label_m2_group.add(Tex(r"$m_2$", font_size=text_size).move_to(octant_arrow_group[i][2].get_center() + [0, 1/2*octant_arrow_length, 0]))
+            else:
+                octant_label_m2_group.add(Tex(r"$m_2$", font_size=text_size).move_to(octant_arrow_group[i][2].get_center() + [0, -1/2*octant_arrow_length, 0]))
+        
+        d1_dot = Dot(point=ORIGIN, color=GREEN)
+        d1_label = Tex(r"$\boldsymbol{D_1}$", font_size=1.5*text_size).set_z_index(2).move_to(d1_dot.get_center()).shift([0, +4*text_buff, 0])
+        d1_rectangle = Rectangle(
+            width = get_len(d1_label),
+            height = get_height(d1_label),
+            fill_opacity = 0.7,
+            stroke_opacity = 0.0,
+            fill_color = BLACK,
+        ).move_to(d1_label.get_center()).set_z_index(1)
+
+        d1_group = VGroup(d1_dot, d1_label, d1_rectangle)
+
+
+        d2_angle = PI/16
+        radius = 1.5*triangle_octant_size
+        d2_dot = always_redraw(lambda: Dot(point=[radius*np.cos(d2_angle), radius*np.sin(d2_angle), 0], color=GREEN))
+        d2_label = Tex(r"$\boldsymbol{D_2}$", font_size=1.5*text_size)
+        d2_label.add_updater(lambda a: a.next_to(d2_dot, UP, buff=4*text_buff))
+
+        nabla_m = Tex(
+            r"$\boldsymbol{if \; \nabla \ge 0 \rightarrow m_1}$",
+            r"$\boldsymbol{if \; \nabla <0 \rightarrow m_2}$",
+            font_size=1.5*text_size
+        )
+        nabla_m[1].next_to(nabla_m[0], DOWN, buff=text_buff*2).shift([-1/2*get_len(nabla_m[0]) + 1/2*get_len(nabla_m[1])])
+
+
 
         ###############################ANIMATIONS###############################
+
+        self.next_section(skip_animations=True)
 
         self.play(
             Create(triangles_octant),
             Write(triangle_octant_labels),
-            Create(octant_arrow_group)
+            Create(octant_arrow_group),
+            Write(octant_label_a_group),
+            Write(octant_label_b_group),
+            Write(octant_label_m1_group),
+            Write(octant_label_m2_group)
         )
+        self.wait(1)
+        self.play(
+            Create(d1_group),
+            octant_arrow_group.animate.set_opacity(0),
+            octant_label_a_group.animate.set_opacity(0),
+            octant_label_b_group.animate.set_opacity(0),
+            octant_label_m1_group.animate.set_opacity(0),
+            octant_label_m2_group.animate.set_opacity(0),
+            Create(d2_dot),
+            Write(d2_label)
+        )
+        dt = 4/FPS
+        runtime = 4
+        while d2_angle - PI/16 <= 2*PI:
+            self.play(
+                d2_dot.animate.move_to([radius*np.cos(d2_angle), radius*np.sin(d2_angle), 0]),
+                triangles_octant[int(d2_angle/PI/2*8) % 8].animate.set_fill(color=triangle_octant_fill, opacity=1),
+                triangles_octant[(int(d2_angle/PI/2*8) - 1) % 8].animate.set_fill(color=triangle_octant_fill, opacity=0),
+                run_time=dt,
+                rate_func=linear
+            )
+            d2_angle += 2*PI/runtime*dt
+        
+        self.next_section(skip_animations=True)
+
+        self.play(
+            triangles_octant[0].animate.set_fill(color=triangle_octant_fill, opacity=0),
+            FadeOut(d1_group),
+            FadeOut(d2_dot),
+            FadeOut(d2_label),
+        )
+        self.play(
+            octant_arrow_group.animate.set_opacity(1),
+            octant_label_a_group.animate.set_opacity(1),
+            octant_label_b_group.animate.set_opacity(1),
+            octant_label_m1_group.animate.set_opacity(1),
+            octant_label_m2_group.animate.set_opacity(1),
+        )
+        self.camera.frame.save_state()
+        self.play(
+            self.camera.frame.animate.scale((triangle_octant_size*2)/get_len(self.camera.frame)).move_to([triangle_octant_size - text_buff*4, 1/4*triangle_octant_size, 0])
+        )
+        nabla_m.next_to(self.camera.frame.get_right(), RIGHT, buff=0)
+        self.play(
+            nabla_m[1].animate.shift([-get_len(nabla_m[1]) - text_buff*4, 0, 0])
+        )
+        self.wait(1)
+        self.play(
+            nabla_m[0].animate.shift([-get_len(nabla_m[0]) - text_buff*4, 0, 0])
+        )
+        self.wait(1)
+        self.play(
+            nabla_m[0].animate.shift([get_len(nabla_m[0]) + text_buff*4, 0, 0]).set_opacity(0),
+            nabla_m[1].animate.shift([get_len(nabla_m[1]) + text_buff*4, 0, 0]).set_opacity(0),
+        )
+        self.play(
+            Restore(self.camera.frame),
+            octant_label_a_group.animate.set_opacity(0),
+            octant_label_b_group.animate.set_opacity(0),
+            octant_label_m1_group.animate.set_opacity(0),
+            octant_label_m2_group.animate.set_opacity(0),
+        )
+        for i in range(1, 8):
+            self.play(octant_arrow_group[i].animate.set_opacity(0), run_time=0.15)
+
+        self.next_section()
+        self.wait(1)
+        octant_arrow_transformator = octant_arrow_group[0].copy()
+        new_item_runtime = 1/FPS
+        octant_arrow_movement_runtime = 1
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[1, 0, 0]).move_to(octant_arrow_group[7].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[7].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[1, -1, 0]).move_to(octant_arrow_group[6].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[6].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[0, 1, 0]).move_to(octant_arrow_group[5].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[5].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[1, 1, 0]).move_to(octant_arrow_group[4].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[4].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[1, 0, 0]).move_to(octant_arrow_group[3].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[3].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[1, -1, 0]).move_to(octant_arrow_group[2].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[2].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(octant_arrow_transformator.animate.flip(axis=[0, 1, 0]).move_to(octant_arrow_group[1].get_center()), run_time=octant_arrow_movement_runtime)
+        self.play(octant_arrow_group[1].animate.set_opacity(1), run_time=new_item_runtime)
+
+        self.play(
+            octant_label_a_group.animate.set_opacity(1),
+            octant_label_b_group.animate.set_opacity(1),
+            octant_label_m1_group.animate.set_opacity(1),
+            octant_label_m2_group.animate.set_opacity(1),
+        )
+
 
 
         self.wait(3)
