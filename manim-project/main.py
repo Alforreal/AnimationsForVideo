@@ -3930,6 +3930,170 @@ class SixthScene(MovingCameraScene):
 
         self.wait(3)
 
+
+class SeventhScene(MovingCameraScene):
+     
+    def construct(self):
+        #Box
+        plane = NumberPlane(x_range=(0, 5, 1), y_range=(0, 4, 1))
+        upper_line = Line(start=plane.c2p(0, 4), end=plane.c2p(5, 4), stroke_width= 2, color=WHITE)
+        right_line = Line(start=plane.c2p(5, 4), end=plane.c2p(5,0), stroke_width= 2, color=WHITE)
+        box = VGroup(plane, upper_line, right_line)
+        box.set_z_index(1)
+
+
+        #Original Grid_Numbers
+        grid_diag_numbers = VGroup()
+        grid_vertical_numbers = VGroup()
+        for i in range(1, 6):
+            grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
+        for i in range(1, 5):
+            grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
+
+        #Not original(xd) Grid Numbers
+        new_grid_horizontal_numbers = VGroup()
+        new_grid_vertical_numbers = VGroup()
+        for i in range(1, 6):
+            new_grid_horizontal_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 4), UP * 0.17))
+        for i in range(1, 5):
+            new_grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, 4 - i), LEFT * 0.17))
+
+        #Original Arrows_on_sides
+        arrow_b_first = Arrow(start = plane.c2p(0, 2.2), end = plane.c2p(0, 2.7), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        b_name_first = Text("b", font_size=14).next_to(arrow_b_first, LEFT * 0.1)
+        b_group_first = VGroup(arrow_b_first, b_name_first)
+        b_group_first.set_z_index(2)
+        b_group_first.shift(LEFT * 0.2).set_opacity(0.8)
+
+        arrow_a_first = Arrow(start = plane.c2p(4.2, 0), end = plane.c2p(4.7, 0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        a_name_first = Text("a", font_size=14).next_to(arrow_a_first, DOWN * 0.1)
+        a_group_first = VGroup(arrow_a_first, a_name_first)
+        a_group_first.set_z_index(2)
+        a_group_first.shift(DOWN * 0.2).set_opacity(0.8)
+
+        #Not Original Arrows_on_sides
+        arrow_b_second = Arrow(start = plane.c2p(0, 2.7), end = plane.c2p(0, 2.2), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        b_name_second = Text("b", font_size=14).next_to(arrow_b_second, LEFT * 0.1)
+
+          #Идея на потом
+          #b_name_second_add = Tex(r"$\boldsymbol{b}$", font_size=14).next_to(arrow_b_second, RIGHT * 0.0625) #0.0625 => textbuff
+
+        b_group_second = VGroup(arrow_b_second, b_name_second)
+        b_group_second.set_z_index(2)
+        b_group_second.shift(LEFT * 0.2).set_opacity(0.8)
+
+        arrow_a_second = Arrow(start = plane.c2p(1.2, 4.0), end = plane.c2p(1.7, 4.0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        a_name_second = Text("a", font_size=14).next_to(arrow_a_second, UP * 0.1)
+        a_group_second = VGroup(arrow_a_second, a_name_second)
+        a_group_second.set_z_index(2)
+        a_group_second.shift(UP * 0.2).set_opacity(0.8)
+
+        #D1D2
+        d1_first_coord = [0, 0, 0]
+        d2_first_coord = [5, 4, 0]
+
+        d1 = Dot(plane.c2p(d1_first_coord[0], d1_first_coord[1]), radius= 0.05, color=GREEN)
+        d2 = Dot(plane.c2p(d2_first_coord[0], d2_first_coord[1]), radius= 0.05, color=GREEN)
+
+        d1_second_coord = [0, 4, 0]       
+        d2_second_coord = [5, 0, 0]
+
+        dots = VGroup(d1, d2)
+        dots.set_z_index(3)
+
+        # d1_second = Dot(plane.c2p(d1_second_coord[0], d1_second_coord[1]), radius= 0.05, color=GREEN) 
+        # d2_second = Dot(plane.c2p(d2_second_coord[0], d2_second_coord[1]), radius= 0.05, color=GREEN)
+
+        
+        d1_name_first_pos = DOWN * 0.7
+        d2_name_first_pos = UP * 0.5
+
+        d1_name = Tex(r"$\boldsymbol{D_1}$", font_size=21).add_updater(lambda x: x.next_to(d1, d1_name_first_pos))
+        d2_name = Tex(r"$\boldsymbol{D_2}$", font_size=21).add_updater(lambda x: x.next_to(d2, d2_name_first_pos))
+
+
+        d1_name_second_pos = d2_name_first_pos
+        d2_name_second_pos = d1_name_first_pos
+
+        dots_names = VGroup(d1_name, d2_name)
+
+        dots_names.set_z_index(2)
+
+        d1d2_line_first = Line(plane.c2p(d1_first_coord[0], d1_first_coord[1]), plane.c2p(d2_first_coord[0], d2_first_coord[1]), color=WHITE)
+
+        d1d2_line_second = Line(plane.c2p(d1_second_coord[0], d1_second_coord[1]), plane.c2p(d2_second_coord[0], d2_second_coord[1]), color=WHITE)
+
+        d1_d2_lines = VGroup(d1d2_line_first, d1d2_line_second)
+        d1_d2_lines.set_z_index(2)
+
+
+        #________________________*Animation seeeeex_tion*________________________
+        #---------------https://www.youtube.com/watch?v=ViXSzU8UjbI--------------
+
+        self.wait(1)
+        
+        #--Renewing the state of Second Scene--
+
+        #creating grid
+        self.play(Create(box), run_time = 4)
+        self.wait(1)
+
+        #Writing grid numbers
+        self.play(Write(grid_diag_numbers), Write(grid_vertical_numbers), run_time=2)
+        self.wait(2)
+
+        #writing dots
+        self.play(Create(d1), Create(d2), run_time=1) 
+        self.wait(1)
+
+        #D1 and D2 captions
+        self.play(Write(dots_names), run_time=1)
+        self.wait(2)
+
+        #arrows on sides representing the coordinate axis
+        self.play(Write(b_group_first), Write(a_group_first), run_time=1)
+        self.wait(2)
+
+        #d1d2 line of the 1 octave(how do i write this word)
+        self.play(Create(d1d2_line_first), run_time=2)
+        self.wait(3)
+
+        #removing the original line
+        self.play(Uncreate(d1d2_line_first))
+
+
+        #removing updaters to replace them with new ones
+        d1_name.clear_updaters()
+        d2_name.clear_updaters()
+
+
+        #moving things to the position of the 7th octave
+        self.play(
+            d1.animate.move_to(plane.c2p(d1_second_coord[0], d1_second_coord[1])),
+            d2.animate.move_to(plane.c2p(d2_second_coord[0], d2_second_coord[1])),
+            grid_diag_numbers[-1].animate.set_opacity(0),                                #Только сейчас заметил. Какого фига это diag если это horizontal?
+            grid_vertical_numbers[-1].animate.set_opacity(0),
+            d1_name.animate.add_updater(lambda x: x.next_to(d1, d1_name_second_pos)),
+            d2_name.animate.add_updater(lambda x: x.next_to(d2, d2_name_second_pos))
+        )
+
+        self.wait(2)
+
+        #Changing grid things to match 7th octave
+        self.play(
+            TransformMatchingShapes(grid_diag_numbers, new_grid_horizontal_numbers),
+            TransformMatchingShapes(grid_vertical_numbers, new_grid_vertical_numbers),
+            TransformMatchingShapes(b_group_first, b_group_second),
+            TransformMatchingShapes(a_group_first, a_group_second)
+        )
+
+        self.wait(2)
+
+        #Create d1d2 line of 7th octave
+        self.play(Create(d1d2_line_second))
+
+        self.wait(3)
+
 class EightthScene(MovingCameraScene):
     def construct(self):
         text_size = 15
