@@ -27,5 +27,3 @@ Thumbs.db
 # Manim renders
 media/
 
-# Virtual environments
-.venv/

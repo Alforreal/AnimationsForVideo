@@ -3850,8 +3850,8 @@ class SeventhScene(MovingCameraScene):
         d1_first_coord = [0, 0, 0]
         d2_first_coord = [5, 4, 0]
 
-        d1 = always_redraw(lambda: Dot(plane.c2p(d1_first_coord[0], d1_first_coord[1]), radius= 0.05, color=GREEN))
-        d2 = always_redraw(lambda: Dot(plane.c2p(d2_first_coord[0], d2_first_coord[1]), radius= 0.05, color=GREEN))
+        d1 = Dot(plane.c2p(d1_first_coord[0], d1_first_coord[1]), radius= 0.05, color=GREEN)
+        d2 = Dot(plane.c2p(d2_first_coord[0], d2_first_coord[1]), radius= 0.05, color=GREEN)
 
         d1_second_coord = [0, 4, 0]       
         d2_second_coord = [5, 0, 0]
@@ -3862,8 +3862,17 @@ class SeventhScene(MovingCameraScene):
         # d1_second = Dot(plane.c2p(d1_second_coord[0], d1_second_coord[1]), radius= 0.05, color=GREEN) 
         # d2_second = Dot(plane.c2p(d2_second_coord[0], d2_second_coord[1]), radius= 0.05, color=GREEN)
 
-        d1_name = always_redraw(lambda: Tex(r"$\boldsymbol{D_1}$", font_size=21).next_to(d1, DOWN * 0.7))
-        d2_name = always_redraw(lambda: Tex(r"$\boldsymbol{D_2}$", font_size=21).next_to(d2, UP * 0.5))
+        
+        d1_name_first_pos = DOWN * 0.7
+        d2_name_first_pos = UP * 0.5
+
+        d1_name = Tex(r"$\boldsymbol{D_1}$", font_size=21).add_updater(lambda x: x.next_to(d1, d1_name_first_pos))
+        d2_name = Tex(r"$\boldsymbol{D_2}$", font_size=21).add_updater(lambda x: x.next_to(d2, d2_name_first_pos))
+
+
+        d1_name_second_pos = d2_name_first_pos
+        d2_name_second_pos = d1_name_first_pos
+
         dots_names = VGroup(d1_name, d2_name)
 
         dots_names.set_z_index(2)
@@ -3880,13 +3889,50 @@ class SeventhScene(MovingCameraScene):
 
         self.wait(1)
         
-        self.play(Create(box), run_time = 4)
+        #--Renewing the state of Second Scene--
 
+        #creating grid
+        self.play(Create(box), run_time = 4)
+        self.wait(1)
+
+        #Writing grid numbers
+        self.play(Write(grid_diag_numbers), Write(grid_vertical_numbers), run_time=2)
+        self.wait(2)
+
+        #writing dots
         self.play(Create(d1), Create(d2), run_time=1) 
-        self.wait(2)
-        self.play(Create(d1d2_line_first), run_time=2)
-        self.wait(2)
+        self.wait(1)
+
+        #D1 and D2 captions
         self.play(Write(dots_names), run_time=1)
+        self.wait(2)
+
+        #arrows on sides representing the coordinate axis
+        self.play(Write(b_group_first), Write(a_group_first), run_time=1)
+        self.wait(2)
+
+        #d1d2 line of the 1 octave(how do i write this word)
+        self.play(Create(d1d2_line_first), run_time=2)
+        self.wait(3)
+
+        self.play(Uncreate(d1d2_line_first))
+
+        d1_name.clear_updaters()
+        d2_name.clear_updaters()
+
+
+
+        self.play(
+            d1.animate.move_to(plane.c2p(d1_second_coord[0], d1_second_coord[1])),
+            d2.animate.move_to(plane.c2p(d2_second_coord[0], d2_second_coord[1])),
+            grid_diag_numbers[-1].animate.set_opacity(0),                                #Только сейчас заметил. Какого фига это diag если это horizontal?
+            grid_vertical_numbers[-1].animate.set_opacity(0),
+            d1_name.animate.add_updater(lambda x: x.next_to(d1, d1_name_second_pos)),
+            d2_name.animate.add_updater(lambda x: x.next_to(d2, d2_name_second_pos))
+        )
+
+        self.wait(1)
+
 
 
 
