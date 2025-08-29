@@ -3814,6 +3814,88 @@ class SixthScene(MovingCameraScene):
 
         self.wait(3)
 
+
+class SeventhScene(MovingCameraScene):
+     
+    def construct(self):
+        #Box
+        plane = NumberPlane(x_range=(0, 5, 1), y_range=(0, 4, 1))
+        upper_line = Line(start=plane.c2p(0, 4), end=plane.c2p(5, 4), stroke_width= 2, color=WHITE)
+        right_line = Line(start=plane.c2p(5, 4), end=plane.c2p(5,0), stroke_width= 2, color=WHITE)
+        box = VGroup(plane, upper_line, right_line)
+        box.set_z_index(1)
+
+        #Arrows_on_sides
+        arrow_b_first = Arrow(start = plane.c2p(0, 2.2), end = plane.c2p(0, 2.7), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        b_name_first = Text("b", font_size=14).next_to(arrow_b_first, LEFT * 0.1)
+        b_group_first = VGroup(arrow_b_first, b_name_first)
+        b_group_first.set_z_index(2)
+        b_group_first.shift(LEFT * 0.2).set_opacity(0.8)
+
+        arrow_a_first = Arrow(start = plane.c2p(4.2, 0), end = plane.c2p(4.7, 0), color=ManimColor("#00A2FF"), buff=0.0, stroke_width=1, tip_length = 0.1)
+        a_name_first = Text("a", font_size=14).next_to(arrow_a_first, DOWN * 0.1)
+        a_group_first = VGroup(arrow_a_first, a_name_first)
+        a_group_first.set_z_index(2)
+        a_group_first.shift(DOWN * 0.2).set_opacity(0.8)
+
+        #Grid_Numbers
+        grid_diag_numbers = VGroup()
+        grid_vertical_numbers = VGroup()
+        for i in range(1, 6):
+            grid_diag_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(i, 0), DOWN * 0.17))
+        for i in range(1, 5):
+            grid_vertical_numbers.add(Text(str(i), font_size=12).next_to(plane.c2p(0, i), LEFT * 0.17))
+
+        #D1D2
+        d1_first_coord = [0, 0, 0]
+        d2_first_coord = [5, 4, 0]
+
+        d1 = always_redraw(lambda: Dot(plane.c2p(d1_first_coord[0], d1_first_coord[1]), radius= 0.05, color=GREEN))
+        d2 = always_redraw(lambda: Dot(plane.c2p(d2_first_coord[0], d2_first_coord[1]), radius= 0.05, color=GREEN))
+
+        d1_second_coord = [0, 4, 0]       
+        d2_second_coord = [5, 0, 0]
+
+        dots = VGroup(d1, d2)
+        dots.set_z_index(3)
+
+        # d1_second = Dot(plane.c2p(d1_second_coord[0], d1_second_coord[1]), radius= 0.05, color=GREEN) 
+        # d2_second = Dot(plane.c2p(d2_second_coord[0], d2_second_coord[1]), radius= 0.05, color=GREEN)
+
+        d1_name = always_redraw(lambda: Tex(r"$\boldsymbol{D_1}$", font_size=21).next_to(d1, DOWN * 0.7))
+        d2_name = always_redraw(lambda: Tex(r"$\boldsymbol{D_2}$", font_size=21).next_to(d2, UP * 0.5))
+        dots_names = VGroup(d1_name, d2_name)
+
+        dots_names.set_z_index(2)
+
+        d1d2_line_first = Line(plane.c2p(d1_first_coord[0], d1_first_coord[1]), plane.c2p(d2_first_coord[0], d2_first_coord[1]), color=WHITE)
+
+        d1d2_line_second = Line(plane.c2p(d1_second_coord[0], d1_second_coord[1]), plane.c2p(d2_second_coord[0], d2_second_coord[1]), color=WHITE)
+
+        d1_d2_lines = VGroup(d1d2_line_first, d1d2_line_second)
+        d1_d2_lines.set_z_index(2)
+
+        #________________________*Animation seeeeex_tion*________________________
+        #---------------https://www.youtube.com/watch?v=ViXSzU8UjbI--------------
+
+        self.wait(1)
+        
+        self.play(Create(box), run_time = 4)
+
+        self.play(Create(d1), Create(d2), run_time=1) 
+        self.wait(2)
+        self.play(Create(d1d2_line_first), run_time=2)
+        self.wait(2)
+        self.play(Write(dots_names), run_time=1)
+
+
+
+
+
+
+
+
+
 class EightthScene(MovingCameraScene):
     def construct(self):
         text_size = 20
