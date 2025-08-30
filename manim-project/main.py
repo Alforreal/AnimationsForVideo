@@ -4283,11 +4283,26 @@ class EightthScene(MovingCameraScene):
         )
         nabla_m[1].next_to(nabla_m[0], DOWN, buff=text_buff*2).shift([-1/2*get_len(nabla_m[0]) + 1/2*get_len(nabla_m[1])])
 
+        info_table = MathTable(
+            [["OCT", "\Delta x", "\Delta y", "|\Delta x| - |\Delta y|", "\Delta a",   "\Delta b"],
+             [  1,    "\ge 0",    "\ge 0",            "\ge 0",         "|\Delta x|", "|\Delta y|"],
+             [  2,    "\ge 0",    "\ge 0",             "< 0",          "|\Delta y|", "|\Delta x|"],
+             [  3,     "< 0",     "\ge 0",             "< 0",          "|\Delta y|", "|\Delta x|"],
+             [  4,     "< 0",     "\ge 0",            "\ge 0",         "|\Delta x|", "|\Delta y|"],
+             [  5,     "< 0",      "< 0",             "\ge 0",         "|\Delta x|", "|\Delta y|"],
+             [  6,     "< 0",      "< 0",              "< 0",          "|\Delta y|", "|\Delta x|"],
+             [  7,    "\ge 0",     "< 0",              "< 0",          "|\Delta y|", "|\Delta x|"],
+             [  8,    "\ge 0",     "< 0",             "\ge 0",         "|\Delta x|", "|\Delta y|"]],
+            include_outer_lines = True,
+            line_config={"stroke_width": 2},
+            v_buff = 0.3,
+            h_buff = 1
+        )
 
 
         ###############################ANIMATIONS###############################
 
-        self.next_section(skip_animations=True)
+        self.next_section()
 
         self.play(
             Create(triangles_octant),
@@ -4321,7 +4336,7 @@ class EightthScene(MovingCameraScene):
             )
             d2_angle += 2*PI/runtime*dt
         
-        self.next_section(skip_animations=True)
+        self.next_section()
 
         self.play(
             triangles_octant[0].animate.set_fill(color=triangle_octant_fill, opacity=0),
@@ -4367,7 +4382,7 @@ class EightthScene(MovingCameraScene):
         self.wait(1)
         octant_arrow_transformator = octant_arrow_group[0].copy()
         new_item_runtime = 1/FPS
-        octant_arrow_movement_runtime = 1
+        octant_arrow_movement_runtime = 0.7
 
         self.play(octant_arrow_transformator.animate.flip(axis=[1, 0, 0]).move_to(octant_arrow_group[7].get_center()), run_time=octant_arrow_movement_runtime)
         self.play(octant_arrow_group[7].animate.set_opacity(1), run_time=new_item_runtime)
@@ -4396,6 +4411,15 @@ class EightthScene(MovingCameraScene):
             octant_label_m1_group.animate.set_opacity(1),
             octant_label_m2_group.animate.set_opacity(1),
         )
+        self.wait(1)
+        self.camera.frame.save_state()
+        scale_info_table = 0.5
+        info_table.scale(scale_info_table).move_to([self.camera.frame.get_right()[0] + 1/2*get_len(info_table)*scale_info_table, 0, 0]).shift([1/2*get_len(self.camera.frame) - triangle_octant_size - text_buff*8, 0, 0])
+        self.play(
+            self.camera.frame.animate.shift([1/2*get_len(self.camera.frame) - triangle_octant_size - text_buff*8, 0, 0]),
+            info_table.animate.shift([-get_len(info_table), 0, 0])
+        )
+        self.wait(1)
 
 
 
